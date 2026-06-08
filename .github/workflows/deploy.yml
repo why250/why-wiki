@@ -28,7 +28,7 @@ jobs:
 
       - name: Clone Quartz v4
         run: |
-          git clone --depth 1 --branch v4 https://github.com/jackyzha0/quartz.git /tmp/quartz
+          git clone --depth 1 --branch v4.5.2 https://github.com/jackyzha0/quartz.git /tmp/quartz
 
       - name: Apply custom Quartz config
         run: |
@@ -55,7 +55,11 @@ jobs:
       - name: Build Quartz site
         run: |
           cd /tmp/quartz
-          npx quartz build
+          echo "=== Content directory ==="
+          ls -la content/
+          echo "=== Config files ==="
+          ls -la quartz.config.ts quartz.layout.ts
+          npx quartz build --verbose
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
