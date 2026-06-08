@@ -2,7 +2,7 @@
 type: concept
 title: TI 校准算法
 tags: [ADC, calibration, time-interleaving, offset, gain, skew, bandwidth, dither]
-related: [[time-interleaving-adc]], [[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[dac-mismatch-effects]]
+related: "[[time-interleaving-adc]], [[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[dac-mismatch-effects]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

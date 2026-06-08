@@ -2,7 +2,7 @@
 type: entity
 title: J. Jacob Wikner
 tags: [researcher, DAC, data-converter, Linköping-University]
-related: [[nianxiong-tan]], [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[dac-mismatch-effects]]
+related: "[[nianxiong-tan]], [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[dac-mismatch-effects]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

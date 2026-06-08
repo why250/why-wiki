@@ -6,7 +6,7 @@ year: 2024
 url: "https://mp.weixin.qq.com/s/zNVgPspcgMC3C-CxfhNmhQ"
 venue: "微信公众号：固推铁球"
 tags: [SAR-ADC, time-interleaving, calibration, input-buffer, clock-generation, reference-buffer, 集创赛, tutorial]
-related: [[gutietieqiu]], [[zhangtuoken-2026-adc-calibration]]
+related: "[[gutietieqiu]], [[zhangtuoken-2026-adc-calibration]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

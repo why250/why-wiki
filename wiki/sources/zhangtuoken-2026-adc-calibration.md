@@ -6,7 +6,7 @@ year: 2026
 url: "https://mp.weixin.qq.com/s/IFFsfBBhwCjeAmttofoRBg"
 venue: "微信公众号"
 tags: [ADC, calibration, open-source, AI, vibe-coding]
-related: [[zhangtuoken]], [[ti-calibration]], [[gutietieqiu-2024-8bit-high-speed-sar-adc]]
+related: "[[zhangtuoken]], [[ti-calibration]], [[gutietieqiu-2024-8bit-high-speed-sar-adc]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

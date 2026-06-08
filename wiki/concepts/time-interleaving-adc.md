@@ -2,7 +2,7 @@
 type: concept
 title: 时间交织 ADC (Time-Interleaving ADC)
 tags: [ADC, time-interleaving, SAR, mismatch, architecture]
-related: [[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[ti-calibration]], [[high-speed-sar-adc]]
+related: "[[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[ti-calibration]], [[high-speed-sar-adc]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

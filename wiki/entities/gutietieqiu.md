@@ -2,7 +2,7 @@
 type: entity
 title: 固推铁球
 tags: [wechat-public-account, ADC, IC-design, tutorial]
-related: [[gutietieqiu-2024-8bit-high-speed-sar-adc]]
+related: "[[gutietieqiu-2024-8bit-high-speed-sar-adc]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

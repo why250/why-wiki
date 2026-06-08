@@ -6,7 +6,7 @@ year: 1997
 url: ""
 venue: Linköping University / Ericsson Components AB
 tags: [DAC, dynamic-performance, SFDR, mismatch, noise, output-impedance, CMOS]
-related: [[dac-dynamic-performance]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[jacob-wikner]], [[nianxiong-tan]]
+related: "[[dac-dynamic-performance]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[jacob-wikner]], [[nianxiong-tan]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

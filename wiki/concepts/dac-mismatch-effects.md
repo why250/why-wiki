@@ -2,7 +2,7 @@
 type: concept
 title: DAC 电流源失配效应
 tags: [DAC, mismatch, SFDR, yield, process-variation, current-source]
-related: [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[ti-calibration]], [[binary-weighted-dac]]
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[ti-calibration]], [[binary-weighted-dac]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

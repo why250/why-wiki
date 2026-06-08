@@ -2,7 +2,7 @@
 type: concept
 title: 辅助电路（高速ADC）
 tags: [ADC, input-buffer, clock-generation, reference-buffer, auxiliary-circuits]
-related: [[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[high-speed-sar-adc]], [[time-interleaving-adc]]
+related: "[[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[high-speed-sar-adc]], [[time-interleaving-adc]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

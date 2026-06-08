@@ -2,7 +2,7 @@
 type: entity
 title: Nianxiong Tan
 tags: [researcher, DAC, data-converter, Ericsson, CMOS]
-related: [[jacob-wikner]], [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]]
+related: "[[jacob-wikner]], [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

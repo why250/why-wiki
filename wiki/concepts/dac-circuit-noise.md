@@ -2,7 +2,7 @@
 type: concept
 title: DAC 电路噪声与 SNR 限制
 tags: [DAC, noise, thermal-noise, SNR, current-source, CMOS]
-related: [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[binary-weighted-dac]]
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[binary-weighted-dac]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

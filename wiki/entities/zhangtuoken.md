@@ -2,7 +2,7 @@
 type: entity
 title: 张托肯
 tags: [person, engineer, open-source]
-related: [[zhangtuoken-2026-adc-calibration]], [[ti-calibration]]
+related: "[[zhangtuoken-2026-adc-calibration]], [[ti-calibration]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

@@ -2,7 +2,7 @@
 type: concept
 title: DAC 动态性能
 tags: [DAC, dynamic-performance, SFDR, SNR, IMD, SNDR, telecommunications]
-related: [[wikner-tan-1997-dac-imperfections]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[binary-weighted-dac]]
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[binary-weighted-dac]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

@@ -2,7 +2,7 @@
 type: concept
 title: DAC 输出阻抗与信号依赖失真
 tags: [DAC, output-impedance, SFDR, distortion, current-source]
-related: [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[binary-weighted-dac]]
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[binary-weighted-dac]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

@@ -2,7 +2,7 @@
 type: concept
 title: 二进制加权 DAC
 tags: [DAC, binary-weighted, current-steering, architecture, CMOS]
-related: [[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[dac-output-impedance]], [[dac-mismatch-effects]]
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[dac-output-impedance]], [[dac-mismatch-effects]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---

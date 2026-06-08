@@ -2,7 +2,7 @@
 type: concept
 title: 高速 SAR ADC 设计
 tags: [SAR-ADC, high-speed, switching-path, reset-path, multi-bit-per-cycle, comparator]
-related: [[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[time-interleaving-adc]]
+related: "[[gutietieqiu-2024-8bit-high-speed-sar-adc]], [[time-interleaving-adc]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---
