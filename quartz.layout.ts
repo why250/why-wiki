@@ -8,7 +8,7 @@ export const sharedPageComponents: SharedLayout = {
   afterBody: [],
   footer: Component.Footer({
     links: {
-      "Why Wiki (source)": "https://github.com/YOUR_GITHUB_USERNAME/why-wiki",
+      "Why Wiki (source)": "https://github.com/why250/why-wiki",
     },
   }),
 }
