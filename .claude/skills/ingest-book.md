@@ -15,10 +15,27 @@
 
 ## Prerequisites
 
-- [ ] PDF 书籍已放入 `raw/` 子目录（如 `raw/books/`）
+- [ ] PDF 书籍已放入 `raw/book/` 目录
 - [ ] Python 环境中已安装 `marker-pdf`（参见 `preprocess-pdf.md`）
 - [ ] 已阅读 `schema.md`（了解页面格式约定）
 - [ ] 已阅读 `preprocess-pdf.md`（了解页码范围转换 recipe）
+
+## 输出目录约定
+
+文件夹名与 PDF 文件名一致，放在 `raw/book/` 下：
+
+```
+raw/book/<pdf-filename>/                  ← 与 PDF 同名
+├── <pdf-filename>.pdf                     ← 原始 PDF
+├── ch-01-intro/                           ← 每章一个文件夹
+│   ├── ch-01-intro.md                     ← Markdown（重命名后）
+│   ├── ch-01-intro_meta.json              ← 元数据（重命名后）
+│   └── _page_X_Figure_Y.jpeg              ← 提取的图片
+├── ch-02-background/
+│   └── ...
+```
+
+> `book-slug`（wiki 页面用的缩写名）只在 wiki 中使用，`raw/` 下直接用 PDF 文件名作为文件夹名。
 
 ---
 
@@ -74,8 +91,9 @@ config_parser = ConfigParser(
 
 ```python
 # 对每一章
+# pdf_folder = "raw/book/<pdf-filename>"（与 PDF 同名）
 chapter_pdf_range = f"{start_page}-{end_page}"  # 0-based
-output_dir = f"raw/books/{book_slug}"
+output_dir = f"{pdf_folder}/ch-{NN:02d}-{chapter_slug}"
 
 config_parser = ConfigParser(
     {
@@ -87,11 +105,18 @@ config_parser = ConfigParser(
 # ... 标准转换代码，见 preprocess-pdf.md
 ```
 
-**产物命名：** `<book-slug>/ch-NN-<chapter-slug>.md`
+**产物命名：** `raw/book/<book-slug>/ch-NN-<chapter-slug>/ch-NN-<chapter-slug>.md`
+- `book-slug`：简短的英文书名 slug（如 `bosch-2004-dac-limitations`）
 - `NN`：两位数字章节号（01, 02, ...）
-- `chapter-slug`：简短的英文 slug（如 `intro`, `background`, `noise-analysis`）
+- `chapter-slug`：简短的英文 slug（如 `intro`, `background`）
 
-**Gotcha:** marker 转换每一章都需要时间（每章 ~30-90 秒）。这是正常的——总时间 = 章数 × 单章转换时间，但换来了后续每章 ingest 的低 token 消耗。
+**Gotcha — marker 嵌套输出：** `save_output()` 会在 `output_dir` 下再创一个以 PDF 文件名为名的子文件夹。例如指定 `output_dir = "raw/book/chapters/ch-01-intro"`，实际产物路径是：
+```
+ch-01-intro/<pdf-name>/<pdf-name>.md
+```
+需要在每章转换完成后清理：把 `.md` 提出来重命名为 `<ch-id>.md`，删除嵌套空文件夹。参见 `preprocess-pdf.md` Step 4 的清理代码。
+
+**Gotcha:** marker 转换每一章都需要时间。公式密集的章节（如 Static/Dynamic Behaviour）可能 20-30 分钟，轻量章节 1-3 分钟。总时间由最重的章节决定。
 
 ---
 

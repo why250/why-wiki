@@ -116,21 +116,65 @@ config_parser = ConfigParser(
 
 ---
 
-### 4. 确认输出
+### 4. 清理输出结构
 
-`save_output()` 会在 PDF 同级目录生成：
+**Gotcha:** `save_output()` 的实际行为是在 `output_dir` 下再创建一个以 PDF 文件名为名的子文件夹，产物都放在里面：
 
 ```
 raw/paper/
-├── example.pdf          ← 原始 PDF（不动）
-├── example.md           ← 转换后的 Markdown（可被 ingest 读取）
-├── example_meta.json    ← 元数据（辅助）
-└── example_images/      ← 提取的图片（如有）
+├── example.pdf                    ← 原始 PDF（不动）
+└── example/                       ← marker 自动创建的子文件夹
+    ├── example.md                 ← Markdown
+    ├── example_meta.json          ← 元数据
+    └── *.jpeg                     ← 提取的图片
 ```
 
-**Gotcha:** 如果 PDF 同级目录已存在同名 `.md`，`save_output()` 会覆盖。如有疑虑，先提示用户。
+**这会导致多余的嵌套层级**，且 .md 和 `_meta.json` 文件名与 PDF 同名（冗长）。需要在转换完成后**立即清理**：
 
-`_meta.json` 包含检测到的目录结构、每页提取统计、文本提取方式（如 `surya`）、debug 数据路径。返回结果时优先给出 `.md` 路径，`_meta.json` 作为可选辅助信息。
+1. 将嵌套文件夹中的所有文件（.md / _meta.json / 图片）提到 `output_dir` 根目录
+2. 将 .md 和 `_meta.json` 重命名为期望的简短名称
+3. 删除空的嵌套文件夹
+
+清理代码（Python，在转换脚本中直接使用）：
+```python
+import shutil, os
+
+# 1. 将嵌套文件夹内容提到 output_dir
+nested = os.path.join(out_folder)  # save_output 返回的路径
+for f in os.listdir(nested):
+    src = os.path.join(nested, f)
+    dst = os.path.join(output_dir, f)
+    if os.path.exists(dst):
+        if os.path.isdir(dst):
+            shutil.rmtree(dst)
+        else:
+            os.remove(dst)
+    shutil.move(src, dst)
+os.rmdir(nested)
+
+# 2. 重命名 .md 和 _meta.json 为期望名称
+old_md = os.path.join(output_dir, f"{pdf_basename}.md")
+old_meta = os.path.join(output_dir, f"{pdf_basename}_meta.json")
+if os.path.exists(old_md):
+    shutil.move(old_md, os.path.join(output_dir, f"{desired_name}.md"))
+if os.path.exists(old_meta):
+    shutil.move(old_meta, os.path.join(output_dir, f"{desired_name}_meta.json"))
+```
+
+**注意：图片文件**（`_page_X_Figure_Y.jpeg`）不要改名——.md 内的 `![](_page_X_Figure_Y.jpeg)` 引用依赖原始文件名。
+```python
+import shutil, glob
+# 找到 marker 创建的子文件夹中的 .md
+nested_md = glob.glob(f"{output_dir}/**/*.md", recursive=True)[0]
+# 移到 output_dir 下并重命名
+shutil.move(nested_md, f"{output_dir}/{desired_name}.md")
+# 删除空壳文件夹
+for nested in glob.glob(f"{output_dir}/*/"):
+    if os.path.basename(nested.rstrip('/')) != desired_name:
+        shutil.rmtree(nested)
+```
+
+`_meta.json` 包含检测到的目录结构、每页提取统计、文本提取方式（如 `surya`）、debug 数据路径。通常不需要保留，可在清理时一并删除。
 
 ---
 

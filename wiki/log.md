@@ -1,5 +1,33 @@
 # Research Log
 
+## [2026-06-08] ingest | Bosch DAC Book — Ch 5: Dynamic Behaviour of Current Steering D/A Converters
+
+- Created source page: [[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]]
+- Created concepts: [[dac-dynamic-factors]], [[cascoded-current-cell]]
+- Cross-linked to [[dac-output-impedance]] and [[wikner-tan-1997-dac-imperfections]]
+
+## [2026-06-08] ingest | Bosch DAC Book — Ch 4: Static Behaviour of Current Steering D/A Converters
+
+- Created source page: [[bosch-2004-dac-limitations-ch-04-static-behaviour]]
+- Created concepts: [[inl-yield]], [[dac-switching-schemes]]
+
+## [2026-06-08] ingest | Bosch DAC Book — Ch 3: CMOS D/A Converter Architectures
+
+- Created source page: [[bosch-2004-dac-limitations-ch-03-architectures]]
+- Cross-linked to [[current-steering-dac]]
+
+## [2026-06-08] ingest | Bosch DAC Book — Ch 2: Functionality and Specifications
+
+- Created source page: [[bosch-2004-dac-limitations-ch-02-specifications]]
+- Created concepts: [[quantization-noise]], [[sinc-distortion]]
+- Cross-linked to existing DAC concept pages
+
+## [2026-06-08] ingest | Bosch DAC Book — Ch 1: Introduction
+
+- Created source page: [[bosch-2004-dac-limitations-ch-01-introduction]]
+- Created entities: [[anne-van-den-bosch]], [[michiel-steyaert]], [[willy-sansen]]
+- Created concepts: [[current-steering-dac]], [[dac-static-performance]], [[transistor-mismatch]]
+
 ## [2026-06-07] ingest | Influence of Circuit Imperfections on the Dynamic Performance of DACs
 
 - Preprocessed PDF → MD via marker: `raw/paper/Influence_of_Circuit_Imperfections_on_the_Performa.pdf`
