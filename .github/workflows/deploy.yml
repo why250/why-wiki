@@ -28,7 +28,7 @@ jobs:
 
       - name: Clone Quartz v4
         run: |
-          git clone --depth 1 https://github.com/jackyzha0/quartz.git /tmp/quartz
+          git clone --depth 1 --branch v4 https://github.com/jackyzha0/quartz.git /tmp/quartz
 
       - name: Apply custom Quartz config
         run: |
