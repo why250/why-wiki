@@ -2,7 +2,7 @@
 type: concept
 title: 电流舵 DAC
 tags: [DAC, current-steering, architecture, CMOS, binary-weighted, thermometer-coded]
-related: [[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-dynamic-performance]], [[binary-weighted-dac]], [[transistor-mismatch]]
+related: "[[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-dynamic-performance]], [[binary-weighted-dac]], [[transistor-mismatch]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

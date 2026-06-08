@@ -2,7 +2,7 @@
 type: entity
 title: Michiel Steyaert
 tags: [researcher, DAC, analog-IC, KU-Leuven]
-related: [[anne-van-den-bosch]], [[willy-sansen]], [[bosch-2004-dac-limitations-ch-01-introduction]]
+related: "[[anne-van-den-bosch]], [[willy-sansen]], [[bosch-2004-dac-limitations-ch-01-introduction]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

@@ -2,7 +2,7 @@
 type: concept
 title: DAC 动态性能四大影响因素
 tags: [DAC, dynamic-performance, glitch, feedthrough, synchronization, output-impedance]
-related: [[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]], [[dac-dynamic-performance]], [[dac-output-impedance]]
+related: "[[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]], [[dac-dynamic-performance]], [[dac-output-impedance]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

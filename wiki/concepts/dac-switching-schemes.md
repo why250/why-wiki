@@ -2,7 +2,7 @@
 type: concept
 title: DAC 开关方案
 tags: [DAC, switching-schemes, gradients, systematic-errors, layout, current-steering]
-related: [[bosch-2004-dac-limitations-ch-04-static-behaviour]], [[dac-static-performance]], [[current-steering-dac]]
+related: "[[bosch-2004-dac-limitations-ch-04-static-behaviour]], [[dac-static-performance]], [[current-steering-dac]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

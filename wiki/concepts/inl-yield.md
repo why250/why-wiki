@@ -2,7 +2,7 @@
 type: concept
 title: INL 良率 (INL Yield)
 tags: [DAC, INL, yield, mismatch, Monte-Carlo, statistics]
-related: [[bosch-2004-dac-limitations-ch-04-static-behaviour]], [[dac-static-performance]], [[transistor-mismatch]]
+related: "[[bosch-2004-dac-limitations-ch-04-static-behaviour]], [[dac-static-performance]], [[transistor-mismatch]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

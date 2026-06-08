@@ -8,7 +8,7 @@ year: 2004
 url: ""
 venue: "Book Chapter, Springer"
 tags: [DAC, static-performance, INL, yield, mismatch, Monte-Carlo, gradients, switching-schemes]
-related: [[dac-static-performance]], [[transistor-mismatch]], [[inl-yield]], [[dac-switching-schemes]]
+related: "[[dac-static-performance]], [[transistor-mismatch]], [[inl-yield]], [[dac-switching-schemes]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

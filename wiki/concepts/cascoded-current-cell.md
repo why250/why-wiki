@@ -2,7 +2,7 @@
 type: concept
 title: Cascode 电流单元
 tags: [DAC, cascode, output-impedance, SFDR, current-cell, frequency-response]
-related: [[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]], [[dac-dynamic-factors]], [[dac-output-impedance]]
+related: "[[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]], [[dac-dynamic-factors]], [[dac-output-impedance]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

@@ -2,7 +2,7 @@
 type: concept
 title: DAC 静态性能
 tags: [DAC, static-performance, INL, DNL, mismatch, offset, gain-error]
-related: [[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-dynamic-performance]], [[transistor-mismatch]], [[current-steering-dac]]
+related: "[[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-dynamic-performance]], [[transistor-mismatch]], [[current-steering-dac]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

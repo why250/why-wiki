@@ -8,7 +8,7 @@ year: 2004
 url: ""
 venue: "Book Chapter, Springer"
 tags: [DAC, current-steering, introduction, overview]
-related: [[current-steering-dac]], [[dac-dynamic-performance]], [[dac-static-performance]], [[transistor-mismatch]]
+related: "[[current-steering-dac]], [[dac-dynamic-performance]], [[dac-static-performance]], [[transistor-mismatch]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

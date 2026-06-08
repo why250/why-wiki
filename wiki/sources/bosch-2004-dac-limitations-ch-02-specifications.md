@@ -8,7 +8,7 @@ year: 2004
 url: ""
 venue: "Book Chapter, Springer"
 tags: [DAC, specifications, SNR, INL, DNL, quantization, SFDR]
-related: [[dac-static-performance]], [[dac-dynamic-performance]], [[quantization-noise]], [[sinc-distortion]]
+related: "[[dac-static-performance]], [[dac-dynamic-performance]], [[quantization-noise]], [[sinc-distortion]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

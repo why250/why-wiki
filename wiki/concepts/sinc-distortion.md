@@ -2,7 +2,7 @@
 type: concept
 title: Sinc 失真（零阶保持效应）
 tags: [DAC, sinc, sample-and-hold, frequency-response, reconstruction]
-related: [[bosch-2004-dac-limitations-ch-02-specifications]], [[dac-dynamic-performance]], [[quantization-noise]]
+related: "[[bosch-2004-dac-limitations-ch-02-specifications]], [[dac-dynamic-performance]], [[quantization-noise]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

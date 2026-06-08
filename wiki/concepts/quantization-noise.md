@@ -2,7 +2,7 @@
 type: concept
 title: 量化噪声
 tags: [quantization, noise, DAC, ADC, SNR, data-converter]
-related: [[bosch-2004-dac-limitations-ch-02-specifications]], [[dac-dynamic-performance]]
+related: "[[bosch-2004-dac-limitations-ch-02-specifications]], [[dac-dynamic-performance]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

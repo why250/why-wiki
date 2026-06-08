@@ -2,7 +2,7 @@
 type: entity
 title: Willy Sansen
 tags: [researcher, analog-IC, CMOS, KU-Leuven]
-related: [[anne-van-den-bosch]], [[michiel-steyaert]], [[bosch-2004-dac-limitations-ch-01-introduction]]
+related: "[[anne-van-den-bosch]], [[michiel-steyaert]], [[bosch-2004-dac-limitations-ch-01-introduction]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

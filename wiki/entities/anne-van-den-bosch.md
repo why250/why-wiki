@@ -2,7 +2,7 @@
 type: entity
 title: Anne Van den Bosch
 tags: [researcher, DAC, current-steering, KU-Leuven]
-related: [[michiel-steyaert]], [[willy-sansen]], [[bosch-2004-dac-limitations-ch-01-introduction]]
+related: "[[michiel-steyaert]], [[willy-sansen]], [[bosch-2004-dac-limitations-ch-01-introduction]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

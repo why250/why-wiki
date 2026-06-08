@@ -2,7 +2,7 @@
 type: concept
 title: 晶体管失配
 tags: [mismatch, transistor, CMOS, process-variation, Pelgrom, Lakshmikumar]
-related: [[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-static-performance]], [[dac-mismatch-effects]]
+related: "[[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-static-performance]], [[dac-mismatch-effects]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

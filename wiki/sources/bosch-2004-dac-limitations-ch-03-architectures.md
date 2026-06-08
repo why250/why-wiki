@@ -8,7 +8,7 @@ year: 2004
 url: ""
 venue: "Book Chapter, Springer"
 tags: [DAC, architectures, resistor, capacitor, current-steering, binary, thermometer, segmented]
-related: [[current-steering-dac]], [[binary-weighted-dac]], [[resistor-dac]], [[capacitor-dac]]
+related: "[[current-steering-dac]], [[binary-weighted-dac]], [[resistor-dac]], [[capacitor-dac]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---

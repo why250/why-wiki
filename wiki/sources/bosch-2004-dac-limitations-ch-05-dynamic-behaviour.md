@@ -8,7 +8,7 @@ year: 2004
 url: ""
 venue: "Book Chapter, Springer"
 tags: [DAC, dynamic-performance, SFDR, output-impedance, cascode, glitch, feedthrough]
-related: [[dac-dynamic-performance]], [[dac-output-impedance]], [[dac-dynamic-factors]], [[cascoded-current-cell]]
+related: "[[dac-dynamic-performance]], [[dac-output-impedance]], [[dac-dynamic-factors]], [[cascoded-current-cell]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---
