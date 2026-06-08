@@ -1,0 +1,620 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Influence of Circuit Imperfections on the\nDynamic Performance of DACs",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          139.453125,
+          68.47906494140625
+        ],
+        [
+          454.21600341796875,
+          68.47906494140625
+        ],
+        [
+          454.21600341796875,
+          110.47845458984375
+        ],
+        [
+          139.453125,
+          110.47845458984375
+        ]
+      ]
+    },
+    {
+      "title": "I. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          236.77978515625,
+          324.95697021484375
+        ],
+        [
+          357.1399841308594,
+          323.5615234375
+        ],
+        [
+          357.1399841308594,
+          338.9569396972656
+        ],
+        [
+          236.77978515625,
+          338.9569396972656
+        ]
+      ]
+    },
+    {
+      "title": "II. DAC STRUCTURES",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          224.57763671875,
+          637.9569549560547
+        ],
+        [
+          370.35601806640625,
+          637.255859375
+        ],
+        [
+          370.35601806640625,
+          651.9569549560547
+        ],
+        [
+          224.57763671875,
+          651.9569549560547
+        ]
+      ]
+    },
+    {
+      "title": "III. INFLUENCE OF OUTPUT IMPEDANCE VARIATIONS",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          116.2109375,
+          381.7669677734375
+        ],
+        [
+          478.8739929199219,
+          380.2978515625
+        ],
+        [
+          478.8739929199219,
+          395.7669677734375
+        ],
+        [
+          115.048828125,
+          395.7669677734375
+        ]
+      ]
+    },
+    {
+      "title": "IV. INFLUENCE OF MISMATCH",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          195.52490234375,
+          114.7060546875
+        ],
+        [
+          399.5340270996094,
+          113.0615234375
+        ],
+        [
+          399.5340270996094,
+          128.8070068359375
+        ],
+        [
+          194.36279296875,
+          128.8070068359375
+        ]
+      ]
+    },
+    {
+      "title": "A) Influence of deterministic variations",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          70.3076171875,
+          358.86273193359375
+        ],
+        [
+          271.3900146484375,
+          358.0966796875
+        ],
+        [
+          271.3900146484375,
+          370.86273193359375
+        ],
+        [
+          69.1455078125,
+          370.86273193359375
+        ]
+      ]
+    },
+    {
+      "title": "B) Influence of statistic variations",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          70.87000274658203,
+          330.24273681640625
+        ],
+        [
+          242.7340087890625,
+          329.3173828125
+        ],
+        [
+          242.7340087890625,
+          342.24273681640625
+        ],
+        [
+          70.3076171875,
+          342.24273681640625
+        ]
+      ]
+    },
+    {
+      "title": "V. INFLUENCE OF NOISE",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          212.666015625,
+          528.9969482421875
+        ],
+        [
+          381.64801025390625,
+          528.9969482421875
+        ],
+        [
+          381.64801025390625,
+          542.9969482421875
+        ],
+        [
+          212.666015625,
+          542.9969482421875
+        ]
+      ]
+    },
+    {
+      "title": "VI. DISCUSSION AND CONCLUSIONS",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          171.6057934508816,
+          667.3018699910953
+        ],
+        [
+          422.6448362720403,
+          667.3018699910953
+        ],
+        [
+          422.6448362720403,
+          678.5485307212823
+        ],
+        [
+          170.830078125,
+          678.5485307212823
+        ]
+      ]
+    },
+    {
+      "title": "VII. ACKNOWLEDGMENTS",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          207.4365234375,
+          68.95697021484375
+        ],
+        [
+          386.3080139160156,
+          67.8369140625
+        ],
+        [
+          386.3080139160156,
+          82.95697021484375
+        ],
+        [
+          207.4365234375,
+          82.95697021484375
+        ]
+      ]
+    },
+    {
+      "title": "VIII. REFERENCES",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          233.87451171875,
+          135.673828125
+        ],
+        [
+          359.8740234375,
+          134.029296875
+        ],
+        [
+          359.8740234375,
+          149.95697021484375
+        ],
+        [
+          232.71240234375,
+          149.95697021484375
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          105
+        ],
+        [
+          "Line",
+          44
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "Footnote",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          208
+        ],
+        [
+          "Line",
+          40
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          34
+        ],
+        [
+          "Span",
+          22
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Equation",
+          6
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          190
+        ],
+        [
+          "Line",
+          46
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "Equation",
+          3
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          162
+        ],
+        [
+          "Line",
+          53
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          154
+        ],
+        [
+          "Line",
+          47
+        ],
+        [
+          "Caption",
+          3
+        ],
+        [
+          "Text",
+          3
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          38
+        ],
+        [
+          "Span",
+          23
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          103
+        ],
+        [
+          "Line",
+          34
+        ],
+        [
+          "ListItem",
+          13
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Text",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\Influence_of_Circuit_Imperfections_on_the_Performa"
+}

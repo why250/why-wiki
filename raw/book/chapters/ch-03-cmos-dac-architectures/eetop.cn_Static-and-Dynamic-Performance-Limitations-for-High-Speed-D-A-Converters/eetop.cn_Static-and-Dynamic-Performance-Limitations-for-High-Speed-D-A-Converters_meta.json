@@ -1,0 +1,699 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Chapter 3",
+      "heading_level": null,
+      "page_id": 37,
+      "polygon": [
+        [
+          44.90234375,
+          138.08984375
+        ],
+        [
+          140.9110565185547,
+          138.08984375
+        ],
+        [
+          140.9110565185547,
+          160.38827514648438
+        ],
+        [
+          44.90234375,
+          160.38827514648438
+        ]
+      ]
+    },
+    {
+      "title": "CMOS D/A Converter Architectures",
+      "heading_level": null,
+      "page_id": 37,
+      "polygon": [
+        [
+          44.6875,
+          189.87353515625
+        ],
+        [
+          378.8451232910156,
+          189.87353515625
+        ],
+        [
+          378.8451232910156,
+          211.2723388671875
+        ],
+        [
+          44.6875,
+          211.2723388671875
+        ]
+      ]
+    },
+    {
+      "title": "3.1 Introduction",
+      "heading_level": null,
+      "page_id": 37,
+      "polygon": [
+        [
+          44.6875,
+          255.98730468750003
+        ],
+        [
+          161.25880432128906,
+          255.98730468750003
+        ],
+        [
+          161.25880432128906,
+          270.9483642578125
+        ],
+        [
+          44.6875,
+          270.9483642578125
+        ]
+      ]
+    },
+    {
+      "title": "3.2 The Resistor DI A Converter",
+      "heading_level": null,
+      "page_id": 37,
+      "polygon": [
+        [
+          43.828125,
+          514.580078125
+        ],
+        [
+          256.5805969238281,
+          514.580078125
+        ],
+        [
+          256.5805969238281,
+          530.6283416748047
+        ],
+        [
+          43.828125,
+          530.6283416748047
+        ]
+      ]
+    },
+    {
+      "title": "3.2.1 The resistor string D/A converter",
+      "heading_level": null,
+      "page_id": 37,
+      "polygon": [
+        [
+          43.3984375,
+          551.38232421875
+        ],
+        [
+          257.2994689941406,
+          551.38232421875
+        ],
+        [
+          257.2994689941406,
+          564.4945831298828
+        ],
+        [
+          43.3984375,
+          564.4945831298828
+        ]
+      ]
+    },
+    {
+      "title": "3.2.2 The binary weighted resistor DI A converter",
+      "heading_level": null,
+      "page_id": 39,
+      "polygon": [
+        [
+          37.8125,
+          292.13818359375
+        ],
+        [
+          305.93292236328125,
+          292.13818359375
+        ],
+        [
+          305.93292236328125,
+          304.9403076171875
+        ],
+        [
+          37.8125,
+          304.9403076171875
+        ]
+      ]
+    },
+    {
+      "title": "3.2.3 The R-2R based D/A converters",
+      "heading_level": null,
+      "page_id": 39,
+      "polygon": [
+        [
+          37.8125,
+          496.01611328125006
+        ],
+        [
+          244.1733856201172,
+          496.01611328125006
+        ],
+        [
+          244.1733856201172,
+          508.9402770996094
+        ],
+        [
+          37.8125,
+          508.9402770996094
+        ]
+      ]
+    },
+    {
+      "title": "3.3 The Capacitor D/A Converter",
+      "heading_level": null,
+      "page_id": 40,
+      "polygon": [
+        [
+          48.80546075085324,
+          289.8583984375
+        ],
+        [
+          271.05802047781566,
+          289.8583984375
+        ],
+        [
+          271.05802047781566,
+          304.1884765625
+        ],
+        [
+          48.80546075085324,
+          304.1884765625
+        ]
+      ]
+    },
+    {
+      "title": "3.4 The Current-Steering DI A Converter",
+      "heading_level": null,
+      "page_id": 43,
+      "polygon": [
+        [
+          38.671875,
+          67.0908203125
+        ],
+        [
+          306.80181884765625,
+          67.0908203125
+        ],
+        [
+          306.80181884765625,
+          83.719482421875
+        ],
+        [
+          38.671875,
+          83.719482421875
+        ]
+      ]
+    },
+    {
+      "title": "3.4.1 Introduction",
+      "heading_level": null,
+      "page_id": 43,
+      "polygon": [
+        [
+          39.53125,
+          103.24169921875
+        ],
+        [
+          145.01266479492188,
+          103.24169921875
+        ],
+        [
+          145.01266479492188,
+          117.15350341796875
+        ],
+        [
+          39.53125,
+          117.15350341796875
+        ]
+      ]
+    },
+    {
+      "title": "3.4.2 The Binary Implementation",
+      "heading_level": null,
+      "page_id": 43,
+      "polygon": [
+        [
+          38.671875,
+          235.14355468750003
+        ],
+        [
+          224.22012329101562,
+          235.14355468750003
+        ],
+        [
+          224.22012329101562,
+          248.42349243164062
+        ],
+        [
+          38.671875,
+          248.42349243164062
+        ]
+      ]
+    },
+    {
+      "title": "3.4.3 The Unary Implementation",
+      "heading_level": null,
+      "page_id": 43,
+      "polygon": [
+        [
+          37.8125,
+          465.40185546875006
+        ],
+        [
+          221.59564208984375,
+          465.40185546875006
+        ],
+        [
+          221.59564208984375,
+          478.83349609375
+        ],
+        [
+          37.8125,
+          478.83349609375
+        ]
+      ]
+    },
+    {
+      "title": "3.4.4 The Segmented Implementation",
+      "heading_level": null,
+      "page_id": 44,
+      "polygon": [
+        [
+          50.703125,
+          353.041015625
+        ],
+        [
+          258.21685791015625,
+          353.041015625
+        ],
+        [
+          258.21685791015625,
+          367.3403015136719
+        ],
+        [
+          50.703125,
+          367.3403015136719
+        ]
+      ]
+    },
+    {
+      "title": "3.5 Conclusions",
+      "heading_level": null,
+      "page_id": 44,
+      "polygon": [
+        [
+          51.34765625,
+          577.43701171875
+        ],
+        [
+          164.33935546875,
+          577.43701171875
+        ],
+        [
+          164.33935546875,
+          592.6795806884766
+        ],
+        [
+          51.34765625,
+          592.6795806884766
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 37,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          72
+        ],
+        [
+          "Line",
+          23
+        ],
+        [
+          "SectionHeader",
+          5
+        ],
+        [
+          "Text",
+          3
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 38,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          33
+        ],
+        [
+          "Span",
+          13
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Equation",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 39,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          77
+        ],
+        [
+          "Line",
+          30
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Text",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 40,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          40
+        ],
+        [
+          "Span",
+          12
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "Equation",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 41,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          22
+        ],
+        [
+          "Span",
+          14
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "Text",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 42,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          23
+        ],
+        [
+          "Span",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 43,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          104
+        ],
+        [
+          "Line",
+          36
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Equation",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 44,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "TableCell",
+          102
+        ],
+        [
+          "Span",
+          88
+        ],
+        [
+          "Line",
+          34
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 45,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          9
+        ],
+        [
+          "Line",
+          4
+        ],
+        [
+          "Text",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters"
+}

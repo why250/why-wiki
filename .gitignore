@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Quartz build output
+public/
+
+# Build artifacts
+dist/
+
+# Cache
+.cache/
+
+# Logs
+logs/
+
+# Environment & local config
+.env
+*.local
+
+# LLM Wiki runtime (auto-regenerated on each machine)
+.llm-wiki/chats/
+.llm-wiki/lancedb/
+.llm-wiki/*.json
+
+# Claude local overrides (may contain API keys)
+.claude/settings.local.json
+
+# Claude session history
+.claudian/sessions/

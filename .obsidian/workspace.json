@@ -1,0 +1,243 @@
+{
+  "main": {
+    "id": "2b3bf12f9c9c1922",
+    "type": "split",
+    "children": [
+      {
+        "id": "3057a844f023017a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1764c0073b2a88ce",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "关系图谱"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a750e3ebbc3003b1",
+    "type": "split",
+    "children": [
+      {
+        "id": "995db9061a5d6679",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6f08d9209796b0d6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "0a0d5feb34e3374c",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "ca536dde833c48a0",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "3604aafed9018ea1",
+    "type": "split",
+    "children": [
+      {
+        "id": "9a22fa607e7c4d3f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a6d797414e85f02d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "raw/articles/第八届集创赛赛题点评之“8位高速 SAR ADC的设计.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "第八届集创赛赛题点评之“8位高速 SAR ADC的设计 的反向链接列表"
+            }
+          },
+          {
+            "id": "0989cb7681253cde",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "raw/articles/第八届集创赛赛题点评之“8位高速 SAR ADC的设计.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "第八届集创赛赛题点评之“8位高速 SAR ADC的设计 的出链列表"
+            }
+          },
+          {
+            "id": "9ac5fdd8073bdb05",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "717eb0f50c7a15d9",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "726b1ab7767f5d18",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "raw/articles/第八届集创赛赛题点评之“8位高速 SAR ADC的设计.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "第八届集创赛赛题点评之“8位高速 SAR ADC的设计 的大纲"
+            }
+          },
+          {
+            "id": "f60c2f8061cb4771",
+            "type": "leaf",
+            "state": {
+              "type": "claudian-view",
+              "state": {},
+              "icon": "bot",
+              "title": "Claudian"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 501.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false,
+      "obsidian42-brat:BRAT": false,
+      "realclaudian:Open Claudian": false
+    }
+  },
+  "active": "1764c0073b2a88ce",
+  "lastOpenFiles": [
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_63_Figure_4.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_63_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_61_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_60_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_58_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_57_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_54_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_51_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_53_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_50_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/_page_49_Figure_2.jpeg",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters_meta.json",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters.md",
+    "raw/book/chapters/ch-04-static-behaviour/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters",
+    "raw/book/chapters/ch-04-static-behaviour",
+    "quartz.layout.ts.tmp.17780.3c62542c6bd2",
+    "quartz.config.ts.tmp.17780.a4c1f7da718b",
+    "quartz.layout.ts",
+    "quartz.layout.ts.tmp.17780.0cefb5460a32",
+    "quartz.config.ts",
+    "quartz.config.ts.tmp.17780.eb6f250db1a2",
+    "docs/website_design.md",
+    "raw/book/chapters/ch-03-cmos-dac-architectures/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters.md",
+    "raw/book/chapters/ch-03-cmos-dac-architectures/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters_meta.json",
+    "raw/book/chapters/ch-02-functionality-and-specifications/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters.md",
+    "raw/book/chapters/ch-01-introduction/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters.md",
+    "raw/book/toc/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters.md",
+    "raw/book/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters/eetop.cn_Static-and-Dynamic-Performance-Limitations-for-High-Speed-D-A-Converters.md",
+    "raw/articles/用 AI 实现并开源 ADC 权重前台校准算法.md",
+    "wiki/concepts/binary-weighted-dac.md",
+    "wiki/concepts/dac-circuit-noise.md",
+    "wiki/concepts/dac-mismatch-effects.md",
+    "wiki/concepts/dac-output-impedance.md",
+    "wiki/concepts/dac-dynamic-performance.md",
+    "wiki/entities/nianxiong-tan.md",
+    "wiki/entities/jacob-wikner.md",
+    "wiki/sources/wikner-tan-1997-dac-imperfections.md",
+    "raw/paper/Influence_of_Circuit_Imperfections_on_the_Performa/Influence_of_Circuit_Imperfections_on_the_Performa.md",
+    "raw/articles/第八届集创赛赛题点评之“8位高速 SAR ADC的设计.md",
+    "wiki/concepts/adc-auxiliary-circuits.md",
+    "wiki/concepts/high-speed-sar-adc.md",
+    "wiki/concepts/ti-calibration.md",
+    "wiki/concepts/time-interleaving-adc.md",
+    "wiki/entities/gutietieqiu.md",
+    "wiki/sources/gutietieqiu-2024-8bit-high-speed-sar-adc.md",
+    "LLM Wiki.md"
+  ]
+}
