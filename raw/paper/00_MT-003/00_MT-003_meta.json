@@ -1,0 +1,130 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so\nYou Don't Get Lost in the Noise Floor",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          102.75,
+          97.06640625
+        ],
+        [
+          510.75,
+          97.06640625
+        ],
+        [
+          510.75,
+          124.13671875
+        ],
+        [
+          102.75,
+          124.13671875
+        ]
+      ]
+    },
+    {
+      "title": "by Walt Kester",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          263.25,
+          145.5
+        ],
+        [
+          348.75,
+          144.24609375
+        ],
+        [
+          348.75,
+          156.75
+        ],
+        [
+          263.25,
+          157.39453125
+        ]
+      ]
+    },
+    {
+      "title": "INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          70.5,
+          174.0
+        ],
+        [
+          170.25,
+          172.86328125
+        ],
+        [
+          170.25,
+          183.0
+        ],
+        [
+          70.5,
+          183.0
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          51
+        ],
+        [
+          "Span",
+          30
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "Text",
+          3
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\00_MT-003"
+}

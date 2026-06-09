@@ -116,74 +116,12 @@ config_parser = ConfigParser(
 
 ---
 
-### 4. 清理输出结构
-
-**Gotcha:** `save_output()` 的实际行为是在 `output_dir` 下再创建一个以 PDF 文件名为名的子文件夹，产物都放在里面：
-
-```
-raw/paper/
-├── example.pdf                    ← 原始 PDF（不动）
-└── example/                       ← marker 自动创建的子文件夹
-    ├── example.md                 ← Markdown
-    ├── example_meta.json          ← 元数据
-    └── *.jpeg                     ← 提取的图片
-```
-
-**这会导致多余的嵌套层级**，且 .md 和 `_meta.json` 文件名与 PDF 同名（冗长）。需要在转换完成后**立即清理**：
-
-1. 将嵌套文件夹中的所有文件（.md / _meta.json / 图片）提到 `output_dir` 根目录
-2. 将 .md 和 `_meta.json` 重命名为期望的简短名称
-3. 删除空的嵌套文件夹
-
-清理代码（Python，在转换脚本中直接使用）：
-```python
-import shutil, os
-
-# 1. 将嵌套文件夹内容提到 output_dir
-nested = os.path.join(out_folder)  # save_output 返回的路径
-for f in os.listdir(nested):
-    src = os.path.join(nested, f)
-    dst = os.path.join(output_dir, f)
-    if os.path.exists(dst):
-        if os.path.isdir(dst):
-            shutil.rmtree(dst)
-        else:
-            os.remove(dst)
-    shutil.move(src, dst)
-os.rmdir(nested)
-
-# 2. 重命名 .md 和 _meta.json 为期望名称
-old_md = os.path.join(output_dir, f"{pdf_basename}.md")
-old_meta = os.path.join(output_dir, f"{pdf_basename}_meta.json")
-if os.path.exists(old_md):
-    shutil.move(old_md, os.path.join(output_dir, f"{desired_name}.md"))
-if os.path.exists(old_meta):
-    shutil.move(old_meta, os.path.join(output_dir, f"{desired_name}_meta.json"))
-```
-
-**注意：图片文件**（`_page_X_Figure_Y.jpeg`）不要改名——.md 内的 `![](_page_X_Figure_Y.jpeg)` 引用依赖原始文件名。
-```python
-import shutil, glob
-# 找到 marker 创建的子文件夹中的 .md
-nested_md = glob.glob(f"{output_dir}/**/*.md", recursive=True)[0]
-# 移到 output_dir 下并重命名
-shutil.move(nested_md, f"{output_dir}/{desired_name}.md")
-# 删除空壳文件夹
-for nested in glob.glob(f"{output_dir}/*/"):
-    if os.path.basename(nested.rstrip('/')) != desired_name:
-        shutil.rmtree(nested)
-```
-
-`_meta.json` 包含检测到的目录结构、每页提取统计、文本提取方式（如 `surya`）、debug 数据路径。通常不需要保留，可在清理时一并删除。
-
----
-
-### 5. 提示下一步
+### 4. 提示下一步
 
 转换完成后，告诉用户：
 
 ```
-PDF 已转换为 raw/paper/example.md
+PDF 已转换为 raw/paper/<pdf-basename>/<pdf-basename>.md
 如需纳入 wiki，运行 ingest 技能处理该 .md 文件。
 ```
 
@@ -193,10 +131,10 @@ PDF 已转换为 raw/paper/example.md
 
 ## Verification
 
-- [ ] `.md` 文件已在 PDF 同级目录生成
+- [ ] `.md` 文件已在 `raw/paper/<pdf-basename>/` 子文件夹中生成
 - [ ] `.md` 文件内容可读、结构完整（标题层级、段落、表格）
 - [ ] 如转换了页码范围，确认内容范围正确
-- [ ] `_meta.json` 和 images 目录同步生成（如有）
+- [ ] `_meta.json` 和图片文件同步生成（如有）
 - [ ] 原始 PDF 未被修改
 
 ---

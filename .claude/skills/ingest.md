@@ -14,6 +14,7 @@ Processing a new raw source: reading it, extracting knowledge, and integrating i
 ## Prerequisites
 
 - [ ] Source file exists in `raw/`
+- [ ] **Source file is a Markdown (`.md`) file** — ingest 只处理 Markdown；PDF 等其他格式需先走对应的预处理技能（如 `.claude/skills/preprocess-pdf.md`）
 - [ ] `wiki/index.md` is up to date
 - [ ] Read `schema.md` for page format conventions
 
