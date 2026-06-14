@@ -33,23 +33,47 @@
 
 ---
 
-### 2. 验证 Python 环境
+### 2. 验证 Python 环境（多版本探测）
 
-在将执行转换的 Python 解释器中依次运行：
+**必须遍历所有可用的 Python 安装，而非仅检查默认 `python`。** Windows 系统常同时安装多个 Python 版本，默认版本未必是配置了 marker 的那个。
+
+#### 2.1 发现所有 Python 安装
 
 ```bash
-python -c "import sys; print(sys.executable)"
-python -m pip show marker-pdf
-python -c "import marker, pydantic, pdftext, surya, cv2"
+where python 2>&1  # Windows: 列出 PATH 中所有 python.exe
+ls "C:/Users/$USER/AppData/Local/Programs/Python/Python*/python.exe" 2>&1  # 常见安装位置
 ```
 
-如果任一 import 失败：
-- 确认当前 `python` 指向的是安装了 `marker-pdf` 的解释器
-- 不要在不同解释器之间混用包
+记录所有找到的 Python 解释器的完整路径。
+
+#### 2.2 逐个检查，找到可用环境
+
+对每个解释器，按优先级检查：
+
+```
+1. torch CUDA 可用？ → 首选（GPU 加速）
+2. marker-pdf + torch 可 import？ → 次选（CPU fallback）
+3. 跳过 →
+```
+
+```bash
+# 以完整路径调用每个 Python 解释器：
+"C:/path/to/python.exe" -c "import torch; print('CUDA:', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')"
+"C:/path/to/python.exe" -c "from marker.converters.pdf import PdfConverter; print('marker ok')"
+```
+
+#### 2.3 选择环境
+
+- **GPU 环境优先** — 标记为本次转换使用的解释器
+- 如果所有环境都不可用 → 向用户确认是否需要安装依赖
+- **不要在不同解释器之间混用包**
+- 后续所有转换命令均使用选定的解释器**完整路径**
 
 ---
 
 ### 3. 执行转换
+
+**使用步骤 2 选定的解释器完整路径执行。** 以下示例中 `python` 指代已选定的解释器。
 
 **默认使用非 LLM 路径。** 只有用户明确要求时才启用 Ollama 增强，且本地模型必须支持 `vision`。
 

@@ -2,7 +2,7 @@
 type: concept
 title: DAC 动态性能
 tags: [DAC, dynamic-performance, SFDR, SNR, IMD, SNDR, telecommunications]
-related: "[[wikner-tan-1997-dac-imperfections]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[binary-weighted-dac]]"
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[binary-weighted-dac]], [[adc-dynamic-metrics]], [[sinad]], [[enob]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---
@@ -34,6 +34,13 @@ updated: 2026-06-07
 
 DAC 和 ADC 共享类似的频域指标概念（SFDR、SNR、SNDR），但物理来源不同。DAC 关注电流源的输出特性，ADC 关注采样和量化过程。
 
+详见对偶概念页面：
+- [[adc-dynamic-metrics]] — ADC 六项动态指标（SFDR、SINAD、SNR、ENOB、THD、THD+N）与 FFT 测试方法
+- [[sinad]] — SINAD 的定义及其与 SNR/THD 的数学关系
+- [[enob]] — 有效位数，ADC 专有的等效分辨率概念
+- [[kester-2009-mt-003]] — MT-003 来源
+
 ## 来源
 
 - [[wikner-tan-1997-dac-imperfections]]
+- [[kester-2009-mt-003]] — ADC 侧动态指标定义

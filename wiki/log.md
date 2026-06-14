@@ -1,5 +1,14 @@
 # Research Log
 
+## [2026-06-14] ingest | MT-003: Understand SINAD, ENOB, SNR, THD, THD+N, SFDR
+
+- Created source page: [[kester-2009-mt-003]]
+- Created entity: [[walt-kester]]
+- Created concepts: [[sinad]], [[enob]], [[adc-dynamic-metrics]]
+- Updated concepts: [[quantization-noise]] (added ENOB section), [[dac-dynamic-performance]] (added ADC cross-refs)
+- Index updated with 5 new pages
+- Source: raw/paper/00_MT-003.pdf → raw/paper/00_MT-003/00_MT-003.md
+
 ## [2026-06-08] ingest | Bosch DAC Book — Ch 5: Dynamic Behaviour of Current Steering D/A Converters
 
 - Created source page: [[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]]

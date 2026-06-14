@@ -2,7 +2,7 @@
 type: concept
 title: 量化噪声
 tags: [quantization, noise, DAC, ADC, SNR, data-converter]
-related: "[[bosch-2004-dac-limitations-ch-02-specifications]], [[dac-dynamic-performance]]"
+related: "[[bosch-2004-dac-limitations-ch-02-specifications]], [[dac-dynamic-performance]], [[enob]], [[sinad]], [[kester-2009-mt-003]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---
@@ -29,6 +29,11 @@ $$SNR = 6.02N + 1.76 \text{ dB}$$
 - 每增加 1 位分辨率 → SNR 提升约 6 dB
 - 实际电路的噪声/失真会使 SNR 低于此理论值
 
+## ENOB — 从 SNR 到有效位数
+
+> 本节的 SNR 公式是 [[enob|ENOB]] 概念的基础。ENOB 将 SINAD 映射为等效的理想 ADC 分辨率：$ENOB = (SINAD - 1.76) / 6.02$。详见 [[kester-2009-mt-003]] 和 [[enob]]。
+
 ## 来源
 
 - [[bosch-2004-dac-limitations-ch-02-specifications]] — Bosch et al. (2004) Ch 2
+- [[kester-2009-mt-003]] — MT-003，ENOB 公式的来源

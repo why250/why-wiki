@@ -15,6 +15,7 @@
 - [[anne-van-den-bosch]] — KU Leuven，高速高精度 CMOS 电流舵 DAC
 - [[michiel-steyaert]] — KU Leuven，模拟/混合信号 IC 设计
 - [[willy-sansen]] — KU Leuven，模拟 IC 设计经典教材作者
+- [[walt-kester]] — Analog Devices，数据转换器技术教程作者
 
 ## Concepts
 
@@ -38,6 +39,9 @@
 - [[inl-yield]] — INL 良率建模：从 Lakshmikumar 到 Bosch 闭合公式
 - [[dac-switching-schemes]] — 消除系统梯度的电流源开关方案
 - [[dac-dynamic-factors]] — 影响动态性能的四大因素：同步/馈通/漏极/阻抗
+- [[enob]] — 有效位数：将 SINAD 映射为等效 ADC 分辨率
+- [[sinad]] — SINAD（信号-噪声-失真比）定义及其与 SNR/THD 的数学关系
+- [[adc-dynamic-metrics]] — ADC 六大动态性能指标（SFDR/THD/SINAD/SNR/ENOB）与 FFT 测试方法
 - [[cascoded-current-cell]] — Cascode 电流单元：零极点分析与高频阻抗优化
 
 ## Sources
@@ -46,6 +50,7 @@
 - [[zhangtuoken-2026-adc-calibration]] — 用 AI 实现并开源 ADC 权重前台校准算法
 - [[gutietieqiu-2024-8bit-high-speed-sar-adc]] — 第八届集创赛赛题点评：8位高速 SAR ADC
 - [[wikner-tan-1997-dac-imperfections]] — 电路非理想因素对 DAC 动态性能的影响
+- [[kester-2009-mt-003]] — MT-003：ADC 动态性能指标详解（SINAD/ENOB/SNR/THD/SFDR）
 - [[bosch-2004-dac-limitations]] — Bosch DAC 专著全书总览（章节索引）
 - [[bosch-2004-dac-limitations-ch-01-introduction]] — Bosch DAC 专著 Ch 1：全书导论与结构概览
 - [[bosch-2004-dac-limitations-ch-02-specifications]] — Bosch DAC 专著 Ch 2：DAC 功能描述与静动态规格

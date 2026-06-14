@@ -1,0 +1,518 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Behavioral Model of Segmented Current-Steering DAC \nby Using SIMULINK\u00ae",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          37.0546875,
+          56.76287841796875
+        ],
+        [
+          580.21435546875,
+          56.76287841796875
+        ],
+        [
+          580.21435546875,
+          108.36285400390625
+        ],
+        [
+          37.0546875,
+          108.36285400390625
+        ]
+      ]
+    },
+    {
+      "title": "I. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          138.05859375,
+          319.81640625
+        ],
+        [
+          220.53515625,
+          319.81640625
+        ],
+        [
+          220.53515625,
+          329.7834167480469
+        ],
+        [
+          138.05859375,
+          329.7834167480469
+        ]
+      ]
+    },
+    {
+      "title": "Ali Zeki2",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          429.2400207519531,
+          143.859375
+        ],
+        [
+          469.6800231933594,
+          143.859375
+        ],
+        [
+          469.6800231933594,
+          156.83416748046875
+        ],
+        [
+          429.2400207519531,
+          156.83416748046875
+        ]
+      ]
+    },
+    {
+      "title": "II. SEGMENTED CURRENT-STEERING DAC",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          348.43359375,
+          276.1171875
+        ],
+        [
+          527.60107421875,
+          276.1171875
+        ],
+        [
+          527.60107421875,
+          286.1034240722656
+        ],
+        [
+          348.43359375,
+          286.1034240722656
+        ]
+      ]
+    },
+    {
+      "title": "III. SIMULINK\u00ae BEHAVIORAL MODEL",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          99.2109375,
+          70.3828125
+        ],
+        [
+          256.3122253417969,
+          70.3828125
+        ],
+        [
+          256.3122253417969,
+          82.94342041015625
+        ],
+        [
+          99.2109375,
+          82.94342041015625
+        ]
+      ]
+    },
+    {
+      "title": "A. Binary-to-thermometer decoder",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          310.78125,
+          332.0445861816406
+        ],
+        [
+          462.94171142578125,
+          332.0445861816406
+        ],
+        [
+          462.94171142578125,
+          342.00457763671875
+        ],
+        [
+          310.78125,
+          342.00457763671875
+        ]
+      ]
+    },
+    {
+      "title": "B. Swing reduced driver (SRD)",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          52.5,
+          72.75
+        ],
+        [
+          186.0,
+          72.75
+        ],
+        [
+          186.0,
+          82.5
+        ],
+        [
+          52.5,
+          82.5
+        ]
+      ]
+    },
+    {
+      "title": "C. Core cell",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          52.5,
+          230.25
+        ],
+        [
+          110.25,
+          230.25
+        ],
+        [
+          110.25,
+          238.60546875
+        ],
+        [
+          52.5,
+          238.60546875
+        ]
+      ]
+    },
+    {
+      "title": "IV. PERFORMANCE VERIFICATION",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          365.16796875,
+          216.17578125
+        ],
+        [
+          510.0,
+          216.17578125
+        ],
+        [
+          510.0,
+          225.0
+        ],
+        [
+          365.16796875,
+          225.0
+        ]
+      ]
+    },
+    {
+      "title": "A. Static performance",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          313.171875,
+          352.5
+        ],
+        [
+          410.25,
+          352.5
+        ],
+        [
+          410.25,
+          362.25
+        ],
+        [
+          313.171875,
+          362.25
+        ]
+      ]
+    },
+    {
+      "title": "B. Dynamic Performance",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          54.0,
+          561.90234375
+        ],
+        [
+          165.3169708251953,
+          561.90234375
+        ],
+        [
+          165.3169708251953,
+          572.3034210205078
+        ],
+        [
+          54.0,
+          572.3034210205078
+        ]
+      ]
+    },
+    {
+      "title": "V. CONCLUSIONS",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          396.84375,
+          382.46484375
+        ],
+        [
+          481.51788330078125,
+          382.46484375
+        ],
+        [
+          481.51788330078125,
+          393.2738342285156
+        ],
+        [
+          396.84375,
+          393.2738342285156
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          409.095703125,
+          509.0986022949219
+        ],
+        [
+          462.2559814453125,
+          509.0986022949219
+        ],
+        [
+          462.2559814453125,
+          519.1119995117188
+        ],
+        [
+          409.095703125,
+          519.1119995117188
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          154
+        ],
+        [
+          "Line",
+          73
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          79
+        ],
+        [
+          "Line",
+          37
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "Caption",
+          4
+        ],
+        [
+          "Figure",
+          3
+        ],
+        [
+          "FigureGroup",
+          3
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          101
+        ],
+        [
+          "Span",
+          30
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "Caption",
+          3
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Equation",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          111
+        ],
+        [
+          "Line",
+          49
+        ],
+        [
+          "Figure",
+          5
+        ],
+        [
+          "Caption",
+          5
+        ],
+        [
+          "ListItem",
+          5
+        ],
+        [
+          "FigureGroup",
+          5
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "Text",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\02_BehavModelSegCurSteerDAC"
+}

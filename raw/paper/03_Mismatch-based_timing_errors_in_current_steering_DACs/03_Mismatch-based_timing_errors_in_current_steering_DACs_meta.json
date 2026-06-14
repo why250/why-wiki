@@ -1,0 +1,414 @@
+{
+  "table_of_contents": [
+    {
+      "title": "MISMATCH-BASED TIMING ERRORS IN CURRENT STEERING DACS",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          108.0,
+          95.373046875
+        ],
+        [
+          474.0,
+          93.80907372400756
+        ],
+        [
+          474.0,
+          104.67773437499999
+        ],
+        [
+          108.0,
+          106.56710775047259
+        ]
+      ]
+    },
+    {
+      "title": "Domine Leenaerts",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          378.0,
+          122.12402343749999
+        ],
+        [
+          462.75,
+          122.12402343749999
+        ],
+        [
+          462.75,
+          131.33270321361059
+        ],
+        [
+          378.0,
+          131.33270321361059
+        ]
+      ]
+    },
+    {
+      "title": "ABSTRACT",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          148.04443359375,
+          220.63894139886577
+        ],
+        [
+          195.0,
+          220.63894139886577
+        ],
+        [
+          195.0,
+          228.89413988657844
+        ],
+        [
+          148.04443359375,
+          228.89413988657844
+        ]
+      ]
+    },
+    {
+      "title": "1. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          132.75,
+          328.70699432892246
+        ],
+        [
+          213.0,
+          328.70699432892246
+        ],
+        [
+          213.0,
+          338.46313799621925
+        ],
+        [
+          132.75,
+          338.46313799621925
+        ]
+      ]
+    },
+    {
+      "title": "2. ERROR CLASSIFICATION AND PROPERTIES",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          93.2421875,
+          356.4736346516007
+        ],
+        [
+          289.3515625,
+          356.4736346516007
+        ],
+        [
+          289.3515625,
+          364.728813559322
+        ],
+        [
+          93.2421875,
+          364.728813559322
+        ]
+      ]
+    },
+    {
+      "title": "3. THE SIGNAL ERROR GENERATION MECHANISM",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          329.0546875,
+          655.73486328125
+        ],
+        [
+          550.0535279805353,
+          655.73486328125
+        ],
+        [
+          550.0535279805353,
+          664.29638671875
+        ],
+        [
+          329.0546875,
+          664.29638671875
+        ]
+      ]
+    },
+    {
+      "title": "4. MISMATCH BASED TIMING ERRORS",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          90.8359375,
+          637.05517578125
+        ],
+        [
+          252.54501216545012,
+          637.05517578125
+        ],
+        [
+          252.54501216545012,
+          646.1553672316384
+        ],
+        [
+          90.8359375,
+          646.1553672316384
+        ]
+      ]
+    },
+    {
+      "title": "5. CONCLUSIONS",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          402.42335766423355,
+          256.45654296875
+        ],
+        [
+          478.86131386861314,
+          256.45654296875
+        ],
+        [
+          478.86131386861314,
+          264.9161958568738
+        ],
+        [
+          402.42335766423355,
+          264.9161958568738
+        ]
+      ]
+    },
+    {
+      "title": "6. REFERENCES",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          405.4209245742092,
+          446.530131826742
+        ],
+        [
+          477.33984375,
+          446.530131826742
+        ],
+        [
+          477.33984375,
+          455.70654296874994
+        ],
+        [
+          405.4209245742092,
+          455.70654296874994
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          105
+        ],
+        [
+          "Span",
+          94
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "PageFooter",
+          3
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          114
+        ],
+        [
+          "Span",
+          92
+        ],
+        [
+          "Text",
+          10
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Equation",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          122
+        ],
+        [
+          "Span",
+          122
+        ],
+        [
+          "Text",
+          19
+        ],
+        [
+          "Equation",
+          10
+        ],
+        [
+          "ListItem",
+          3
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          111
+        ],
+        [
+          "Span",
+          108
+        ],
+        [
+          "ListItem",
+          10
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "Figure",
+          3
+        ],
+        [
+          "Caption",
+          3
+        ],
+        [
+          "FigureGroup",
+          3
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\03_Mismatch-based_timing_errors_in_current_steering_DACs"
+}
