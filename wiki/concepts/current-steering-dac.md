@@ -2,7 +2,7 @@
 type: concept
 title: 电流舵 DAC
 tags: [DAC, current-steering, architecture, CMOS, binary-weighted, thermometer-coded]
-related: "[[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-dynamic-performance]], [[binary-weighted-dac]], [[transistor-mismatch]]"
+related: "[[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-dynamic-performance]], [[binary-weighted-dac]], [[transistor-mismatch]], [[dac-timing-errors]], [[dac-glitch-asymmetry]], [[dac-behavioral-modeling]]"
 created: 2026-06-08
 updated: 2026-06-08
 ---
@@ -26,9 +26,15 @@ $$I_{out}(X) = I_{LSB}[b_1 + 2b_2 + \dots + 2^{N-1}b_N] = I_{LSB}X$$
 ## 关键非理想因素
 
 - **静态**：电流源晶体管失配 → INL/DNL 限制 → 见 [[bosch-2004-dac-limitations-ch-01-introduction|Ch 4]]
-- **动态**：输出阻抗频率依赖性 → SFDR 限制 → 见 [[bosch-2004-dac-limitations-ch-01-introduction|Ch 5]]
+- **动态 — 输出阻抗**：输出阻抗频率依赖性 → SFDR 限制 → 见 [[bosch-2004-dac-limitations-ch-01-introduction|Ch 5]]
+- **动态 — 时序误差**：失配导致开关时序偏差 → TNL, PDM → [[dac-timing-errors]]
+- **动态 — Glitch**：rise/fall 不对称导致 glitch 能量 → [[dac-glitch-asymmetry]]
 - **噪声**：晶体管热噪声 → SNR 限制
+- **行为建模**：SIMULINK/Verilog-A 快速架构评估 → [[dac-behavioral-modeling]]
 
 ## 来源
 
 - [[bosch-2004-dac-limitations-ch-01-introduction]] — Van den Bosch, Steyaert, Sansen (2004)
+- [[myderrizi-zeki-2005-simulink-segmented-dac]]
+- [[doris-2003-mismatch-timing-errors]]
+- [[andersson-vesterbacka-2005-glitch-asymmetry]]

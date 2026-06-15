@@ -16,6 +16,13 @@
 - [[michiel-steyaert]] — KU Leuven，模拟/混合信号 IC 设计
 - [[willy-sansen]] — KU Leuven，模拟 IC 设计经典教材作者
 - [[walt-kester]] — Analog Devices，数据转换器技术教程作者
+- [[indrit-myderrizi]] — Dogus University，SIMULINK 分段 DAC 行为建模
+- [[ali-zeki]] — Istanbul Technical University，模拟/混合信号 IC 设计
+- [[konstantinos-doris]] — TU Eindhoven/NXP，DAC 时序误差理论框架
+- [[arthur-van-roermund]] — TU Eindhoven 教授，模拟与混合信号 IC
+- [[domine-leenaerts]] — Philips Research，模拟/混合信号 IC 设计
+- [[ola-andersson]] — Linköping University，DAC glitch 行为模型
+- [[mark-vesterbacka]] — Linköping University 教授，混合信号系统设计
 
 ## Concepts
 
@@ -43,6 +50,9 @@
 - [[sinad]] — SINAD（信号-噪声-失真比）定义及其与 SNR/THD 的数学关系
 - [[adc-dynamic-metrics]] — ADC 六大动态性能指标（SFDR/THD/SINAD/SNR/ENOB）与 FFT 测试方法
 - [[cascoded-current-cell]] — Cascode 电流单元：零极点分析与高频阻抗优化
+- [[dac-timing-errors]] — CS-DAC 时序误差的 Doris 框架：TNL, PDM, SDR 闭合公式
+- [[dac-glitch-asymmetry]] — rise/fall 不对称导致的 glitch：Andersson & Vesterbacka 模型
+- [[dac-behavioral-modeling]] — SIMULINK 行为级 DAC 建模：Myderrizi & Zeki 方法
 
 ## Sources
 
@@ -57,6 +67,9 @@
 - [[bosch-2004-dac-limitations-ch-03-architectures]] — Bosch DAC 专著 Ch 3：电阻/电容/电流舵 DAC 架构比较
 - [[bosch-2004-dac-limitations-ch-04-static-behaviour]] — Bosch DAC 专著 Ch 4：静态行为——随机误差 INL 良率与系统梯度
 - [[bosch-2004-dac-limitations-ch-05-dynamic-behaviour]] — Bosch DAC 专著 Ch 5：动态行为——四大因素与输出阻抗频率效应
+- [[myderrizi-zeki-2005-simulink-segmented-dac]] — Myderrizi & Zeki：12位分段CS-DAC的SIMULINK行为模型
+- [[doris-2003-mismatch-timing-errors]] — Doris, van Roermund, Leenaerts：CS-DAC失配时序误差统一框架
+- [[andersson-vesterbacka-2005-glitch-asymmetry]] — Andersson & Vesterbacka：rise/fall不对称导致的glitch行为模型
 
 ## Queries
 

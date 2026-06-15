@@ -1,5 +1,16 @@
 # Research Log
 
+## [2026-06-15] ingest | 3 DAC papers: SIMULINK behavioral model, timing errors, glitch asymmetry
+
+- **Paper 1 — Myderrizi & Zeki**: [[myderrizi-zeki-2005-simulink-segmented-dac]], SIMULINK 分段 DAC 行为模型
+- **Paper 2 — Doris, van Roermund, Leenaerts**: [[doris-2003-mismatch-timing-errors]], 失配时序误差统一框架（TNL, PDM, SDR 公式）
+- **Paper 3 — Andersson & Vesterbacka**: [[andersson-vesterbacka-2005-glitch-asymmetry]], rise/fall 不对称 glitch 行为模型
+- Created entities: [[indrit-myderrizi]], [[ali-zeki]], [[konstantinos-doris]], [[arthur-van-roermund]], [[domine-leenaerts]], [[ola-andersson]], [[mark-vesterbacka]]
+- Created concepts: [[dac-timing-errors]], [[dac-glitch-asymmetry]], [[dac-behavioral-modeling]]
+- Updated concepts: [[dac-mismatch-effects]], [[dac-dynamic-performance]], [[current-steering-dac]] — cross-referenced new sources
+- Index updated with 13 new pages (3 sources + 7 entities + 3 concepts)
+- Sources: raw/paper/02_BehavModelSegCurSteerDAC/, raw/paper/03_Mismatch-based_timing_errors_in_current_steering_DACs/, raw/paper/04_Modeling_of_glitches_due_to_rise_fall_asymmetry_in_current-steering_digital-to-analog_converters/
+
 ## [2026-06-14] ingest | MT-003: Understand SINAD, ENOB, SNR, THD, THD+N, SFDR
 
 - Created source page: [[kester-2009-mt-003]]

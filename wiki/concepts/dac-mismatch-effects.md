@@ -2,7 +2,7 @@
 type: concept
 title: DAC 电流源失配效应
 tags: [DAC, mismatch, SFDR, yield, process-variation, current-source]
-related: "[[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[ti-calibration]], [[binary-weighted-dac]]"
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-dynamic-performance]], [[ti-calibration]], [[binary-weighted-dac]], [[doris-2003-mismatch-timing-errors]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---
@@ -49,6 +49,11 @@ $$E\{SFDR(N, \sigma_{LSB})\} \approx 3N + 7.5 - 20\log\sigma_{LSB}$$
 
 ADC 中也存在类似的电容/电流源失配问题（参见 [[ti-calibration]]）。DAC 的失配建模方法与 ADC 共享相似的统计分析框架，但 DAC 面临的核心挑战是失配直接产生输出杂散，而 ADC 的失配影响的是量化阈值。
 
+## 失配导致的动态效应
+
+静态失配不仅影响 INL/DNL，还会通过时序偏差影响动态性能。[[doris-2003-mismatch-timing-errors]] 建立了失配→时序误差→动态失真（TNL, PDM）的完整数学框架。参见 [[dac-timing-errors]]。
+
 ## 来源
 
 - [[wikner-tan-1997-dac-imperfections]]
+- [[doris-2003-mismatch-timing-errors]]

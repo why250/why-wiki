@@ -2,7 +2,7 @@
 type: concept
 title: DAC 动态性能
 tags: [DAC, dynamic-performance, SFDR, SNR, IMD, SNDR, telecommunications]
-related: "[[wikner-tan-1997-dac-imperfections]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[binary-weighted-dac]], [[adc-dynamic-metrics]], [[sinad]], [[enob]]"
+related: "[[wikner-tan-1997-dac-imperfections]], [[dac-output-impedance]], [[dac-mismatch-effects]], [[dac-circuit-noise]], [[binary-weighted-dac]], [[adc-dynamic-metrics]], [[sinad]], [[enob]], [[dac-timing-errors]], [[dac-glitch-asymmetry]]"
 created: 2026-06-07
 updated: 2026-06-07
 ---
@@ -40,7 +40,16 @@ DAC 和 ADC 共享类似的频域指标概念（SFDR、SNR、SNDR），但物理
 - [[enob]] — 有效位数，ADC 专有的等效分辨率概念
 - [[kester-2009-mt-003]] — MT-003 来源
 
+## 动态失真的时域来源
+
+DAC 动态失真可进一步分解为两种时域机制：
+
+- [[dac-timing-errors]] — 失配导致的开关时序偏差（TNL, PDM），Doris (2003) 框架
+- [[dac-glitch-asymmetry]] — rise/fall 不对称导致的 glitch 能量，Andersson & Vesterbacka (2005) 模型
+
 ## 来源
 
 - [[wikner-tan-1997-dac-imperfections]]
+- [[doris-2003-mismatch-timing-errors]]
+- [[andersson-vesterbacka-2005-glitch-asymmetry]]
 - [[kester-2009-mt-003]] — ADC 侧动态指标定义
