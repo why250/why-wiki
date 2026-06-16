@@ -103,6 +103,15 @@ Add every new page to `wiki/index.md` under the correct heading:
 
 If the project's high-level understanding has shifted, update `wiki/overview.md`.
 
+### 10. Quick lint before pushing
+
+在 commit 和 push 之前，至少检查：
+- [ ] Broken wikilinks — 新页面中的 `[[...]]` 目标是否存在（有意预留的前向引用可列出但不阻塞）
+- [ ] Frontmatter 完整性 — 新页面 YAML 是否包含所有必填字段
+- [ ] Index 覆盖 — 新页面是否已加入 `wiki/index.md`
+
+通过后再 push。
+
 ---
 
 ## Verification
