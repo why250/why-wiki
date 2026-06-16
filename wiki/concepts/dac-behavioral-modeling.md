@@ -2,7 +2,7 @@
 type: concept
 title: DAC Behavioral Modeling
 tags: [DAC, behavioral-modeling, SIMULINK, simulation]
-related: ["[[myderrizi-zeki-2005-simulink-segmented-dac]]", "[[dac-mismatch-effects]]", "[[dac-dynamic-performance]]", "[[current-steering-dac]]"]
+related: ["[[myderrizi-zeki-2005-simulink-segmented-dac]]", "[[schmidt-2018-amux-behavioral-model]]", "[[amux-dac]]", "[[dac-mismatch-effects]]", "[[dac-dynamic-performance]]", "[[current-steering-dac]]"]
 created: 2026-06-15
 updated: 2026-06-15
 ---
@@ -42,6 +42,32 @@ updated: 2026-06-15
 | Verilog-A | 可直接与 Spectre/HSPICE 混合仿真 | 工业界常用 |
 | MATLAB 数值模型 | 灵活但无图形化 | [[wikner-tan-1997-dac-imperfections]] |
 | SystemC/SystemVerilog | 系统级验证 | 现代 AMS 流程 |
+
+## Schmidt 等 MATLAB AMUX 行为模型（2018）
+
+[[schmidt-2018-amux-behavioral-model]] 为 [[amux-dac]] 系统中的 2:1 AMUX 建立了 MATLAB 行为模型：
+
+### 模型架构
+
+- **准线性模型**：数据路径无非线性失真，降低复杂度
+- 数据路径：低通滤波器（Butterworth/Bessel/Gaussian）→ 乘法器（与时钟信号相乘）→ 加法器 → 输出 LPF
+- 时钟路径：tanh 非线性 + LPF 级联（模拟 Cherry-Hooper 放大器链）→ 反相复制生成两路差分时钟
+- 寄生建模：馈通隔离（50-60 dB）+ AWGN
+
+### 参数拟合方法
+
+1. **LS 信道估计**：对子系统做最小二乘估计获取滤波器初值
+2. **暴力多参数优化**：搜索参数空间，目标 NMSE < -20 dB
+
+### 与 Myderrizi & Zeki 方法的对比
+
+| 方面 | Myderrizi & Zeki (2005) | Schmidt et al. (2018) |
+|------|--------------------------|------------------------|
+| 建模对象 | 完整分段 CS-DAC | 2:1 AMUX（DAC 前置） |
+| 工具 | SIMULINK | MATLAB |
+| 非线性 | 无 | 时钟路径 tanh |
+| 验证 | INL/DNL/SFDR | NMSE vs SPICE 参考数据 |
+| 仿真速度提升 | ~1000× | >1000×（2²⁰ sample < 1 min）|
 
 ## 与其他概念的关系
 

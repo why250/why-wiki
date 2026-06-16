@@ -23,6 +23,9 @@
 - [[domine-leenaerts]] — Philips Research，模拟/混合信号 IC 设计
 - [[ola-andersson]] — Linköping University，DAC glitch 行为模型
 - [[mark-vesterbacka]] — Linköping University 教授，混合信号系统设计
+- [[christian-schmidt]] — Fraunhofer HHI / TU Berlin，AMUX 行为级建模与高速 DAC 架构
+- [[manfred-berroth]] — University of Stuttgart 教授，高速集成电路设计
+- [[fraunhofer-hhi]] — Fraunhofer Heinrich-Hertz-Institute，光子网络与系统
 
 ## Concepts
 
@@ -52,7 +55,8 @@
 - [[cascoded-current-cell]] — Cascode 电流单元：零极点分析与高频阻抗优化
 - [[dac-timing-errors]] — CS-DAC 时序误差的 Doris 框架：TNL, PDM, SDR 闭合公式
 - [[dac-glitch-asymmetry]] — rise/fall 不对称导致的 glitch：Andersson & Vesterbacka 模型
-- [[dac-behavioral-modeling]] — SIMULINK 行为级 DAC 建模：Myderrizi & Zeki 方法
+- [[amux-dac]] — AMUX-DAC：用模拟复用器组合多路 DAC 以翻倍带宽的架构
+- [[dac-behavioral-modeling]] — SIMULINK/MATLAB 行为级 DAC 与 AMUX 建模方法
 
 ## Sources
 
@@ -70,6 +74,7 @@
 - [[myderrizi-zeki-2005-simulink-segmented-dac]] — Myderrizi & Zeki：12位分段CS-DAC的SIMULINK行为模型
 - [[doris-2003-mismatch-timing-errors]] — Doris, van Roermund, Leenaerts：CS-DAC失配时序误差统一框架
 - [[andersson-vesterbacka-2005-glitch-asymmetry]] — Andersson & Vesterbacka：rise/fall不对称导致的glitch行为模型
+- [[schmidt-2018-amux-behavioral-model]] — Schmidt et al.：高速 2:1 AMUX MATLAB 行为级模型（MWSCAS 2018）
 
 ## Queries
 

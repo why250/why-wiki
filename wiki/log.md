@@ -1,5 +1,13 @@
 # Research Log
 
+## [2026-06-16] ingest | Behavioral Model for a High-Speed 2:1 AMUX (Schmidt et al., MWSCAS 2018)
+
+- Created source page: [[schmidt-2018-amux-behavioral-model]]
+- Created concept: [[amux-dac]] — AMUX-DAC 架构与行为级建模
+- Created entities: [[christian-schmidt]], [[manfred-berroth]], [[fraunhofer-hhi]]
+- Updated concept: [[dac-behavioral-modeling]] — 添加 Schmidt 等 MATLAB AMUX 行为模型章节
+- Cross-references added to 1 existing page
+
 ## [2026-06-15] ingest | 3 DAC papers: SIMULINK behavioral model, timing errors, glitch asymmetry
 
 - **Paper 1 — Myderrizi & Zeki**: [[myderrizi-zeki-2005-simulink-segmented-dac]], SIMULINK 分段 DAC 行为模型

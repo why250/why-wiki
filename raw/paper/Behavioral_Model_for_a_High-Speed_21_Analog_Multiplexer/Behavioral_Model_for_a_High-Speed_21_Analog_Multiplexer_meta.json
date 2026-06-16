@@ -1,0 +1,407 @@
+{
+  "table_of_contents": [
+    {
+      "title": "Behavioral Model for a High-Speed \n2:1 Analog Multiplexer",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          135.03125,
+          89.16583251953125
+        ],
+        [
+          464.2804260253906,
+          89.16583251953125
+        ],
+        [
+          464.2804260253906,
+          142.9456787109375
+        ],
+        [
+          135.03125,
+          142.9456787109375
+        ]
+      ]
+    },
+    {
+      "title": "I. INTRODUCTION",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          135.61328125,
+          402.087890625
+        ],
+        [
+          214.32460021972656,
+          402.087890625
+        ],
+        [
+          214.32460021972656,
+          412.16766357421875
+        ],
+        [
+          135.61328125,
+          412.16766357421875
+        ]
+      ]
+    },
+    {
+      "title": "II. SYSTEM CONCEPT AND ACTUAL CHIP",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          345.7265625,
+          528.3056640625
+        ],
+        [
+          506.5066833496094,
+          528.3056640625
+        ],
+        [
+          506.5066833496094,
+          538.2970581054688
+        ],
+        [
+          345.7265625,
+          538.2970581054688
+        ]
+      ]
+    },
+    {
+      "title": "III. BEHAVIORAL MODEL",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          373.81360201511336,
+          297.66162065894923
+        ],
+        [
+          478.15113350125944,
+          297.66162065894923
+        ],
+        [
+          478.15113350125944,
+          306.65894924309885
+        ],
+        [
+          373.81360201511336,
+          306.65894924309885
+        ]
+      ]
+    },
+    {
+      "title": "IV. PARAMETER FITTING",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          121.0625,
+          379.4755859375
+        ],
+        [
+          224.43828715365237,
+          379.4755859375
+        ],
+        [
+          224.43828715365237,
+          388.3846838824577
+        ],
+        [
+          121.0625,
+          388.3846838824577
+        ]
+      ]
+    },
+    {
+      "title": "V. AMUX-DAC SYSTEM",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          373.08203125,
+          426.3447265625
+        ],
+        [
+          479.65239294710324,
+          426.3447265625
+        ],
+        [
+          479.65239294710324,
+          436.3704363312555
+        ],
+        [
+          373.08203125,
+          436.3704363312555
+        ]
+      ]
+    },
+    {
+      "title": "VI. CONCLUSION & OUTLOOK",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          112.9140625,
+          531.5947265625
+        ],
+        [
+          233.9765625,
+          531.5947265625
+        ],
+        [
+          233.9765625,
+          542.2328796386719
+        ],
+        [
+          112.9140625,
+          542.2328796386719
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          399.4992980957031,
+          338.7734375
+        ],
+        [
+          447.873046875,
+          338.7734375
+        ],
+        [
+          447.873046875,
+          348.5587463378906
+        ],
+        [
+          399.4992980957031,
+          348.5587463378906
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          175
+        ],
+        [
+          "Line",
+          87
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageFooter",
+          3
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          95
+        ],
+        [
+          "Span",
+          52
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          133
+        ],
+        [
+          "Span",
+          28
+        ],
+        [
+          "TableCell",
+          23
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Equation",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "TableGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          183
+        ],
+        [
+          "Line",
+          76
+        ],
+        [
+          "ListItem",
+          11
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\Behavioral_Model_for_a_High-Speed_21_Analog_Multiplexer"
+}

@@ -60,8 +60,14 @@ Include sections: **核心要点** (key takeaways), **关键概念** (concepts t
 
 ### 4. Create or update entity pages
 
-For each named entity, create `wiki/entities/<name>.md` or update the existing one.
-Link back to the source via `[[source-slug]]`.
+**不是每个名字都值得独立页面。** 先判断，再创建。标准：
+
+- 第一作者 / 通讯作者，方向核心推动者 → 创建
+- 研究机构，多篇论文的共同背景 → 创建
+- 团队负责人，与其他已收录工作有关联 → 创建
+- 普通合著者，仅出现一次 → **不创建**，信息留在 source page 的 `authors:` 字段即可
+
+确定要创建时，在 `wiki/entities/<name>.md` 中写入，并通过 `[[source-slug]]` 链接回来源。更新已有 entity 时追加新来源引用。
 
 ### 5. Create or update concept pages
 
