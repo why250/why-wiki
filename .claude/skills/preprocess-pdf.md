@@ -1,6 +1,7 @@
 # Skill: Preprocess PDF
 
 > **Created:** 2026-06-07
+> **Updated:** 2026-07-21
 > **Origin:** 扩展 wiki 项目的源文件处理能力 — 支持 PDF 二进制文件，通过 marker 转为 Markdown 后再走 ingest 流程
 
 ---
@@ -16,12 +17,87 @@
 ## Prerequisites
 
 - [ ] PDF 文件已放入 `raw/` 的某个子目录（如 `raw/paper/`、`raw/articles/`）
-- [ ] Python 环境中已安装 `marker-pdf` 及其依赖
+- [ ] 本机已初始化 marker 环境（见步骤 0）；或用户明确要求现在初始化
 - [ ] 已阅读 `schema.md`（了解项目约定）
 
 ---
 
 ## Steps
+
+### 0. 解析 marker 环境（先读缓存，失败再初始化）
+
+**不要每次手动遍历本机 Python。** 使用脚本读写机器本地配置：
+
+| 文件 | 是否入库 | 作用 |
+|------|---------|------|
+| `.claude/marker-env.local.json` | 否（gitignore） | 缓存：python 绝对路径、GPU、marker/torch 版本 |
+| `.venv-marker/` | 否（gitignore） | 仅在本机找不到可用 marker 时才创建的专用 venv |
+
+从**仓库根目录**执行：
+
+```bash
+python .claude/skills/scripts/setup_marker_env.py resolve
+```
+
+- 成功 → stdout 只有一行：可用解释器的**绝对路径**。后续所有转换都用这个路径（下文记为 `$MARKER_PYTHON`）。
+- 失败（无配置 / 路径失效）→ 走 **0b 初始化**，不要自行 `where python` 扫全盘。
+
+默认 `resolve` **只校验路径存在**（秒级）。需要完整缓存或怀疑环境坏了时：
+
+```bash
+python .claude/skills/scripts/setup_marker_env.py resolve --json
+python .claude/skills/scripts/setup_marker_env.py resolve --verify   # 慢：重新 import marker/torch
+python .claude/skills/scripts/setup_marker_env.py doctor             # 刷新 GPU/版本并写回配置
+```
+
+#### 0b. 新设备 / 首次使用：初始化
+
+marker + torch 体积大、安装慢。**默认策略：先复用，找不到再新建。**
+
+直接跑（agent 默认命令）：
+
+```bash
+python .claude/skills/scripts/setup_marker_env.py setup
+```
+
+脚本会按顺序：
+
+1. 若 `.venv-marker/` 已有可用 marker → 绑定，不重装
+2. 否则扫描本机 Python，绑定已能 `import marker` 的环境（**CUDA 优先**于 CPU）
+3. 都没有 → 才创建 `.venv-marker/` 并 `pip install marker-pdf`（会很慢，属预期）
+
+可选参数：
+
+```bash
+# 只要 GPU：优先复用已有 CUDA marker；没有再装 GPU torch + marker
+python .claude/skills/scripts/setup_marker_env.py setup --cuda cu124
+
+# 强制新建/重建项目 venv（跳过复用，会重新下载）
+python .claude/skills/scripts/setup_marker_env.py setup --force-venv
+python .claude/skills/scripts/setup_marker_env.py setup --force-venv --cuda cu124
+
+# 手动指定绑定某个解释器（不扫描）
+python .claude/skills/scripts/setup_marker_env.py setup --use-existing "C:/Path/to/python.exe"
+
+# 指定解释器且允许往里装 marker
+python .claude/skills/scripts/setup_marker_env.py setup --use-existing "C:/Path/to/python.exe" --install-into-existing
+```
+
+初始化成功后会写入 `.claude/marker-env.local.json`，并打印 python / GPU / 版本摘要。然后重新 `resolve` 取得 `$MARKER_PYTHON`。
+
+**环境异常时刷新探测（不重装）：**
+
+```bash
+python .claude/skills/scripts/setup_marker_env.py doctor
+```
+
+**Gotcha:**
+- 配置与 venv 是**机器本地**的，勿提交 git；skill 与脚本可分享，环境需每人/每机跑一次 `setup`。
+- `setup` 默认会探测多个解释器（每个要 import torch/marker，可能数分钟）；这只发生在初始化，日常转换只跑 `resolve`。
+- 优先 Python **3.11–3.13**；3.14+ 常因 Pillow 与 marker 不兼容失败。
+- **不要在不同解释器之间混用包**；转换命令始终用 `$MARKER_PYTHON` 完整路径。
+- 不要把「推荐新建 venv」当成默认——除非用户明确要求隔离，或本机确实没有 marker。
+---
 
 ### 1. 确认转换范围
 
@@ -33,49 +109,9 @@
 
 ---
 
-### 2. 验证 Python 环境（多版本探测）
+### 2. 执行转换
 
-**必须遍历所有可用的 Python 安装，而非仅检查默认 `python`。** Windows 系统常同时安装多个 Python 版本，默认版本未必是配置了 marker 的那个。
-
-#### 2.1 发现所有 Python 安装
-
-```bash
-where python 2>&1  # Windows: 列出 PATH 中所有 python.exe
-ls "C:/Users/$USER/AppData/Local/Programs/Python/Python*/python.exe" 2>&1  # 常见安装位置
-```
-
-记录所有找到的 Python 解释器的完整路径。
-
-#### 2.2 逐个检查，找到可用环境
-
-对每个解释器，按优先级检查：
-
-```
-1. torch CUDA 可用？ → 首选（GPU 加速）
-2. marker-pdf + torch 可 import？ → 次选（CPU fallback）
-3. 跳过 →
-```
-
-```bash
-# 以完整路径调用每个 Python 解释器：
-"C:/path/to/python.exe" -c "import torch; print('CUDA:', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')"
-"C:/path/to/python.exe" -c "from marker.converters.pdf import PdfConverter; print('marker ok')"
-```
-
-#### 2.3 选择环境
-
-- **GPU 环境优先** — 标记为本次转换使用的解释器
-- 如果所有环境都不可用 → 向用户确认是否需要安装依赖
-- **不要在不同解释器之间混用包**
-- 后续所有转换命令均使用选定的解释器**完整路径**
-
----
-
-### 3. 执行转换
-
-**使用步骤 2 选定的解释器完整路径执行。** 以下示例中 `python` 指代已选定的解释器。
-
-**默认使用非 LLM 路径。** 只有用户明确要求时才启用 Ollama 增强，且本地模型必须支持 `vision`。
+**使用步骤 0 得到的 `$MARKER_PYTHON`。** 默认非 LLM 路径；仅当用户明确要求且本地模型支持 `vision` 时才启用 Ollama。
 
 **仅预览（不写文件）：**
 ```python
@@ -136,11 +172,17 @@ config_parser = ConfigParser(
 # 其余代码同上
 ```
 
-**默认使用非 LLM 转换路径。** 除非用户明确要求本地 Ollama 增强，否则不启用。
+调用方式示例（PowerShell）：
+
+```powershell
+& "$MARKER_PYTHON" -c @"
+# ... 上文转换代码 ...
+"@
+```
 
 ---
 
-### 4. 提示下一步
+### 3. 提示下一步
 
 转换完成后，告诉用户：
 
@@ -155,6 +197,7 @@ PDF 已转换为 raw/paper/<pdf-basename>/<pdf-basename>.md
 
 ## Verification
 
+- [ ] `resolve` 能打印有效 `$MARKER_PYTHON`（或本次刚完成 `setup`）
 - [ ] `.md` 文件已在 `raw/paper/<pdf-basename>/` 子文件夹中生成
 - [ ] `.md` 文件内容可读、结构完整（标题层级、段落、表格）
 - [ ] 如转换了页码范围，确认内容范围正确
@@ -167,17 +210,22 @@ PDF 已转换为 raw/paper/<pdf-basename>/<pdf-basename>.md
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `ModuleNotFoundError: pydantic` | 当前 Python 解释器未安装 marker-pdf | 检查 `python -c "import sys; print(sys.executable)"`，在正确的环境中安装 |
-| `where python` 和实际环境不一致 | Windows 多 Python 版本 | 使用完整路径调用目标解释器 |
-| Pillow 编译失败 (Python 3.14) | marker 依赖 `Pillow<11`，与 Python 3.14 不兼容 | 优先使用已验证的 Python 环境，或降级到 3.12/3.13 |
-| 中文 PDF 转换质量差 | marker 默认模型对中文支持有限 | 提示用户考虑使用支持多语言的配置选项 |
-| 转换后 .md 空白或乱码 | PDF 可能是扫描版（图片型） | 检查 PDF 是否包含可提取文本层；扫描版需 OCR |
+| `No marker env config found` | 新机器未初始化 | 跑 `setup`（会先复用再考虑新建） |
+| `Configured python missing` | 换机 / 卸载了 Python | 重新 `setup` |
+| `Configured python failed marker import` / doctor 失败 | 环境被改坏 | `doctor`；仍失败则 `setup`；要强制重装用 `--force-venv` |
+| `ModuleNotFoundError: pydantic` / marker | 绑错解释器或未安装 | `setup` 自动找可用环境，或 `--use-existing PATH --install-into-existing` |
+| Pillow 编译失败 (Python 3.14) | marker 与 3.14 不兼容 | 用 3.11–3.13；必要时 `--force-venv --python PATH` |
+| CUDA torch 安装失败 | `--cuda` tag 与驱动不匹配 | 换 `cu121`/`cu124`/`cu126`，或去掉 `--cuda` 用 CPU |
+| `setup` 很慢但在 Probing | 正在 import 多个解释器 | 正常；找到后会复用且不重装。日常请用 `resolve` |
+| 中文 PDF 转换质量差 | marker 默认模型对中文支持有限 | 提示用户考虑多语言配置 |
+| 转换后 .md 空白或乱码 | PDF 可能是扫描版 | 检查是否有文本层；扫描版需 OCR |
 
 ---
 
 ## Related
 
+- 环境脚本: `.claude/skills/scripts/setup_marker_env.py`
 - 下一步技能: `.claude/skills/ingest.md`
-- 大书分章摄入: `.claude/skills/ingest-book.md`（处理 300+ 页参考书的正确方式——按章节拆分，避免 token 爆炸）
+- 大书分章摄入: `.claude/skills/ingest-book.md`
 - Schema: `schema.md`
 - 规则: `.claude/rules/always.md`

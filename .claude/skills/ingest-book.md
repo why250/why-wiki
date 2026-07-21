@@ -16,9 +16,9 @@
 ## Prerequisites
 
 - [ ] PDF 书籍已放入 `raw/book/` 目录
-- [ ] Python 环境中已安装 `marker-pdf`（参见 `preprocess-pdf.md`）
+- [ ] 本机 marker 环境已初始化（`preprocess-pdf.md` 步骤 0：`resolve` / 必要时 `setup`）
 - [ ] 已阅读 `schema.md`（了解页面格式约定）
-- [ ] 已阅读 `preprocess-pdf.md`（了解页码范围转换 recipe）
+- [ ] 已阅读 `preprocess-pdf.md`（环境解析 + 页码范围转换 recipe）
 
 ## 输出目录约定
 

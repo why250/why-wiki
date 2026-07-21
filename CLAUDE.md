@@ -102,6 +102,7 @@ raw/                            ← immutable source documents
     ingest.md                   ← SOP: ingesting a raw source
     ingest-book.md              ← SOP: ingesting a multi-chapter book chapter-by-chapter
     preprocess-pdf.md           ← SOP: converting PDF to Markdown before ingest
+    scripts/setup_marker_env.py ← marker env setup/resolve (used by preprocess-pdf)
     lint.md                     ← SOP: wiki health check
     _template.md                ← copy this when creating a new skill
 

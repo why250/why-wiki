@@ -634,8 +634,8 @@ function migrateLegacyHostnameKeyedMap(entries, currentKey, legacyHostnameKey) {
   if (!currentKey || !legacyHostnameKey || currentKey === legacyHostnameKey) {
     return entries;
   }
-  const hasCurrentEntry = Object.prototype.hasOwnProperty.call(entries, currentKey);
-  const hasLegacyEntry = Object.prototype.hasOwnProperty.call(entries, legacyHostnameKey);
+  const hasCurrentEntry = hasOwnEntry(entries, currentKey);
+  const hasLegacyEntry = hasOwnEntry(entries, legacyHostnameKey);
   if (!hasLegacyEntry) {
     return entries;
   }
@@ -645,6 +645,9 @@ function migrateLegacyHostnameKeyedMap(entries, currentKey, legacyHostnameKey) {
   }
   delete migrated[legacyHostnameKey];
   return migrated;
+}
+function hasOwnEntry(entries, key) {
+  return Object.prototype.hasOwnProperty.call(entries, key) === true;
 }
 function parseContextLimit(input) {
   var _a5;
@@ -23373,7 +23376,7 @@ var require_cross_spawn = __commonJS({
       enoent.hookChildProcess(spawned, parsed);
       return spawned;
     }
-    function spawnSync2(command, args, options) {
+    function spawnSync(command, args, options) {
       const parsed = parse4(command, args, options);
       const result = cp.spawnSync(parsed.command, parsed.args, parsed.options);
       result.error = result.error || enoent.verifyENOENTSync(result.status, parsed);
@@ -23381,7 +23384,7 @@ var require_cross_spawn = __commonJS({
     }
     module2.exports = spawn6;
     module2.exports.spawn = spawn6;
-    module2.exports.sync = spawnSync2;
+    module2.exports.sync = spawnSync;
     module2.exports._parse = parse4;
     module2.exports._enoent = enoent;
   }
@@ -24928,6 +24931,54 @@ function patchSetMaxListenersForElectron() {
   events.setMaxListeners = patched;
 }
 
+// src/core/providers/modelSelection.ts
+var PROVIDER_MODEL_SELECTION_PREFIXES = {
+  claude: "claude-code/",
+  codex: "openai-codex/",
+  opencode: "opencode/",
+  pi: "pi/"
+};
+function getProviderModelSelectionPrefix(providerId) {
+  var _a5;
+  return (_a5 = PROVIDER_MODEL_SELECTION_PREFIXES[providerId]) != null ? _a5 : null;
+}
+function encodeProviderModelSelectionId(providerId, modelId) {
+  const normalized = modelId.trim();
+  const prefix = getProviderModelSelectionPrefix(providerId);
+  if (!prefix || !normalized || normalized.startsWith(prefix)) {
+    return normalized;
+  }
+  return `${prefix}${normalized}`;
+}
+function decodeProviderModelSelectionId(value) {
+  const normalized = value.trim();
+  if (!normalized) {
+    return null;
+  }
+  for (const [providerId, prefix] of Object.entries(PROVIDER_MODEL_SELECTION_PREFIXES)) {
+    if (!prefix || !normalized.startsWith(prefix)) {
+      continue;
+    }
+    const modelId = normalized.slice(prefix.length).trim();
+    if (!modelId) {
+      return null;
+    }
+    return {
+      providerId,
+      modelId
+    };
+  }
+  return null;
+}
+function isProviderModelSelectionId(providerId, value) {
+  var _a5;
+  return ((_a5 = decodeProviderModelSelectionId(value)) == null ? void 0 : _a5.providerId) === providerId;
+}
+function toProviderRuntimeModelId(providerId, value) {
+  const decoded = decodeProviderModelSelectionId(value);
+  return (decoded == null ? void 0 : decoded.providerId) === providerId ? decoded.modelId : value;
+}
+
 // src/core/providers/types.ts
 var DEFAULT_CHAT_PROVIDER_ID = "claude";
 
@@ -25021,6 +25072,10 @@ var ProviderRegistry = class {
   static resolveProviderForModel(model, settings11 = {}, options = {}) {
     const providerIds = options.onlyEnabledProviders ? this.getEnabledProviderIds(settings11) : this.getRegisteredProviderIds();
     const fallbackProviderId = options.fallbackProviderId && (!options.onlyEnabledProviders || this.isEnabled(options.fallbackProviderId, settings11)) ? options.fallbackProviderId : options.onlyEnabledProviders ? this.resolveSettingsProviderId(settings11) : DEFAULT_CHAT_PROVIDER_ID;
+    const decodedSelection = decodeProviderModelSelectionId(model);
+    if (decodedSelection && providerIds.includes(decodedSelection.providerId) && (!options.onlyEnabledProviders || this.isEnabled(decodedSelection.providerId, settings11))) {
+      return decodedSelection.providerId;
+    }
     for (const providerId of providerIds) {
       if (providerId === fallbackProviderId) {
         continue;
@@ -46055,7 +46110,7 @@ function installTreeAwareKill(child, spawnSpec) {
     get pid() {
       return child.pid;
     },
-    kill: originalKill
+    kill: (signal) => originalKill(signal)
   };
   child.kill = ((signal) => terminateSpawnedProcess(killableChild, signal, import_child_process6.spawn, spawnSpec));
 }
@@ -46959,6 +47014,17 @@ var CHAT_VIEW_PLACEMENTS = [
 // src/providers/codex/settings.ts
 init_env();
 
+// src/providers/codex/modelSelection.ts
+function encodeCodexModelSelectionId(modelId) {
+  return encodeProviderModelSelectionId("codex", modelId);
+}
+function isCodexModelSelectionId(modelId) {
+  return isProviderModelSelectionId("codex", modelId);
+}
+function toCodexRuntimeModelId(modelId) {
+  return toProviderRuntimeModelId("codex", modelId);
+}
+
 // src/providers/codex/types/models.ts
 var CODEX_SPARK_MODEL = "gpt-5.3-codex-spark";
 var DEFAULT_CODEX_MINI_MODEL = "gpt-5.4-mini";
@@ -47014,7 +47080,7 @@ var DEFAULT_CODEX_PROVIDER_SETTINGS = Object.freeze({
   wslDistroOverridesByHost: {}
 });
 function shouldDisableCodexReasoningSummary(model) {
-  return model === CODEX_SPARK_MODEL;
+  return model ? toCodexRuntimeModelId(model) === CODEX_SPARK_MODEL : false;
 }
 function getEffectiveCodexReasoningSummary(settings11, model) {
   if (shouldDisableCodexReasoningSummary(model)) {
@@ -48450,9 +48516,9 @@ var DEFAULT_CLAUDIAN_SETTINGS = {
   savedProviderPermissionMode: {},
   lastCustomModel: "",
   maxTabs: 3,
-  tabBarPosition: "input",
   enableAutoScroll: true,
   deferMathRenderingDuringStreaming: true,
+  expandFileEditsByDefault: false,
   chatViewPlacement: "right-sidebar",
   hiddenProviderCommands: getDefaultHiddenProviderCommands()
 };
@@ -49693,10 +49759,23 @@ var ProviderSettingsCoordinator = class {
     if (!currentModel) {
       return false;
     }
-    const isValid2 = ProviderRegistry.getRegisteredProviderIds().some(
-      (providerId) => ProviderRegistry.getChatUIConfig(providerId).getModelOptions(settings11).some((option) => option.value === currentModel)
-    );
-    if (isValid2) {
+    for (const providerId of ProviderRegistry.getRegisteredProviderIds()) {
+      const uiConfig = ProviderRegistry.getChatUIConfig(providerId);
+      if (!uiConfig.ownsModel(currentModel, settings11)) {
+        continue;
+      }
+      const normalizedModel = normalizeProviderModel(uiConfig, settings11, currentModel);
+      const currentRuntimeModel = toProviderRuntimeModelId(providerId, currentModel);
+      const isValid2 = normalizedModel !== void 0 && uiConfig.getModelOptions(settings11).some(
+        (option) => option.value === normalizedModel && toProviderRuntimeModelId(providerId, option.value) === currentRuntimeModel
+      );
+      if (!isValid2) {
+        continue;
+      }
+      if (normalizedModel !== currentModel) {
+        settings11.titleGenerationModel = normalizedModel;
+        return true;
+      }
       return false;
     }
     settings11.titleGenerationModel = "";
@@ -50208,12 +50287,6 @@ var settings = {
     desc: "Maximale Anzahl gleichzeitiger Chat-Tabs (3-10). Jeder Tab verwendet eine separate Claude-Sitzung.",
     warning: "Mehr als 5 Tabs k\xF6nnen Leistung und Speichernutzung beeintr\xE4chtigen."
   },
-  tabBarPosition: {
-    name: "Tab-Leiste Position",
-    desc: "W\xE4hlen Sie, wo Tab-Badges und Aktionsschaltfl\xE4chen angezeigt werden",
-    input: "\xDCber Eingabefeld (Standard)",
-    header: "In Kopfzeile"
-  },
   enableAutoScroll: {
     name: "Automatisches Scrollen w\xE4hrend Streaming",
     desc: "Automatisch nach unten scrollen, w\xE4hrend Claude Antworten streamt. Deaktivieren, um oben zu bleiben und von Anfang an zu lesen."
@@ -50221,6 +50294,10 @@ var settings = {
   deferMathRenderingDuringStreaming: {
     name: "Mathe-Rendering w\xE4hrend Streaming aufschieben",
     desc: "LaTeX w\xE4hrend des Streamings roh anzeigen und Mathematik einmal rendern, wenn der Textblock abgeschlossen ist."
+  },
+  expandFileEditsByDefault: {
+    name: "Dateibearbeitungen standardm\xE4\xDFig ausklappen",
+    desc: "Write- und Edit-Diffs beim ersten Erscheinen ausgeklappt anzeigen."
   },
   chatViewPlacement: {
     name: "Claudian \xF6ffnen in",
@@ -50544,12 +50621,6 @@ var settings2 = {
     desc: "Maximum number of concurrent chat tabs (3-10). Each tab uses a separate Claude session.",
     warning: "More than 5 tabs may impact performance and memory usage."
   },
-  tabBarPosition: {
-    name: "Tab bar position",
-    desc: "Choose where to display tab badges and action buttons",
-    input: "Above input (default)",
-    header: "In header"
-  },
   enableAutoScroll: {
     name: "Auto-scroll during streaming",
     desc: "Automatically scroll to the bottom as Claude streams responses. Disable to stay at the top and read from the beginning."
@@ -50557,6 +50628,10 @@ var settings2 = {
   deferMathRenderingDuringStreaming: {
     name: "Defer math rendering during streaming",
     desc: "Show raw LaTeX while responses stream, then render math once when each text block completes."
+  },
+  expandFileEditsByDefault: {
+    name: "Expand file edits by default",
+    desc: "Show Write and Edit diffs expanded when they first appear."
   },
   chatViewPlacement: {
     name: "Open Claudian in",
@@ -50880,12 +50955,6 @@ var settings3 = {
     desc: "N\xFAmero m\xE1ximo de pesta\xF1as de chat simult\xE1neas (3-10). Cada pesta\xF1a usa una sesi\xF3n de Claude separada.",
     warning: "M\xE1s de 5 pesta\xF1as puede afectar el rendimiento y el uso de memoria."
   },
-  tabBarPosition: {
-    name: "Posici\xF3n de la barra de pesta\xF1as",
-    desc: "Elige d\xF3nde mostrar las insignias de pesta\xF1as y los botones de acci\xF3n",
-    input: "Sobre el \xE1rea de entrada (predeterminado)",
-    header: "En el encabezado"
-  },
   enableAutoScroll: {
     name: "Desplazamiento autom\xE1tico durante streaming",
     desc: "Desplazarse autom\xE1ticamente hacia abajo mientras Claude transmite respuestas. Desactivar para quedarse arriba y leer desde el principio."
@@ -50893,6 +50962,10 @@ var settings3 = {
   deferMathRenderingDuringStreaming: {
     name: "Diferir renderizado matem\xE1tico durante streaming",
     desc: "Mostrar LaTeX sin procesar mientras se transmite la respuesta y renderizar las f\xF3rmulas una vez al completar cada bloque de texto."
+  },
+  expandFileEditsByDefault: {
+    name: "Expandir ediciones de archivo por defecto",
+    desc: "Mostrar los diffs de Write y Edit expandidos cuando aparecen por primera vez."
   },
   chatViewPlacement: {
     name: "Abrir Claudian en",
@@ -51216,12 +51289,6 @@ var settings4 = {
     desc: "Nombre maximum d'onglets de chat simultan\xE9s (3-10). Chaque onglet utilise une session Claude s\xE9par\xE9e.",
     warning: "Plus de 5 onglets peut affecter les performances et l'utilisation de la m\xE9moire."
   },
-  tabBarPosition: {
-    name: "Position de la barre d'onglets",
-    desc: "Choisissez o\xF9 afficher les badges d'onglets et les boutons d'action",
-    input: "Au-dessus de la saisie (par d\xE9faut)",
-    header: "Dans l'en-t\xEAte"
-  },
   enableAutoScroll: {
     name: "D\xE9filement automatique pendant le streaming",
     desc: "D\xE9filer automatiquement vers le bas pendant que Claude diffuse les r\xE9ponses. D\xE9sactiver pour rester en haut et lire depuis le d\xE9but."
@@ -51229,6 +51296,10 @@ var settings4 = {
   deferMathRenderingDuringStreaming: {
     name: "Diff\xE9rer le rendu math\xE9matique pendant le streaming",
     desc: "Afficher le LaTeX brut pendant la diffusion, puis rendre les formules une fois chaque bloc de texte termin\xE9."
+  },
+  expandFileEditsByDefault: {
+    name: "D\xE9velopper les modifications de fichiers par d\xE9faut",
+    desc: "Afficher les diffs Write et Edit d\xE9velopp\xE9s lors de leur premi\xE8re apparition."
   },
   chatViewPlacement: {
     name: "Ouvrir Claudian dans",
@@ -51552,12 +51623,6 @@ var settings5 = {
     desc: "\u540C\u6642\u306B\u958B\u3051\u308B\u6700\u5927\u30C1\u30E3\u30C3\u30C8\u30BF\u30D6\u6570\uFF083-10\uFF09\u3002\u5404\u30BF\u30D6\u306F\u500B\u5225\u306E Claude \u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u4F7F\u7528\u3057\u307E\u3059\u3002",
     warning: "5 \u30BF\u30D6\u3092\u8D85\u3048\u308B\u3068\u30D1\u30D5\u30A9\u30FC\u30DE\u30F3\u30B9\u3084\u30E1\u30E2\u30EA\u4F7F\u7528\u91CF\u306B\u5F71\u97FF\u3059\u308B\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002"
   },
-  tabBarPosition: {
-    name: "\u30BF\u30D6\u30D0\u30FC\u306E\u4F4D\u7F6E",
-    desc: "\u30BF\u30D6\u30D0\u30C3\u30B8\u3068\u30A2\u30AF\u30B7\u30E7\u30F3\u30DC\u30BF\u30F3\u306E\u8868\u793A\u4F4D\u7F6E\u3092\u9078\u629E",
-    input: "\u5165\u529B\u6B04\u306E\u4E0A\uFF08\u30C7\u30D5\u30A9\u30EB\u30C8\uFF09",
-    header: "\u30D8\u30C3\u30C0\u30FC\u5185"
-  },
   enableAutoScroll: {
     name: "\u30B9\u30C8\u30EA\u30FC\u30DF\u30F3\u30B0\u4E2D\u306E\u81EA\u52D5\u30B9\u30AF\u30ED\u30FC\u30EB",
     desc: "Claude\u304C\u5FDC\u7B54\u3092\u30B9\u30C8\u30EA\u30FC\u30DF\u30F3\u30B0\u3057\u3066\u3044\u308B\u9593\u3001\u81EA\u52D5\u7684\u306B\u4E0B\u306B\u30B9\u30AF\u30ED\u30FC\u30EB\u3057\u307E\u3059\u3002\u7121\u52B9\u306B\u3059\u308B\u3068\u4E0A\u90E8\u306B\u7559\u307E\u308A\u3001\u6700\u521D\u304B\u3089\u8AAD\u3080\u3053\u3068\u304C\u3067\u304D\u307E\u3059\u3002"
@@ -51565,6 +51630,10 @@ var settings5 = {
   deferMathRenderingDuringStreaming: {
     name: "\u30B9\u30C8\u30EA\u30FC\u30DF\u30F3\u30B0\u4E2D\u306E\u6570\u5F0F\u30EC\u30F3\u30C0\u30EA\u30F3\u30B0\u3092\u9045\u5EF6",
     desc: "\u5FDC\u7B54\u306E\u30B9\u30C8\u30EA\u30FC\u30DF\u30F3\u30B0\u4E2D\u306F\u751F\u306E LaTeX \u3092\u8868\u793A\u3057\u3001\u5404\u30C6\u30AD\u30B9\u30C8\u30D6\u30ED\u30C3\u30AF\u306E\u5B8C\u4E86\u6642\u306B\u4E00\u5EA6\u3060\u3051\u6570\u5F0F\u3092\u30EC\u30F3\u30C0\u30EA\u30F3\u30B0\u3057\u307E\u3059\u3002"
+  },
+  expandFileEditsByDefault: {
+    name: "\u30D5\u30A1\u30A4\u30EB\u7DE8\u96C6\u3092\u30C7\u30D5\u30A9\u30EB\u30C8\u3067\u5C55\u958B",
+    desc: "Write \u3068 Edit \u306E diff \u304C\u6700\u521D\u306B\u8868\u793A\u3055\u308C\u308B\u3068\u304D\u3001\u5C55\u958B\u3057\u305F\u72B6\u614B\u3067\u8868\u793A\u3057\u307E\u3059\u3002"
   },
   chatViewPlacement: {
     name: "Claudian \u3092\u958B\u304F\u5834\u6240",
@@ -51888,12 +51957,6 @@ var settings6 = {
     desc: "\uB3D9\uC2DC\uC5D0 \uC5F4 \uC218 \uC788\uB294 \uCD5C\uB300 \uCC44\uD305 \uD0ED \uC218(3-10). \uAC01 \uD0ED\uC740 \uBCC4\uB3C4\uC758 Claude \uC138\uC158\uC744 \uC0AC\uC6A9\uD569\uB2C8\uB2E4.",
     warning: "5\uAC1C \uD0ED\uC744 \uCD08\uACFC\uD558\uBA74 \uC131\uB2A5 \uBC0F \uBA54\uBAA8\uB9AC \uC0AC\uC6A9\uB7C9\uC5D0 \uC601\uD5A5\uC744 \uC904 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
   },
-  tabBarPosition: {
-    name: "\uD0ED \uBC14 \uC704\uCE58",
-    desc: "\uD0ED \uBC30\uC9C0\uC640 \uC791\uC5C5 \uBC84\uD2BC\uC758 \uD45C\uC2DC \uC704\uCE58 \uC120\uD0DD",
-    input: "\uC785\uB825\uCC3D \uC704(\uAE30\uBCF8\uAC12)",
-    header: "\uD5E4\uB354\uC5D0"
-  },
   enableAutoScroll: {
     name: "\uC2A4\uD2B8\uB9AC\uBC0D \uC911 \uC790\uB3D9 \uC2A4\uD06C\uB864",
     desc: "Claude\uAC00 \uC751\uB2F5\uC744 \uC2A4\uD2B8\uB9AC\uBC0D\uD558\uB294 \uB3D9\uC548 \uC790\uB3D9\uC73C\uB85C \uC544\uB798\uB85C \uC2A4\uD06C\uB864\uD569\uB2C8\uB2E4. \uBE44\uD65C\uC131\uD654\uD558\uBA74 \uC0C1\uB2E8\uC5D0 \uBA38\uBB3C\uB7EC \uCC98\uC74C\uBD80\uD130 \uC77D\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
@@ -51901,6 +51964,10 @@ var settings6 = {
   deferMathRenderingDuringStreaming: {
     name: "\uC2A4\uD2B8\uB9AC\uBC0D \uC911 \uC218\uC2DD \uB80C\uB354\uB9C1 \uC9C0\uC5F0",
     desc: "\uC751\uB2F5\uC774 \uC2A4\uD2B8\uB9AC\uBC0D\uB418\uB294 \uB3D9\uC548 \uC6D0\uBCF8 LaTeX\uB97C \uD45C\uC2DC\uD558\uACE0 \uAC01 \uD14D\uC2A4\uD2B8 \uBE14\uB85D\uC774 \uC644\uB8CC\uB418\uBA74 \uC218\uC2DD\uC744 \uD55C \uBC88 \uB80C\uB354\uB9C1\uD569\uB2C8\uB2E4."
+  },
+  expandFileEditsByDefault: {
+    name: "\uD30C\uC77C \uD3B8\uC9D1\uC744 \uAE30\uBCF8\uC801\uC73C\uB85C \uD3BC\uCE58\uAE30",
+    desc: "Write \uBC0F Edit diff\uAC00 \uCC98\uC74C \uD45C\uC2DC\uB420 \uB54C \uD3BC\uCE5C \uC0C1\uD0DC\uB85C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4."
   },
   chatViewPlacement: {
     name: "Claudian \uC5F4 \uC704\uCE58",
@@ -52224,12 +52291,6 @@ var settings7 = {
     desc: "N\xFAmero m\xE1ximo de abas de chat simult\xE2neas (3-10). Cada aba usa uma sess\xE3o Claude separada.",
     warning: "Mais de 5 abas pode afetar o desempenho e o uso de mem\xF3ria."
   },
-  tabBarPosition: {
-    name: "Posi\xE7\xE3o da barra de abas",
-    desc: "Escolha onde exibir os emblemas de abas e bot\xF5es de a\xE7\xE3o",
-    input: "Acima da entrada (padr\xE3o)",
-    header: "No cabe\xE7alho"
-  },
   enableAutoScroll: {
     name: "Rolagem autom\xE1tica durante streaming",
     desc: "Rolar automaticamente para baixo enquanto o Claude transmite respostas. Desativar para ficar no topo e ler desde o in\xEDcio."
@@ -52237,6 +52298,10 @@ var settings7 = {
   deferMathRenderingDuringStreaming: {
     name: "Adiar renderiza\xE7\xE3o matem\xE1tica durante streaming",
     desc: "Mostrar LaTeX bruto enquanto a resposta \xE9 transmitida e renderizar a matem\xE1tica uma vez quando cada bloco de texto terminar."
+  },
+  expandFileEditsByDefault: {
+    name: "Expandir edi\xE7\xF5es de arquivo por padr\xE3o",
+    desc: "Mostrar os diffs de Write e Edit expandidos quando aparecerem pela primeira vez."
   },
   chatViewPlacement: {
     name: "Abrir Claudian em",
@@ -52560,12 +52625,6 @@ var settings8 = {
     desc: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043E\u0434\u043D\u043E\u0432\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0445 \u0432\u043A\u043B\u0430\u0434\u043E\u043A \u0447\u0430\u0442\u0430 (3-10). \u041A\u0430\u0436\u0434\u0430\u044F \u0432\u043A\u043B\u0430\u0434\u043A\u0430 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u0443\u044E \u0441\u0435\u0441\u0441\u0438\u044E Claude.",
     warning: "\u0411\u043E\u043B\u0435\u0435 5 \u0432\u043A\u043B\u0430\u0434\u043E\u043A \u043C\u043E\u0436\u0435\u0442 \u043F\u043E\u0432\u043B\u0438\u044F\u0442\u044C \u043D\u0430 \u043F\u0440\u043E\u0438\u0437\u0432\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C \u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u0435 \u043F\u0430\u043C\u044F\u0442\u0438."
   },
-  tabBarPosition: {
-    name: "\u041F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u043F\u0430\u043D\u0435\u043B\u0438 \u0432\u043A\u043B\u0430\u0434\u043E\u043A",
-    desc: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435, \u0433\u0434\u0435 \u043E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0442\u044C \u0437\u043D\u0430\u0447\u043A\u0438 \u0432\u043A\u043B\u0430\u0434\u043E\u043A \u0438 \u043A\u043D\u043E\u043F\u043A\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439",
-    input: "\u041D\u0430\u0434 \u043F\u043E\u043B\u0435\u043C \u0432\u0432\u043E\u0434\u0430 (\u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E)",
-    header: "\u0412 \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043A\u0435"
-  },
   enableAutoScroll: {
     name: "\u0410\u0432\u0442\u043E\u043F\u0440\u043E\u043A\u0440\u0443\u0442\u043A\u0430 \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u043F\u043E\u0442\u043E\u043A\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0434\u0430\u0447\u0438",
     desc: "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u043F\u0440\u043E\u043A\u0440\u0443\u0447\u0438\u0432\u0430\u0442\u044C \u0432\u043D\u0438\u0437, \u043F\u043E\u043A\u0430 Claude \u043F\u0435\u0440\u0435\u0434\u0430\u0435\u0442 \u043E\u0442\u0432\u0435\u0442\u044B. \u041E\u0442\u043A\u043B\u044E\u0447\u0438\u0442\u0435, \u0447\u0442\u043E\u0431\u044B \u043E\u0441\u0442\u0430\u0432\u0430\u0442\u044C\u0441\u044F \u043D\u0430\u0432\u0435\u0440\u0445\u0443 \u0438 \u0447\u0438\u0442\u0430\u0442\u044C \u0441 \u043D\u0430\u0447\u0430\u043B\u0430."
@@ -52573,6 +52632,10 @@ var settings8 = {
   deferMathRenderingDuringStreaming: {
     name: "\u041E\u0442\u043B\u043E\u0436\u0438\u0442\u044C \u0440\u0435\u043D\u0434\u0435\u0440\u0438\u043D\u0433 \u0444\u043E\u0440\u043C\u0443\u043B \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u043F\u043E\u0442\u043E\u043A\u0430",
     desc: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0439 LaTeX \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u043F\u043E\u0442\u043E\u043A\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0434\u0430\u0447\u0438 \u0438 \u0440\u0435\u043D\u0434\u0435\u0440\u0438\u0442\u044C \u0444\u043E\u0440\u043C\u0443\u043B\u044B \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u043F\u043E\u0441\u043B\u0435 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0438\u044F \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u0442\u0435\u043A\u0441\u0442\u043E\u0432\u043E\u0433\u043E \u0431\u043B\u043E\u043A\u0430."
+  },
+  expandFileEditsByDefault: {
+    name: "\u0420\u0430\u0441\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u043F\u0440\u0430\u0432\u043A\u0438 \u0444\u0430\u0439\u043B\u043E\u0432 \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E",
+    desc: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C diff \u0434\u043B\u044F Write \u0438 Edit \u0440\u0430\u0441\u043A\u0440\u044B\u0442\u044B\u043C \u043F\u0440\u0438 \u043F\u0435\u0440\u0432\u043E\u043C \u043F\u043E\u044F\u0432\u043B\u0435\u043D\u0438\u0438."
   },
   chatViewPlacement: {
     name: "\u041E\u0442\u043A\u0440\u044B\u0432\u0430\u0442\u044C Claudian \u0432",
@@ -52896,12 +52959,6 @@ var settings9 = {
     desc: "\u540C\u65F6\u5F00\u542F\u7684\u6700\u5927\u804A\u5929\u6807\u7B7E\u6570\uFF083-10\uFF09\u3002\u6BCF\u4E2A\u6807\u7B7E\u4F7F\u7528\u72EC\u7ACB\u7684 Claude \u4F1A\u8BDD\u3002",
     warning: "\u8D85\u8FC7 5 \u4E2A\u6807\u7B7E\u53EF\u80FD\u4F1A\u5F71\u54CD\u6027\u80FD\u548C\u5185\u5B58\u4F7F\u7528\u3002"
   },
-  tabBarPosition: {
-    name: "\u6807\u7B7E\u680F\u4F4D\u7F6E",
-    desc: "\u9009\u62E9\u6807\u7B7E\u5FBD\u7AE0\u548C\u64CD\u4F5C\u6309\u94AE\u7684\u663E\u793A\u4F4D\u7F6E",
-    input: "\u8F93\u5165\u6846\u4E0A\u65B9\uFF08\u9ED8\u8BA4\uFF09",
-    header: "\u5728\u6807\u9898\u680F"
-  },
   enableAutoScroll: {
     name: "\u6D41\u5F0F\u4F20\u8F93\u65F6\u81EA\u52A8\u6EDA\u52A8",
     desc: "\u5728 Claude \u6D41\u5F0F\u4F20\u8F93\u54CD\u5E94\u65F6\u81EA\u52A8\u6EDA\u52A8\u5230\u5E95\u90E8\u3002\u7981\u7528\u540E\u5C06\u505C\u7559\u5728\u9876\u90E8\uFF0C\u4ECE\u5934\u5F00\u59CB\u9605\u8BFB\u3002"
@@ -52909,6 +52966,10 @@ var settings9 = {
   deferMathRenderingDuringStreaming: {
     name: "\u6D41\u5F0F\u4F20\u8F93\u65F6\u5EF6\u8FDF\u6E32\u67D3\u6570\u5B66\u516C\u5F0F",
     desc: "\u54CD\u5E94\u6D41\u5F0F\u4F20\u8F93\u65F6\u663E\u793A\u539F\u59CB LaTeX\uFF0C\u5E76\u5728\u6BCF\u4E2A\u6587\u672C\u5757\u5B8C\u6210\u540E\u53EA\u6E32\u67D3\u4E00\u6B21\u6570\u5B66\u516C\u5F0F\u3002"
+  },
+  expandFileEditsByDefault: {
+    name: "\u9ED8\u8BA4\u5C55\u5F00\u6587\u4EF6\u7F16\u8F91",
+    desc: "Write \u548C Edit diff \u9996\u6B21\u51FA\u73B0\u65F6\u4EE5\u5C55\u5F00\u72B6\u6001\u663E\u793A\u3002"
   },
   chatViewPlacement: {
     name: "Claudian \u6253\u5F00\u4F4D\u7F6E",
@@ -53232,12 +53293,6 @@ var settings10 = {
     desc: "\u540C\u6642\u958B\u555F\u7684\u6700\u5927\u804A\u5929\u6A19\u7C64\u6578\uFF083-10\uFF09\u3002\u6BCF\u500B\u6A19\u7C64\u4F7F\u7528\u7368\u7ACB\u7684 Claude \u5C0D\u8A71\u3002",
     warning: "\u8D85\u904E 5 \u500B\u6A19\u7C64\u53EF\u80FD\u6703\u5F71\u97FF\u6548\u80FD\u548C\u8A18\u61B6\u9AD4\u4F7F\u7528\u3002"
   },
-  tabBarPosition: {
-    name: "\u6A19\u7C64\u5217\u4F4D\u7F6E",
-    desc: "\u9078\u64C7\u6A19\u7C64\u5FBD\u7AE0\u548C\u64CD\u4F5C\u6309\u9215\u7684\u986F\u793A\u4F4D\u7F6E",
-    input: "\u8F38\u5165\u6846\u4E0A\u65B9\uFF08\u9810\u8A2D\uFF09",
-    header: "\u5728\u6A19\u984C\u5217"
-  },
   enableAutoScroll: {
     name: "\u4E32\u6D41\u50B3\u8F38\u6642\u81EA\u52D5\u6372\u52D5",
     desc: "\u5728 Claude \u4E32\u6D41\u50B3\u8F38\u56DE\u61C9\u6642\u81EA\u52D5\u6372\u52D5\u5230\u5E95\u90E8\u3002\u505C\u7528\u5F8C\u5C07\u505C\u7559\u5728\u9802\u90E8\uFF0C\u5F9E\u982D\u958B\u59CB\u95B1\u8B80\u3002"
@@ -53245,6 +53300,10 @@ var settings10 = {
   deferMathRenderingDuringStreaming: {
     name: "\u4E32\u6D41\u50B3\u8F38\u6642\u5EF6\u9072\u6E32\u67D3\u6578\u5B78\u516C\u5F0F",
     desc: "\u56DE\u61C9\u4E32\u6D41\u50B3\u8F38\u6642\u986F\u793A\u539F\u59CB LaTeX\uFF0C\u4E26\u5728\u6BCF\u500B\u6587\u5B57\u5340\u584A\u5B8C\u6210\u5F8C\u53EA\u6E32\u67D3\u4E00\u6B21\u6578\u5B78\u516C\u5F0F\u3002"
+  },
+  expandFileEditsByDefault: {
+    name: "\u9810\u8A2D\u5C55\u958B\u6A94\u6848\u7DE8\u8F2F",
+    desc: "Write \u548C Edit diff \u9996\u6B21\u51FA\u73FE\u6642\u4EE5\u5C55\u958B\u72C0\u614B\u986F\u793A\u3002"
   },
   chatViewPlacement: {
     name: "Claudian \u958B\u555F\u4F4D\u7F6E",
@@ -61614,6 +61673,14 @@ function getCustomModelIds(envVars) {
   return modelIds;
 }
 
+// src/providers/claude/modelSelection.ts
+function encodeClaudeModelSelectionId(modelId) {
+  return encodeProviderModelSelectionId("claude", modelId);
+}
+function toClaudeRuntimeModelId(modelId) {
+  return toProviderRuntimeModelId("claude", modelId);
+}
+
 // src/providers/claude/types/models.ts
 var DEFAULT_CLAUDE_MODELS = [
   { value: "haiku", label: "Haiku", description: "Fast and efficient" },
@@ -61639,7 +61706,7 @@ var DEFAULT_EFFORT_LEVEL = {
 var ONE_M_SUFFIX = "[1m]";
 var DEFAULT_MODEL_VALUES = new Set(DEFAULT_CLAUDE_MODELS.map((m4) => m4.value.toLowerCase()));
 function normalizeModelId(model) {
-  return model.trim().toLowerCase();
+  return toClaudeRuntimeModelId(model).trim().toLowerCase();
 }
 function has1MContextSuffix(model) {
   return normalizeModelId(model).endsWith(ONE_M_SUFFIX);
@@ -61757,7 +61824,10 @@ function getClaudeModelOptions(settings11) {
     customModelAliases
   );
   if (customModels.length > 0) {
-    return customModels;
+    return customModels.map((model) => ({
+      ...model,
+      value: encodeClaudeModelSelectionId(model.value)
+    }));
   }
   const claudeSettings = getClaudeProviderSettings(settings11);
   const models = filterVisibleModelOptions(
@@ -61765,14 +61835,15 @@ function getClaudeModelOptions(settings11) {
     claudeSettings.enableOpus1M,
     claudeSettings.enableSonnet1M
   );
-  const seenValues = new Set(models.map((model) => model.value));
-  for (const modelId of parseConfiguredCustomModelIds(claudeSettings.customModels)) {
-    if (seenValues.has(modelId)) {
+  const seenModelIds = new Set(models.map((model) => toClaudeRuntimeModelId(model.value)));
+  for (const configuredModelId of parseConfiguredCustomModelIds(claudeSettings.customModels)) {
+    const modelId = toClaudeRuntimeModelId(configuredModelId);
+    if (seenModelIds.has(modelId)) {
       continue;
     }
-    seenValues.add(modelId);
+    seenModelIds.add(modelId);
     models.push({
-      value: modelId,
+      value: encodeClaudeModelSelectionId(modelId),
       label: (_a5 = customModelAliases[modelId]) != null ? _a5 : formatCustomModelLabel(modelId),
       description: "Custom model"
     });
@@ -61782,12 +61853,24 @@ function getClaudeModelOptions(settings11) {
 function resolveClaudeModelSelection(settings11, currentModel) {
   var _a5, _b3;
   const modelOptions = getClaudeModelOptions(settings11);
-  if (currentModel && modelOptions.some((option) => option.value === currentModel)) {
-    return currentModel;
+  if (currentModel) {
+    const currentRuntimeModel = toClaudeRuntimeModelId(currentModel);
+    const currentOption = modelOptions.find(
+      (option) => option.value === currentModel || toClaudeRuntimeModelId(option.value) === currentRuntimeModel
+    );
+    if (currentOption) {
+      return currentOption.value;
+    }
   }
   const lastModel = getClaudeProviderSettings(settings11).lastModel;
-  if (lastModel && modelOptions.some((option) => option.value === lastModel)) {
-    return lastModel;
+  if (lastModel) {
+    const lastRuntimeModel = toClaudeRuntimeModelId(lastModel);
+    const lastOption = modelOptions.find(
+      (option) => option.value === lastModel || toClaudeRuntimeModelId(option.value) === lastRuntimeModel
+    );
+    if (lastOption) {
+      return lastOption.value;
+    }
   }
   return (_b3 = (_a5 = modelOptions[0]) == null ? void 0 : _a5.value) != null ? _b3 : null;
 }
@@ -62246,43 +62329,54 @@ var claudeChatUIConfig = {
     return getClaudeModelOptions(settings11);
   },
   ownsModel(model, settings11) {
-    return getClaudeModelOptions(settings11).some((option) => option.value === model);
+    const runtimeModel = toClaudeRuntimeModelId(model);
+    return getClaudeModelOptions(settings11).some(
+      (option) => option.value === model || toClaudeRuntimeModelId(option.value) === runtimeModel
+    );
   },
   isAdaptiveReasoningModel(_model, _settings) {
     return true;
   },
   getReasoningOptions(model, _settings) {
-    const levels = supportsXHighEffort(model) ? EFFORT_LEVELS : EFFORT_LEVELS.filter((e2) => e2.value !== "xhigh");
+    const runtimeModel = toClaudeRuntimeModelId(model);
+    const levels = supportsXHighEffort(runtimeModel) ? EFFORT_LEVELS : EFFORT_LEVELS.filter((e2) => e2.value !== "xhigh");
     return levels.map((e2) => ({ value: e2.value, label: e2.label }));
   },
   getDefaultReasoningValue(model, _settings) {
     var _a5;
-    return (_a5 = DEFAULT_EFFORT_LEVEL[model]) != null ? _a5 : "high";
+    return (_a5 = DEFAULT_EFFORT_LEVEL[toClaudeRuntimeModelId(model)]) != null ? _a5 : "high";
   },
   getContextWindowSize(model, customLimits) {
-    return getContextWindowSize(model, customLimits);
+    return getContextWindowSize(toClaudeRuntimeModelId(model), customLimits);
   },
   isDefaultModel(model) {
-    return DEFAULT_CLAUDE_MODELS.some((m4) => m4.value === model);
+    const runtimeModel = toClaudeRuntimeModelId(model);
+    return DEFAULT_CLAUDE_MODELS.some((m4) => m4.value === runtimeModel);
   },
   applyModelDefaults(model, settings11) {
     var _a5;
     const target = settings11;
-    if (DEFAULT_CLAUDE_MODELS.some((m4) => m4.value === model)) {
-      target.effortLevel = (_a5 = DEFAULT_EFFORT_LEVEL[model]) != null ? _a5 : "high";
-      updateClaudeProviderSettings(target, { lastModel: model });
+    const runtimeModel = toClaudeRuntimeModelId(model);
+    if (DEFAULT_CLAUDE_MODELS.some((m4) => m4.value === runtimeModel)) {
+      target.effortLevel = (_a5 = DEFAULT_EFFORT_LEVEL[runtimeModel]) != null ? _a5 : "high";
+      updateClaudeProviderSettings(target, { lastModel: runtimeModel });
     } else {
       target.lastCustomModel = model;
-      target.effortLevel = normalizeEffortLevel(model, target.effortLevel);
+      target.effortLevel = normalizeEffortLevel(runtimeModel, target.effortLevel);
     }
   },
   normalizeModelVariant(model, settings11) {
+    var _a5;
     const claudeSettings = getClaudeProviderSettings(settings11);
-    return normalizeVisibleModelVariant(
-      model,
+    const normalizedRuntimeModel = normalizeVisibleModelVariant(
+      toClaudeRuntimeModelId(model),
       claudeSettings.enableOpus1M,
       claudeSettings.enableSonnet1M
     );
+    const option = getClaudeModelOptions(settings11).find(
+      (candidate) => candidate.value === normalizedRuntimeModel || toClaudeRuntimeModelId(candidate.value) === normalizedRuntimeModel
+    );
+    return (_a5 = option == null ? void 0 : option.value) != null ? _a5 : normalizedRuntimeModel;
   },
   getCustomModelIds(envVars) {
     return getCustomModelIds(envVars);
@@ -63113,6 +63207,7 @@ function getClaudeWorkspaceServices() {
 var CURRENT_NOTE_PREFIX_REGEX = /^<current_note>\n[\s\S]*?<\/current_note>\n\n/;
 var CURRENT_NOTE_SUFFIX_REGEX = /\n\n<current_note>\n[\s\S]*?<\/current_note>$/;
 var XML_CONTEXT_PATTERN = /\n\n<(?:current_note|editor_selection|editor_cursor|context_files|canvas_selection|browser_selection)[\s>]/;
+var BRACKET_CONTEXT_PATTERN = /\n\[(?:Current note|Editor selection from|Browser selection from|Canvas selection from)\b/;
 function formatCurrentNote(notePath) {
   return `<current_note>
 ${notePath}
@@ -63139,6 +63234,18 @@ function extractContentBeforeXmlContext(text) {
   const xmlMatch = text.match(XML_CONTEXT_PATTERN);
   if ((xmlMatch == null ? void 0 : xmlMatch.index) !== void 0) {
     return text.substring(0, xmlMatch.index).trim();
+  }
+  return void 0;
+}
+function extractUserDisplayContent(text) {
+  if (!text) return void 0;
+  const xmlDisplayContent = extractContentBeforeXmlContext(text);
+  if (xmlDisplayContent !== void 0) {
+    return xmlDisplayContent;
+  }
+  const bracketMatch = text.match(BRACKET_CONTEXT_PATTERN);
+  if ((bracketMatch == null ? void 0 : bracketMatch.index) !== void 0) {
+    return text.substring(0, bracketMatch.index).trim();
   }
   return void 0;
 }
@@ -63547,7 +63654,7 @@ async function runColdStartQuery(config2, prompt) {
     "claude"
   );
   const claudeSettings = getClaudeProviderSettings(settings11);
-  const selectedModel = (_b3 = config2.model) != null ? _b3 : settings11.model;
+  const selectedModel = toClaudeRuntimeModelId((_b3 = config2.model) != null ? _b3 : settings11.model);
   const options = {
     cwd: vaultPath,
     systemPrompt: config2.systemPrompt,
@@ -63922,7 +64029,7 @@ Generate a title for this conversation:`;
       titleModel,
       this.plugin.settings
     )) {
-      return titleModel;
+      return toClaudeRuntimeModelId(titleModel);
     }
     return envVars.ANTHROPIC_DEFAULT_HAIKU_MODEL || "claude-haiku-4-5";
   }
@@ -64006,13 +64113,8 @@ var claudeSettingsReconciler = {
     return { changed: true, invalidatedConversations };
   },
   normalizeModelVariantSettings(settings11) {
-    const claudeSettings = getClaudeProviderSettings(settings11);
     let changed = false;
-    const normalize3 = (model2) => normalizeVisibleModelVariant(
-      model2,
-      claudeSettings.enableOpus1M,
-      claudeSettings.enableSonnet1M
-    );
+    const normalize3 = (model2) => claudeChatUIConfig.normalizeModelVariant(model2, settings11);
     const model = settings11.model;
     const normalizedModel = normalize3(model);
     if (model !== normalizedModel) {
@@ -64027,7 +64129,7 @@ var claudeSettingsReconciler = {
         changed = true;
       }
     }
-    const lastClaudeModel = claudeSettings.lastModel;
+    const lastClaudeModel = getClaudeProviderSettings(settings11).lastModel;
     if (lastClaudeModel) {
       const normalizedLastClaudeModel = normalize3(lastClaudeModel);
       if (lastClaudeModel !== normalizedLastClaudeModel) {
@@ -64758,9 +64860,6 @@ function isRebuiltContextContent(textContent) {
   }
   return textContent.includes("\n\nUser:") || textContent.includes("\n\nAssistant:") || textContent.includes("\n\nA:");
 }
-function extractDisplayContent(textContent) {
-  return extractContentBeforeXmlContext(textContent);
-}
 function extractImages(content) {
   if (!content || typeof content === "string") {
     return void 0;
@@ -64885,7 +64984,7 @@ function parseSDKMessageToChat(sdkMsg, toolResults) {
   const commandNameMatch = sdkMsg.type === "user" ? textContent.match(/<command-name>(\/[^<]+)<\/command-name>/) : null;
   let displayContent;
   if (sdkMsg.type === "user") {
-    displayContent = commandNameMatch ? commandNameMatch[1] : extractDisplayContent(textContent);
+    displayContent = commandNameMatch ? commandNameMatch[1] : extractUserDisplayContent(textContent);
   }
   const isInterrupt = sdkMsg.type === "user" && isInterruptSignalText(textContent);
   const isRebuiltContext = sdkMsg.type === "user" && isRebuiltContextContent(textContent);
@@ -66913,7 +67012,7 @@ function createClaudeApprovalCallback(deps) {
         const questions = input.questions;
         if (Array.isArray(questions)) {
           for (const q of questions) {
-            if (q && typeof q === "object" && !("isOther" in q)) {
+            if (isObjectRecord(q) && !("isOther" in q)) {
               q.isOther = true;
             }
           }
@@ -66966,6 +67065,9 @@ function createClaudeApprovalCallback(deps) {
     }
   };
 }
+function isObjectRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
 
 // src/providers/claude/runtime/ClaudeDynamicUpdates.ts
 async function applyClaudeDynamicUpdates(deps, queryOptions, restartOptions, allowRestart = true) {
@@ -66983,7 +67085,7 @@ async function applyClaudeDynamicUpdates(deps, queryOptions, restartOptions, all
     return;
   }
   const settings11 = deps.getScopedSettings();
-  const selectedModel = (queryOptions == null ? void 0 : queryOptions.model) || settings11.model;
+  const selectedModel = toClaudeRuntimeModelId((queryOptions == null ? void 0 : queryOptions.model) || settings11.model);
   const permissionMode = deps.getPermissionMode();
   const currentConfig = deps.getCurrentConfig();
   if (currentConfig && selectedModel !== currentConfig.model) {
@@ -67485,9 +67587,10 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
     const disallowedToolsKey = ctx.mcpManager.getAllDisallowedMcpTools().join("|");
     const pluginsKey = ctx.pluginManager.getPluginsKey();
     const settingSources = resolveClaudeSettingSources(claudeSettings.loadUserSettings);
+    const runtimeModel = toClaudeRuntimeModelId(ctx.settings.model);
     return {
-      model: ctx.settings.model,
-      effortLevel: resolveEffortLevel(ctx.settings.model, ctx.settings.effortLevel),
+      model: runtimeModel,
+      effortLevel: resolveEffortLevel(runtimeModel, ctx.settings.effortLevel),
       permissionMode: ctx.settings.permissionMode,
       sdkPermissionMode,
       systemPromptKey: computeSystemPromptKey(systemPromptSettings),
@@ -67503,9 +67606,10 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
     };
   }
   static buildPersistentQueryOptions(ctx) {
+    const runtimeModel = toClaudeRuntimeModelId(ctx.settings.model);
     const { options, claudeSettings } = _QueryOptionsBuilder.buildBaseOptions(
       ctx,
-      ctx.settings.model,
+      runtimeModel,
       ctx.abortController
     );
     options.disallowedTools = [
@@ -67519,7 +67623,7 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
       claudeSettings.safeMode,
       ctx.canUseTool
     );
-    _QueryOptionsBuilder.applyThinking(options, ctx.settings, ctx.settings.model);
+    _QueryOptionsBuilder.applyThinking(options, ctx.settings, runtimeModel);
     options.hooks = ctx.hooks;
     options.enableFileCheckpointing = true;
     if (ctx.resume) {
@@ -67537,8 +67641,8 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
     return options;
   }
   static buildColdStartQueryOptions(ctx) {
-    var _a5, _b3;
-    const selectedModel = (_a5 = ctx.modelOverride) != null ? _a5 : ctx.settings.model;
+    var _a5;
+    const selectedModel = toClaudeRuntimeModelId((_a5 = ctx.modelOverride) != null ? _a5 : ctx.settings.model);
     const { options, claudeSettings } = _QueryOptionsBuilder.buildBaseOptions(
       ctx,
       selectedModel,
@@ -67564,7 +67668,7 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
       ctx.canUseTool
     );
     options.hooks = ctx.hooks;
-    _QueryOptionsBuilder.applyThinking(options, ctx.settings, (_b3 = ctx.modelOverride) != null ? _b3 : ctx.settings.model);
+    _QueryOptionsBuilder.applyThinking(options, ctx.settings, selectedModel);
     if (ctx.allowedTools !== void 0 && ctx.allowedTools.length > 0) {
       options.tools = ctx.allowedTools;
     }
@@ -67742,8 +67846,12 @@ async function createClaudeRewindBackup(filesChanged, vaultPath) {
 }
 async function executeClaudeRewind(userMessageId, deps) {
   if (deps.mode === "conversation") {
-    deps.setPendingResumeAt(deps.assistantMessageId);
-    deps.closePersistentQuery("conversation rewind");
+    if (deps.assistantMessageId) {
+      deps.setPendingResumeAt(deps.assistantMessageId);
+      deps.closePersistentQuery("conversation rewind");
+    } else {
+      deps.resetSession();
+    }
     return { canRewind: true, filesChanged: [] };
   }
   const preview = await deps.rewindFiles(userMessageId, true);
@@ -67758,8 +67866,12 @@ async function executeClaudeRewind(userMessageId, deps) {
       deps.closePersistentQuery("rewind failed");
       return result;
     }
-    deps.setPendingResumeAt(deps.assistantMessageId);
-    deps.closePersistentQuery("rewind");
+    if (deps.assistantMessageId) {
+      deps.setPendingResumeAt(deps.assistantMessageId);
+      deps.closePersistentQuery("rewind");
+    } else {
+      deps.resetSession();
+    }
     return {
       ...result,
       filesChanged: preview.filesChanged,
@@ -68446,7 +68558,7 @@ var ClaudianService = class {
   getTransformOptions(modelOverride, streamState = this.streamTransformState, usageState = this.usageTransformState) {
     const settings11 = this.getScopedSettings();
     return {
-      intendedModel: modelOverride != null ? modelOverride : settings11.model,
+      intendedModel: toClaudeRuntimeModelId(modelOverride != null ? modelOverride : settings11.model),
       customContextLimits: settings11.customContextLimits,
       streamState,
       usageState
@@ -68935,7 +69047,7 @@ var ClaudianService = class {
   async *queryViaSDK(prompt, cwd, cliPath, images, queryOptions) {
     var _a5, _b3, _c2;
     this.resetTurnMetadata();
-    const selectedModel = (queryOptions == null ? void 0 : queryOptions.model) || this.getScopedSettings().model;
+    const selectedModel = toClaudeRuntimeModelId((queryOptions == null ? void 0 : queryOptions.model) || this.getScopedSettings().model);
     this.sessionManager.setPendingModel(selectedModel);
     this.vaultPath = cwd;
     const queryPrompt = this.buildPromptWithImages(prompt, images);
@@ -69143,6 +69255,7 @@ var ClaudianService = class {
       setPendingResumeAt: (resumeAt) => {
         this.pendingResumeAt = resumeAt;
       },
+      resetSession: () => this.resetSession(),
       vaultPath: this.vaultPath
     });
   }
@@ -71498,9 +71611,10 @@ init_path();
 
 // src/providers/codex/modelOptions.ts
 function createCustomCodexModelOption(modelId, description) {
+  const runtimeModelId = toCodexRuntimeModelId(modelId);
   return {
-    value: modelId,
-    label: formatCodexModelLabel(modelId),
+    value: encodeCodexModelSelectionId(runtimeModelId),
+    label: formatCodexModelLabel(runtimeModelId),
     description
   };
 }
@@ -71528,33 +71642,44 @@ function parseConfiguredCustomModelIds2(value) {
 }
 function getCodexModelOptions(settings11) {
   const models = [...DEFAULT_CODEX_MODELS];
-  const seenValues = new Set(models.map((model) => model.value));
+  const seenModelIds = new Set(models.map((model) => toCodexRuntimeModelId(model.value)));
   const envModel = getConfiguredEnvCustomModel(settings11);
   if (envModel) {
-    seenValues.add(envModel);
+    seenModelIds.add(envModel);
     models.unshift(createCustomCodexModelOption(envModel, "Custom (env)"));
   }
   const codexSettings = getCodexProviderSettings(settings11);
-  for (const modelId of parseConfiguredCustomModelIds2(codexSettings.customModels)) {
-    if (seenValues.has(modelId)) {
+  for (const configuredModelId of parseConfiguredCustomModelIds2(codexSettings.customModels)) {
+    const modelId = toCodexRuntimeModelId(configuredModelId);
+    if (seenModelIds.has(modelId)) {
       continue;
     }
-    seenValues.add(modelId);
+    seenModelIds.add(modelId);
     models.push(createCustomCodexModelOption(modelId, "Custom model"));
   }
   return models;
 }
 function resolveCodexModelSelection(settings11, currentModel) {
-  var _a5, _b3;
+  var _a5, _b3, _c2;
+  const modelOptions = getCodexModelOptions(settings11);
   const envModel = getConfiguredEnvModel(settings11);
   if (envModel) {
-    return envModel;
+    const envRuntimeModel = toCodexRuntimeModelId(envModel);
+    const envOption = modelOptions.find(
+      (option) => option.value === envModel || toCodexRuntimeModelId(option.value) === envRuntimeModel
+    );
+    return (_a5 = envOption == null ? void 0 : envOption.value) != null ? _a5 : envModel;
   }
-  const modelOptions = getCodexModelOptions(settings11);
-  if (currentModel && modelOptions.some((option) => option.value === currentModel)) {
-    return currentModel;
+  if (currentModel) {
+    const currentRuntimeModel = toCodexRuntimeModelId(currentModel);
+    const currentOption = modelOptions.find(
+      (option) => option.value === currentModel || toCodexRuntimeModelId(option.value) === currentRuntimeModel
+    );
+    if (currentOption) {
+      return currentOption.value;
+    }
   }
-  return (_b3 = (_a5 = modelOptions[0]) == null ? void 0 : _a5.value) != null ? _b3 : DEFAULT_CODEX_PRIMARY_MODEL;
+  return (_c2 = (_b3 = modelOptions[0]) == null ? void 0 : _b3.value) != null ? _c2 : DEFAULT_CODEX_PRIMARY_MODEL;
 }
 
 // src/providers/codex/ui/CodexSkillSettings.ts
@@ -72269,7 +72394,7 @@ var codexSettingsTabRenderer = {
           return false;
         }
         const previousCustomModelIds = new Set(parseConfiguredCustomModelIds2(previousCustomModels));
-        if (!previousCustomModelIds.has(currentSavedModel)) {
+        if (!previousCustomModelIds.has(toCodexRuntimeModelId(currentSavedModel))) {
           return false;
         }
         const nextSavedModel = resolveCodexModelSelection(settingsBag, currentSavedModel);
@@ -72487,7 +72612,7 @@ var CodexAuxQueryRunner = class {
       await this.startProcess();
     }
     if (!this.threadId) {
-      const model = (_a5 = config2.model) != null ? _a5 : this.resolveProviderModel();
+      const model = toCodexRuntimeModelId((_a5 = config2.model) != null ? _a5 : this.resolveProviderModel());
       const result = await this.transport.request("thread/start", {
         model,
         cwd: (_c2 = (_b3 = this.launchSpec) == null ? void 0 : _b3.targetCwd) != null ? _c2 : process.cwd(),
@@ -72550,7 +72675,7 @@ var CodexAuxQueryRunner = class {
     const turnResult = await this.transport.request("turn/start", {
       threadId: this.threadId,
       input: [{ type: "text", text: prompt }],
-      model: config2.model
+      model: config2.model ? toCodexRuntimeModelId(config2.model) : void 0
     });
     turnId = turnResult.turn.id;
     try {
@@ -72581,12 +72706,12 @@ var CodexAuxQueryRunner = class {
     }
   }
   resolveProviderModel() {
-    var _a5;
     const providerSettings = ProviderSettingsCoordinator.getProviderSettingsSnapshot(
       this.plugin.settings,
       "codex"
     );
-    return (_a5 = providerSettings.model) != null ? _a5 : DEFAULT_CODEX_PRIMARY_MODEL;
+    const model = providerSettings.model;
+    return typeof model === "string" ? toCodexRuntimeModelId(model) : DEFAULT_CODEX_PRIMARY_MODEL;
   }
   async startProcess() {
     this.launchSpec = resolveCodexAppServerLaunchSpec(this.plugin, "codex");
@@ -72777,10 +72902,16 @@ var codexChatUIConfig = {
     return getCodexModelOptions(settings11);
   },
   ownsModel(model, settings11) {
-    if (getCodexModelOptions(settings11).some((option) => option.value === model)) {
+    if (isCodexModelSelectionId(model)) {
       return true;
     }
-    return looksLikeCodexModel(model);
+    const runtimeModel = toCodexRuntimeModelId(model);
+    if (getCodexModelOptions(settings11).some(
+      (option) => option.value === model || toCodexRuntimeModelId(option.value) === runtimeModel
+    )) {
+      return true;
+    }
+    return looksLikeCodexModel(runtimeModel);
   },
   isAdaptiveReasoningModel(_model, _settings) {
     return true;
@@ -72801,11 +72932,15 @@ var codexChatUIConfig = {
     if (!settings11 || typeof settings11 !== "object") {
       return;
     }
-    applyCodexModelDefaults(model, settings11);
+    applyCodexModelDefaults(toCodexRuntimeModelId(model), settings11);
   },
   normalizeModelVariant(model, settings11) {
-    if (getCodexModelOptions(settings11).some((option) => option.value === model)) {
-      return model;
+    const runtimeModel = toCodexRuntimeModelId(model);
+    const option = getCodexModelOptions(settings11).find(
+      (candidate) => candidate.value === model || toCodexRuntimeModelId(candidate.value) === runtimeModel
+    );
+    if (option) {
+      return option.value;
     }
     return DEFAULT_CODEX_PRIMARY_MODEL;
   },
@@ -72835,7 +72970,7 @@ var CodexTitleGenerationService = class extends QueryBackedTitleGenerationServic
       resolveModel: () => {
         const settings11 = plugin.settings;
         const titleModel = typeof settings11.titleGenerationModel === "string" ? settings11.titleGenerationModel : "";
-        return codexChatUIConfig.ownsModel(titleModel, settings11) ? titleModel : void 0;
+        return codexChatUIConfig.ownsModel(titleModel, settings11) ? toCodexRuntimeModelId(titleModel) : void 0;
       }
     });
   }
@@ -73347,23 +73482,55 @@ function parseSessionRecord(line) {
   };
 }
 var CODEX_SYSTEM_MESSAGE_PREFIXES = [
-  "# AGENTS.md instructions",
-  "<environment_context>",
-  "<subagent_notification>",
-  "<skill>"
+  "# AGENTS.md instructions"
 ];
-var CODEX_BRACKET_CONTEXT_PATTERN = /\n\[(?:Current note|Editor selection from|Browser selection from|Canvas selection from)\b/;
-function isCodexSystemMessage(text) {
-  const trimmed = text.trimStart();
-  return CODEX_SYSTEM_MESSAGE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
-}
-function extractCodexDisplayContent(text) {
-  if (!text) return void 0;
-  const bracketMatch = text.match(CODEX_BRACKET_CONTEXT_PATTERN);
-  if ((bracketMatch == null ? void 0 : bracketMatch.index) !== void 0) {
-    return text.substring(0, bracketMatch.index).trim();
+var CODEX_CONTROL_BLOCK_TAGS = [
+  "system_instruction",
+  "environment_context",
+  "turn_aborted",
+  "user-preferences",
+  "subagent_notification",
+  "skill"
+];
+function stripLeadingTaggedBlock(text, tagName) {
+  const openTag = `<${tagName}>`;
+  if (!text.startsWith(openTag)) {
+    return null;
   }
-  return void 0;
+  const closeTag = `</${tagName}>`;
+  const closeIndex = text.indexOf(closeTag, openTag.length);
+  if (closeIndex === -1) {
+    return "";
+  }
+  return text.slice(closeIndex + closeTag.length);
+}
+function stripLeadingCodexControlBlocks(text) {
+  let remaining = text.trimStart();
+  let stripped = true;
+  while (stripped) {
+    stripped = false;
+    for (const tagName of CODEX_CONTROL_BLOCK_TAGS) {
+      const next = stripLeadingTaggedBlock(remaining, tagName);
+      if (next === null) {
+        continue;
+      }
+      remaining = next.trimStart();
+      stripped = true;
+      break;
+    }
+  }
+  return remaining;
+}
+function extractCodexUserVisibleText(text) {
+  const trimmed = text.trimStart();
+  if (!trimmed) {
+    return null;
+  }
+  if (CODEX_SYSTEM_MESSAGE_PREFIXES.some((prefix) => trimmed.startsWith(prefix))) {
+    return null;
+  }
+  const visible = stripLeadingCodexControlBlocks(trimmed).trim();
+  return visible ? visible : null;
 }
 function extractMessageText(content) {
   if (!Array.isArray(content)) {
@@ -73688,7 +73855,8 @@ function processPersistedPayload(payload, timestamp, lineIndex, ctx) {
       const messagePayload = payload;
       const text = extractMessageText(messagePayload.content);
       if (messagePayload.role === "user") {
-        if (isCodexSystemMessage(text)) break;
+        const visibleText = extractCodexUserVisibleText(text);
+        if (visibleText === null) break;
         if (ctx.currentTurnId) {
           const prevTurn = ctx.turns.get(ctx.currentTurnId);
           if (prevTurn) closeAssistantBubble(prevTurn);
@@ -73696,9 +73864,7 @@ function processPersistedPayload(payload, timestamp, lineIndex, ctx) {
         ctx.currentTurnId = null;
         const turn = ensureTurn(ctx.turns, ctx.turnOrder, nextTurnId(ctx), null, timestamp);
         ctx.currentTurnId = turn.id;
-        if (text) {
-          appendUserChunk(turn, text, timestamp);
-        }
+        appendUserChunk(turn, visibleText, timestamp);
       } else if (messagePayload.role === "assistant") {
         const turn = ensureTurn(ctx.turns, ctx.turnOrder, nextTurnId(ctx), ctx.currentTurnId, timestamp);
         const bubble = ensureAssistantBubble(turn, timestamp);
@@ -73735,27 +73901,6 @@ function processPersistedPayload(payload, timestamp, lineIndex, ctx) {
       break;
     default:
       break;
-  }
-}
-function applyCompactedReplacementHistory(payload, timestamp, ctx) {
-  ctx.turns.clear();
-  ctx.turnOrder.length = 0;
-  ctx.currentTurnId = null;
-  ctx.toolCallToTurn.clear();
-  ctx.suppressedToolOutputIds.clear();
-  ctx.terminalSessionToCommandId.clear();
-  ctx.stdinCallToCommandId.clear();
-  ctx.turnCounter = 0;
-  const replacementHistory = Array.isArray(payload == null ? void 0 : payload.replacement_history) ? payload.replacement_history : [];
-  for (const [index, item] of replacementHistory.entries()) {
-    processPersistedPayload(item, timestamp + index, index, ctx);
-  }
-  if (ctx.currentTurnId) {
-    const turn = ctx.turns.get(ctx.currentTurnId);
-    if (turn) {
-      closeAssistantBubble(turn);
-    }
-    ctx.currentTurnId = null;
   }
 }
 function extractServerTurnId(payload) {
@@ -73804,8 +73949,11 @@ function processEventMsg(payload, timestamp, ctx) {
     case "user_message": {
       const turn = ensureTurn(ctx.turns, ctx.turnOrder, nextTurnId(ctx), ctx.currentTurnId, timestamp);
       const msg = payload.message;
-      if (typeof msg === "string" && msg.trim()) {
-        appendUserChunk(turn, msg, timestamp);
+      if (typeof msg === "string") {
+        const visibleText = extractCodexUserVisibleText(msg);
+        if (visibleText !== null) {
+          appendUserChunk(turn, visibleText, timestamp);
+        }
       }
       break;
     }
@@ -73845,13 +73993,13 @@ function processEventMsg(payload, timestamp, ctx) {
 }
 function flushBubbleTurnMessages(turn, msgIndex) {
   const messages = [];
-  const userText = turn.userChunks.join("\n").trim();
-  if (userText && !isCodexSystemMessage(userText)) {
-    const displayContent = extractCodexDisplayContent(userText);
+  const visibleUserText = extractCodexUserVisibleText(turn.userChunks.join("\n"));
+  if (visibleUserText) {
+    const displayContent = extractUserDisplayContent(visibleUserText);
     messages.push({
       id: `codex-msg-${msgIndex}`,
       role: "user",
-      content: userText,
+      content: visibleUserText,
       ...displayContent !== void 0 ? { displayContent } : {},
       ...turn.serverTurnId ? { userMessageId: turn.serverTurnId } : {},
       timestamp: turn.userTimestamp || turn.startedAt || Date.now()
@@ -74058,7 +74206,6 @@ function parseModernSessionTurns(records) {
       continue;
     }
     if (parsed.type === "compacted") {
-      applyCompactedReplacementHistory(parsed.payload, timestamp, ctx);
       continue;
     }
     if (parsed.type === "response_item") {
@@ -76314,7 +76461,8 @@ User: ${turn.prompt}`
   resolveModel(queryOptions) {
     var _a5;
     const providerSettings = this.getProviderSettings();
-    return (_a5 = queryOptions == null ? void 0 : queryOptions.model) != null ? _a5 : providerSettings.model;
+    const model = (_a5 = queryOptions == null ? void 0 : queryOptions.model) != null ? _a5 : providerSettings.model;
+    return model ? toCodexRuntimeModelId(model) : void 0;
   }
   resolveSandboxConfig() {
     const providerSettings = this.getProviderSettings();
@@ -81830,10 +81978,212 @@ var opencodeSettingsReconciler = {
 };
 
 // src/providers/opencode/history/OpencodeHistoryStore.ts
-var import_node_child_process2 = require("node:child_process");
 var fs22 = __toESM(require("node:fs"));
+
+// src/providers/opencode/history/OpencodeSqliteReader.ts
+var import_node_child_process2 = require("node:child_process");
+init_env();
+var OPENCODE_SQLITE_QUERY_MAX_BUFFER = 100 * 1024 * 1024;
 var OPENCODE_MESSAGE_ROW_SQL = buildOpencodeMessageRowsSql("?");
 var OPENCODE_PART_ROW_SQL = buildOpencodePartRowsSql("?");
+var OPENCODE_SQLITE_CHILD_SCRIPT = `
+const { DatabaseSync } = require('node:sqlite');
+const [databasePath, sessionId, messageSql, partSql] = process.argv.slice(1);
+let db;
+try {
+  db = new DatabaseSync(databasePath, { readonly: true });
+  const messageRows = db.prepare(messageSql).all(sessionId);
+  const partRows = db.prepare(partSql).all(sessionId);
+  process.stdout.write(JSON.stringify({ messageRows, partRows }));
+} finally {
+  if (db) db.close();
+}
+`.trim();
+async function loadOpencodeSessionRows(databasePath, sessionId, dependencies = {}) {
+  const resolvedDependencies = resolveDependencies(dependencies);
+  const viaCurrentProcess = loadSessionRowsWithCurrentProcessSqlite(
+    databasePath,
+    sessionId,
+    resolvedDependencies.requireSqliteModule
+  );
+  if (viaCurrentProcess) {
+    return viaCurrentProcess;
+  }
+  const viaNodeProcess = loadSessionRowsWithNodeProcess(
+    databasePath,
+    sessionId,
+    resolvedDependencies.findNodeExecutable,
+    resolvedDependencies.spawnSync
+  );
+  if (viaNodeProcess) {
+    return viaNodeProcess;
+  }
+  return loadSessionRowsWithSqliteCli(
+    databasePath,
+    sessionId,
+    resolvedDependencies.spawnSync
+  );
+}
+function resolveDependencies(dependencies) {
+  return {
+    findNodeExecutable,
+    requireSqliteModule,
+    spawnSync: import_node_child_process2.spawnSync,
+    ...dependencies
+  };
+}
+function requireSqliteModule() {
+  try {
+    if (typeof module === "undefined" || typeof module.require !== "function") {
+      return null;
+    }
+    const sqlite = module.require("node:sqlite");
+    return isSqliteModule(sqlite) ? sqlite : null;
+  } catch (e2) {
+    return null;
+  }
+}
+function isSqliteModule(value) {
+  return isPlainObject7(value) && typeof value.DatabaseSync === "function";
+}
+function loadSessionRowsWithCurrentProcessSqlite(databasePath, sessionId, requireSqlite) {
+  const sqlite = requireSqlite();
+  if (!sqlite) {
+    return null;
+  }
+  let db2 = null;
+  try {
+    db2 = new sqlite.DatabaseSync(databasePath, { readonly: true });
+    const messageRows = db2.prepare(OPENCODE_MESSAGE_ROW_SQL).all(sessionId);
+    const partRows = db2.prepare(OPENCODE_PART_ROW_SQL).all(sessionId);
+    return { messageRows, partRows };
+  } catch (e2) {
+    return null;
+  } finally {
+    db2 == null ? void 0 : db2.close();
+  }
+}
+function loadSessionRowsWithNodeProcess(databasePath, sessionId, findNode, spawnSync) {
+  const nodePath2 = findNode();
+  if (!nodePath2) {
+    return null;
+  }
+  const result = spawnSync(
+    nodePath2,
+    [
+      "-e",
+      OPENCODE_SQLITE_CHILD_SCRIPT,
+      databasePath,
+      sessionId,
+      OPENCODE_MESSAGE_ROW_SQL,
+      OPENCODE_PART_ROW_SQL
+    ],
+    {
+      encoding: "utf8",
+      maxBuffer: OPENCODE_SQLITE_QUERY_MAX_BUFFER,
+      windowsHide: true
+    }
+  );
+  if (result.error || result.status !== 0) {
+    return null;
+  }
+  return parseStoredSessionRows(getSpawnStdout(result.stdout));
+}
+function loadSessionRowsWithSqliteCli(databasePath, sessionId, spawnSync) {
+  const escapedSessionId = escapeSqlLiteral(sessionId);
+  const messageRows = runSqlite3JsonQuery(
+    databasePath,
+    buildOpencodeMessageRowsSql(`'${escapedSessionId}'`),
+    spawnSync
+  );
+  const partRows = runSqlite3JsonQuery(
+    databasePath,
+    buildOpencodePartRowsSql(`'${escapedSessionId}'`),
+    spawnSync
+  );
+  if (!messageRows || !partRows) {
+    return null;
+  }
+  return { messageRows, partRows };
+}
+function runSqlite3JsonQuery(databasePath, sql, spawnSync) {
+  const result = spawnSync(
+    "sqlite3",
+    ["-json", databasePath, sql],
+    {
+      encoding: "utf8",
+      maxBuffer: OPENCODE_SQLITE_QUERY_MAX_BUFFER,
+      windowsHide: true
+    }
+  );
+  if (result.error || result.status !== 0) {
+    return null;
+  }
+  return parseStoredRows(getSpawnStdout(result.stdout));
+}
+function parseStoredSessionRows(value) {
+  try {
+    const parsed = JSON.parse(value || "{}");
+    if (!isPlainObject7(parsed)) {
+      return null;
+    }
+    const messageRows = parseStoredRowsValue(parsed.messageRows);
+    const partRows = parseStoredRowsValue(parsed.partRows);
+    return messageRows && partRows ? { messageRows, partRows } : null;
+  } catch (e2) {
+    return null;
+  }
+}
+function parseStoredRows(value) {
+  try {
+    return parseStoredRowsValue(JSON.parse(value || "[]"));
+  } catch (e2) {
+    return null;
+  }
+}
+function parseStoredRowsValue(value) {
+  return Array.isArray(value) ? value.filter((row) => isPlainObject7(row)) : null;
+}
+function getSpawnStdout(stdout) {
+  var _a5;
+  return typeof stdout === "string" ? stdout : (_a5 = stdout == null ? void 0 : stdout.toString("utf8")) != null ? _a5 : "";
+}
+function escapeSqlLiteral(value) {
+  return value.replaceAll("'", "''");
+}
+function isPlainObject7(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function buildOpencodeMessageRowsSql(sessionIdExpression) {
+  return `
+with message_json as (
+  select
+    id,
+    time_created,
+    data,
+    json_valid(data) as data_valid
+  from message
+  where session_id = ${sessionIdExpression}
+)
+select
+  id,
+  time_created,
+  data_valid,
+  case when data_valid then json_extract(data, '$.role') end as role,
+  case when data_valid then json_extract(data, '$.time.created') end as data_time_created,
+  case when data_valid then json_extract(data, '$.time.completed') end as data_time_completed
+from message_json
+order by time_created asc, id asc;`.trim();
+}
+function buildOpencodePartRowsSql(sessionIdExpression) {
+  return `
+select id, message_id, data
+from part
+where session_id = ${sessionIdExpression}
+order by message_id asc, id asc;`.trim();
+}
+
+// src/providers/opencode/history/OpencodeHistoryStore.ts
 var OPENCODE_HYDRATION_DIAGNOSTIC_ID_PREFIX = "opencode-hydration-error";
 async function loadOpencodeSessionMessages(sessionId, providerState) {
   const databasePath = resolveExistingOpencodeDatabasePath(providerState == null ? void 0 : providerState.databasePath);
@@ -82153,19 +82503,19 @@ function parseJsonObject2(value) {
   }
   try {
     const parsed = JSON.parse(value);
-    return isPlainObject7(parsed) ? parsed : null;
+    return isPlainObject8(parsed) ? parsed : null;
   } catch (e2) {
     return null;
   }
 }
-function isPlainObject7(value) {
+function isPlainObject8(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 function getBoolean(value) {
   return value === true;
 }
 function getObject(value) {
-  return isPlainObject7(value) ? value : null;
+  return isPlainObject8(value) ? value : null;
 }
 function getString(value) {
   return typeof value === "string" ? value : null;
@@ -82176,107 +82526,12 @@ function getNumber(value) {
 function getNestedNumber(value, keys) {
   let current = value;
   for (const key of keys) {
-    if (!isPlainObject7(current)) {
+    if (!isPlainObject8(current)) {
       return null;
     }
     current = current[key];
   }
   return getNumber(current);
-}
-async function loadSqliteModule() {
-  try {
-    return await import("node:sqlite");
-  } catch (e2) {
-    return null;
-  }
-}
-async function loadOpencodeSessionRows(databasePath, sessionId) {
-  const viaNodeSqlite = await loadSessionRowsWithNodeSqlite(databasePath, sessionId);
-  if (viaNodeSqlite) {
-    return viaNodeSqlite;
-  }
-  return loadSessionRowsWithSqliteCli(databasePath, sessionId);
-}
-async function loadSessionRowsWithNodeSqlite(databasePath, sessionId) {
-  const sqlite = await loadSqliteModule();
-  if (!sqlite) {
-    return null;
-  }
-  let db2 = null;
-  try {
-    db2 = new sqlite.DatabaseSync(databasePath, { readonly: true });
-    const messageRows = db2.prepare(OPENCODE_MESSAGE_ROW_SQL).all(sessionId);
-    const partRows = db2.prepare(OPENCODE_PART_ROW_SQL).all(sessionId);
-    return { messageRows, partRows };
-  } catch (e2) {
-    return null;
-  } finally {
-    db2 == null ? void 0 : db2.close();
-  }
-}
-function loadSessionRowsWithSqliteCli(databasePath, sessionId) {
-  const escapedSessionId = escapeSqlLiteral(sessionId);
-  const messageRows = runSqlite3JsonQuery(
-    databasePath,
-    buildOpencodeMessageRowsSql(`'${escapedSessionId}'`)
-  );
-  const partRows = runSqlite3JsonQuery(
-    databasePath,
-    buildOpencodePartRowsSql(`'${escapedSessionId}'`)
-  );
-  if (!messageRows || !partRows) {
-    return null;
-  }
-  return { messageRows, partRows };
-}
-function runSqlite3JsonQuery(databasePath, sql) {
-  const result = (0, import_node_child_process2.spawnSync)(
-    "sqlite3",
-    ["-json", databasePath, sql],
-    {
-      encoding: "utf8"
-    }
-  );
-  if (result.error || result.status !== 0) {
-    return null;
-  }
-  try {
-    const parsed = JSON.parse(result.stdout || "[]");
-    return Array.isArray(parsed) ? parsed.filter((row) => isPlainObject7(row)) : null;
-  } catch (e2) {
-    return null;
-  }
-}
-function escapeSqlLiteral(value) {
-  return value.replaceAll("'", "''");
-}
-function buildOpencodeMessageRowsSql(sessionIdExpression) {
-  return `
-with message_json as (
-  select
-    id,
-    time_created,
-    data,
-    json_valid(data) as data_valid
-  from message
-  where session_id = ${sessionIdExpression}
-)
-select
-  id,
-  time_created,
-  data_valid,
-  case when data_valid then json_extract(data, '$.role') end as role,
-  case when data_valid then json_extract(data, '$.time.created') end as data_time_created,
-  case when data_valid then json_extract(data, '$.time.completed') end as data_time_completed
-from message_json
-order by time_created asc, id asc;`.trim();
-}
-function buildOpencodePartRowsSql(sessionIdExpression) {
-  return `
-select id, message_id, data
-from part
-where session_id = ${sessionIdExpression}
-order by message_id asc, id asc;`.trim();
 }
 
 // src/providers/opencode/history/OpencodeConversationHistoryService.ts
@@ -82702,7 +82957,7 @@ var PiRpcTransport = class {
     let record2;
     try {
       const parsed = JSON.parse(line);
-      if (!isPlainObject8(parsed)) {
+      if (!isPlainObject9(parsed)) {
         return;
       }
       record2 = parsed;
@@ -82747,7 +83002,7 @@ var PiRpcTransport = class {
     this.pending.clear();
   }
 };
-function isPlainObject8(value) {
+function isPlainObject9(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
@@ -82952,6 +83207,7 @@ function extractModels(response) {
 }
 
 // src/providers/pi/ui/PiSettingsTab.ts
+var ALL_PROVIDERS_KEY2 = "all";
 var piSettingsTabRenderer = {
   render(container, context) {
     const settingsBag = context.plugin.settings;
@@ -83011,66 +83267,350 @@ var piSettingsTabRenderer = {
       updateCliPathValidation(currentValue, text.inputEl);
     });
     new import_obsidian20.Setting(container).setName("Models").setHeading();
-    const modelContainer = container.createDiv({ cls: "claudian-pi-models" });
-    const renderModels = () => {
-      modelContainer.empty();
+    new import_obsidian20.Setting(container).setName("Visible models").setDesc("Choose which Pi models appear in the chat selector. Filter by provider or type to search. The current session model stays pinned even if it is not selected here.");
+    const pickerEl = container.createDiv({ cls: "claudian-provider-model-picker claudian-provider-model-picker--pi" });
+    let searchQuery = "";
+    let providerFilter = ALL_PROVIDERS_KEY2;
+    let loadingModelCatalog = false;
+    let modelCatalogLoadFailed = false;
+    const summaryEl = pickerEl.createDiv({ cls: "claudian-provider-model-picker-summary" });
+    const selectedEl = pickerEl.createDiv({ cls: "claudian-provider-model-picker-selected" });
+    const catalogEl = pickerEl.createEl("details", { cls: "claudian-provider-model-picker-catalog" });
+    catalogEl.open = getPiProviderSettings(settingsBag).visibleModels.length === 0;
+    const catalogSummaryEl = catalogEl.createEl("summary", {
+      cls: "claudian-provider-model-picker-catalog-summary"
+    });
+    catalogSummaryEl.createSpan({
+      cls: "claudian-provider-model-picker-catalog-caret",
+      text: "\u25B8"
+    });
+    catalogSummaryEl.createSpan({
+      cls: "claudian-provider-model-picker-catalog-title",
+      text: "Browse models"
+    });
+    const catalogSummaryCountEl = catalogSummaryEl.createSpan({
+      cls: "claudian-provider-model-picker-catalog-count"
+    });
+    const controlsEl = catalogEl.createDiv({ cls: "claudian-provider-model-picker-controls" });
+    const searchInput = controlsEl.createEl("input", {
+      cls: "claudian-provider-model-picker-search",
+      type: "search"
+    });
+    searchInput.placeholder = "Filter by model, provider, or ID...";
+    searchInput.addEventListener("input", () => {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      renderList();
+    });
+    const providerSelectEl = controlsEl.createEl("select", {
+      cls: "claudian-provider-model-picker-provider"
+    });
+    providerSelectEl.addEventListener("change", () => {
+      providerFilter = providerSelectEl.value;
+      renderList();
+    });
+    const discoverButtonEl = controlsEl.createEl("button", {
+      cls: "claudian-provider-model-picker-action",
+      text: "Discover"
+    });
+    discoverButtonEl.setAttribute("type", "button");
+    discoverButtonEl.addEventListener("click", () => {
+      void loadModelCatalog({ force: true });
+    });
+    const listEl = catalogEl.createDiv({ cls: "claudian-provider-model-picker-list" });
+    const getEnrichedModels = () => {
       const current = getPiProviderSettings(settingsBag);
-      new import_obsidian20.Setting(modelContainer).setName("Discover models").setDesc(current.discoveredModels.length > 0 ? `${current.discoveredModels.length} Pi models cached.` : "Fetch models from `pi --mode rpc --no-session`.").addButton((button) => {
-        button.setButtonText("Discover").onClick(async () => {
-          button.setDisabled(true);
-          const result = await new PiModelDiscoveryService(context.plugin).discoverModels();
-          if (result.diagnostics) {
-            new import_obsidian20.Notice(`Pi discovery failed: ${result.diagnostics}`);
-            button.setDisabled(false);
-            return;
-          }
-          updatePiProviderSettings(settingsBag, {
-            discoveredModels: result.models,
-            visibleModels: normalizePiVisibleModels(
-              current.visibleModels,
-              result.models
-            )
-          });
-          await context.plugin.saveSettings();
-          renderModels();
-          context.refreshModelSelectors();
-        });
+      return buildEnrichedPiModels(current.discoveredModels, current.visibleModels);
+    };
+    const filterModels = (models) => {
+      return models.filter((model) => {
+        if (providerFilter !== ALL_PROVIDERS_KEY2 && model.providerKey !== providerFilter) {
+          return false;
+        }
+        if (!searchQuery) {
+          return true;
+        }
+        return model.encodedId.toLowerCase().includes(searchQuery) || model.modelLabel.toLowerCase().includes(searchQuery) || model.providerLabel.toLowerCase().includes(searchQuery) || model.description.toLowerCase().includes(searchQuery);
       });
-      if (current.discoveredModels.length === 0) {
-        modelContainer.createDiv({
-          cls: "setting-item-description",
-          text: "No Pi models discovered yet."
-        });
+    };
+    const persistVisibleModels = async (visibleModels) => {
+      const current = getPiProviderSettings(settingsBag);
+      const normalized = normalizePiVisibleModels(visibleModels, current.discoveredModels);
+      if (sameStringList2(current.visibleModels, normalized)) {
         return;
       }
-      for (const model of current.discoveredModels) {
-        new import_obsidian20.Setting(modelContainer).setName(current.modelAliases[model.encodedId] || model.label).setDesc(model.encodedId).addToggle((toggle) => {
-          toggle.setValue(current.visibleModels.includes(model.encodedId)).onChange(async (value) => {
-            const visibleModels = value ? [...current.visibleModels, model.encodedId] : current.visibleModels.filter((id) => id !== model.encodedId);
-            const normalized = normalizePiVisibleModels(visibleModels, current.discoveredModels);
-            if (!sameStringList2(current.visibleModels, normalized)) {
-              updatePiProviderSettings(settingsBag, { visibleModels: normalized });
-              await context.plugin.saveSettings();
-              renderModels();
-              context.refreshModelSelectors();
-            }
+      updatePiProviderSettings(settingsBag, { visibleModels: normalized });
+      await context.plugin.saveSettings();
+      renderAll();
+      context.refreshModelSelectors();
+    };
+    const persistModelAliases = async (modelAliases) => {
+      updatePiProviderSettings(settingsBag, { modelAliases });
+      await context.plugin.saveSettings();
+      renderSelected();
+      context.refreshModelSelectors();
+    };
+    const renderSummary = () => {
+      summaryEl.empty();
+      const current = getPiProviderSettings(settingsBag);
+      const enriched = getEnrichedModels();
+      const providerCount = new Set(enriched.map((model) => model.providerKey)).size;
+      const providerWord = providerCount === 1 ? "provider" : "providers";
+      summaryEl.createSpan({ text: "Visible: " });
+      summaryEl.createSpan({
+        cls: "claudian-provider-model-picker-summary-value",
+        text: String(current.visibleModels.length)
+      });
+      summaryEl.createSpan({
+        text: ` of ${current.discoveredModels.length} discovered | ${providerCount} ${providerWord}`
+      });
+      let catalogSummary = "No models discovered yet";
+      if (loadingModelCatalog) {
+        catalogSummary = "Loading models...";
+      } else if (current.discoveredModels.length > 0) {
+        catalogSummary = `${current.discoveredModels.length} available`;
+      }
+      catalogSummaryCountEl.setText(catalogSummary);
+      discoverButtonEl.disabled = loadingModelCatalog;
+      discoverButtonEl.setText(loadingModelCatalog ? "Loading..." : current.discoveredModels.length > 0 ? "Refresh" : "Discover");
+    };
+    const renderSelected = () => {
+      var _a5;
+      selectedEl.empty();
+      const current = getPiProviderSettings(settingsBag);
+      if (current.visibleModels.length === 0) {
+        selectedEl.toggleClass("claudian-hidden", true);
+        return;
+      }
+      selectedEl.toggleClass("claudian-hidden", false);
+      const enrichedById = new Map(
+        getEnrichedModels().map((model) => [model.encodedId, model])
+      );
+      const headerEl = selectedEl.createDiv({ cls: "claudian-provider-model-picker-selected-header" });
+      headerEl.createEl("span", {
+        cls: "claudian-provider-model-picker-selected-label",
+        text: `Selected (${current.visibleModels.length})`
+      });
+      const clearAllBtn = headerEl.createEl("button", {
+        cls: "claudian-provider-model-picker-selected-clear",
+        text: "Clear all"
+      });
+      clearAllBtn.setAttribute("aria-label", "Clear all selected Pi models");
+      clearAllBtn.addEventListener("click", () => {
+        void persistVisibleModels([]);
+      });
+      const rowsEl = selectedEl.createDiv({ cls: "claudian-provider-model-picker-selected-rows" });
+      for (const encodedId of current.visibleModels) {
+        const enriched = enrichedById.get(encodedId);
+        const defaultLabel = enriched ? `${enriched.providerLabel}/${enriched.modelLabel}` : encodedId;
+        const rowEl = rowsEl.createDiv({ cls: "claudian-provider-model-picker-selected-row" });
+        if (enriched && !enriched.isAvailable) {
+          rowEl.classList.add("claudian-provider-model-picker-selected-row--unavailable");
+        }
+        const infoEl = rowEl.createDiv({ cls: "claudian-provider-model-picker-selected-info" });
+        const titleEl = infoEl.createDiv({ cls: "claudian-provider-model-picker-selected-title" });
+        if (enriched) {
+          titleEl.createEl("span", {
+            cls: "claudian-provider-model-picker-selected-badge",
+            text: enriched.providerLabel
           });
-        }).addText((text) => {
-          var _a5;
-          text.setPlaceholder("Alias").setValue((_a5 = current.modelAliases[model.encodedId]) != null ? _a5 : "").onChange(async (value) => {
-            updatePiProviderSettings(settingsBag, {
-              modelAliases: {
-                ...getPiProviderSettings(settingsBag).modelAliases,
-                [model.encodedId]: value
-              }
-            });
-            await context.plugin.saveSettings();
-            context.refreshModelSelectors();
+          titleEl.createEl("span", {
+            cls: "claudian-provider-model-picker-selected-name",
+            text: enriched.modelLabel
           });
+        } else {
+          titleEl.createEl("span", {
+            cls: "claudian-provider-model-picker-selected-name",
+            text: encodedId
+          });
+        }
+        if (enriched && !enriched.isAvailable) {
+          infoEl.createEl("div", {
+            cls: "claudian-provider-model-picker-selected-unavailable",
+            text: "Not currently reported by Pi"
+          });
+        }
+        infoEl.createEl("div", {
+          cls: "claudian-provider-model-picker-selected-id",
+          text: encodedId
+        });
+        const rowControlsEl = rowEl.createDiv({ cls: "claudian-provider-model-picker-selected-controls" });
+        const aliasInput = rowControlsEl.createEl("input", {
+          cls: "claudian-provider-model-picker-selected-alias",
+          type: "text"
+        });
+        aliasInput.placeholder = defaultLabel;
+        aliasInput.value = (_a5 = current.modelAliases[encodedId]) != null ? _a5 : "";
+        aliasInput.setAttribute("aria-label", `Alias for ${defaultLabel}`);
+        aliasInput.title = "Custom label shown in the model selector. Leave empty to use the default.";
+        const commitAlias = () => {
+          var _a6;
+          const latest = getPiProviderSettings(settingsBag);
+          const existing = (_a6 = latest.modelAliases[encodedId]) != null ? _a6 : "";
+          const next = aliasInput.value.trim();
+          if (next === existing) {
+            aliasInput.value = existing;
+            return;
+          }
+          const nextAliases = { ...latest.modelAliases };
+          if (next) {
+            nextAliases[encodedId] = next;
+          } else {
+            delete nextAliases[encodedId];
+          }
+          void persistModelAliases(nextAliases);
+        };
+        aliasInput.addEventListener("blur", commitAlias);
+        aliasInput.addEventListener("keydown", (event) => {
+          var _a6;
+          if (event.key === "Enter") {
+            event.preventDefault();
+            aliasInput.blur();
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            aliasInput.value = (_a6 = getPiProviderSettings(settingsBag).modelAliases[encodedId]) != null ? _a6 : "";
+            aliasInput.blur();
+          }
+        });
+        const removeBtn = rowControlsEl.createEl("button", {
+          cls: "claudian-provider-model-picker-selected-remove",
+          text: "\xD7"
+        });
+        removeBtn.setAttribute("aria-label", `Remove ${defaultLabel}`);
+        removeBtn.addEventListener("click", () => {
+          void persistVisibleModels(getPiProviderSettings(settingsBag).visibleModels.filter((entry) => entry !== encodedId));
         });
       }
     };
-    renderModels();
+    const renderProviderSelect = () => {
+      const enriched = getEnrichedModels();
+      const providers = /* @__PURE__ */ new Map();
+      for (const model of enriched) {
+        const existing = providers.get(model.providerKey);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          providers.set(model.providerKey, { count: 1, label: model.providerLabel });
+        }
+      }
+      providerSelectEl.empty();
+      providerSelectEl.createEl("option", {
+        text: `All providers (${enriched.length})`,
+        value: ALL_PROVIDERS_KEY2
+      });
+      const sortedProviders = Array.from(providers.entries()).sort(([, left], [, right]) => left.label.localeCompare(right.label));
+      for (const [key, { count, label }] of sortedProviders) {
+        providerSelectEl.createEl("option", {
+          text: `${label} (${count})`,
+          value: key
+        });
+      }
+      if (providerFilter !== ALL_PROVIDERS_KEY2 && !providers.has(providerFilter)) {
+        providerFilter = ALL_PROVIDERS_KEY2;
+      }
+      providerSelectEl.value = providerFilter;
+    };
+    const renderList = () => {
+      listEl.empty();
+      const current = getPiProviderSettings(settingsBag);
+      const selectedIds = new Set(current.visibleModels);
+      const enriched = getEnrichedModels();
+      const filtered = filterModels(enriched);
+      if (filtered.length === 0) {
+        const emptyEl = listEl.createDiv({ cls: "claudian-provider-model-picker-empty" });
+        let emptyText = "No models match your filter.";
+        if (loadingModelCatalog) {
+          emptyText = "Loading Pi model catalog...";
+        } else if (modelCatalogLoadFailed) {
+          emptyText = "Could not load the Pi model catalog. Check the CLI path and login state, then try again.";
+        } else if (enriched.length === 0) {
+          emptyText = "No Pi models discovered yet. Click Discover to load models from Pi.";
+        }
+        emptyEl.setText(emptyText);
+        return;
+      }
+      for (const model of filtered) {
+        const rowEl = listEl.createEl("label", { cls: "claudian-provider-model-picker-row" });
+        const isSelected = selectedIds.has(model.encodedId);
+        if (isSelected) {
+          rowEl.classList.add("claudian-provider-model-picker-row--selected");
+        }
+        rowEl.title = model.encodedId;
+        const checkboxEl = rowEl.createEl("input", { type: "checkbox" });
+        checkboxEl.checked = isSelected;
+        checkboxEl.addEventListener("change", () => {
+          const currentVisibleModels = getPiProviderSettings(settingsBag).visibleModels;
+          const next = checkboxEl.checked ? [...currentVisibleModels, model.encodedId] : currentVisibleModels.filter((id) => id !== model.encodedId);
+          void persistVisibleModels(next);
+        });
+        const textEl = rowEl.createDiv({ cls: "claudian-provider-model-picker-row-text" });
+        const headerEl = textEl.createDiv({ cls: "claudian-provider-model-picker-row-header" });
+        headerEl.createEl("span", {
+          cls: "claudian-provider-model-picker-row-name",
+          text: model.modelLabel
+        });
+        const badgeEl = headerEl.createEl("span", {
+          cls: "claudian-provider-model-picker-row-badge",
+          text: model.providerLabel
+        });
+        if (!model.isAvailable) {
+          badgeEl.classList.add("claudian-provider-model-picker-row-badge--unavailable");
+          badgeEl.setText("Unavailable");
+          badgeEl.title = "Configured model not currently reported by Pi";
+        }
+        textEl.createDiv({
+          cls: "claudian-provider-model-picker-row-meta",
+          text: model.encodedId
+        });
+        if (model.description) {
+          textEl.createDiv({
+            cls: "claudian-provider-model-picker-row-desc",
+            text: model.description
+          });
+        }
+      }
+    };
+    const renderAll = () => {
+      renderSummary();
+      renderSelected();
+      renderProviderSelect();
+      renderList();
+    };
+    const loadModelCatalog = async ({ force = false } = {}) => {
+      if (loadingModelCatalog || !force && getPiProviderSettings(settingsBag).discoveredModels.length > 0) {
+        return;
+      }
+      loadingModelCatalog = true;
+      modelCatalogLoadFailed = false;
+      renderAll();
+      try {
+        const result = await new PiModelDiscoveryService(context.plugin).discoverModels();
+        if (result.diagnostics) {
+          modelCatalogLoadFailed = true;
+          new import_obsidian20.Notice(`Pi discovery failed: ${result.diagnostics}`);
+          return;
+        }
+        const current = getPiProviderSettings(settingsBag);
+        const normalizedVisibleModels = normalizePiVisibleModels(current.visibleModels, result.models);
+        const shouldPersist = result.models.length > 0 || current.discoveredModels.length > 0 || !sameStringList2(current.visibleModels, normalizedVisibleModels);
+        if (shouldPersist) {
+          updatePiProviderSettings(settingsBag, {
+            discoveredModels: result.models,
+            visibleModels: normalizedVisibleModels
+          });
+          await context.plugin.saveSettings();
+          context.refreshModelSelectors();
+        }
+      } finally {
+        loadingModelCatalog = false;
+        renderAll();
+      }
+    };
+    renderAll();
+    catalogEl.addEventListener("toggle", () => {
+      if (catalogEl.open) {
+        void loadModelCatalog();
+      }
+    });
     renderEnvironmentSettingsSection({
       container,
       desc: "Environment variables passed only to Pi.",
@@ -83095,6 +83635,76 @@ function validateCliPath(value) {
     return "Path must point to a file";
   }
   return null;
+}
+function buildEnrichedPiModels(discoveredModels, visibleModels) {
+  var _a5, _b3;
+  const enriched = [];
+  const discoveredIds = /* @__PURE__ */ new Set();
+  for (const model of discoveredModels) {
+    discoveredIds.add(model.encodedId);
+    enriched.push({
+      description: buildPiModelDescription(model),
+      encodedId: model.encodedId,
+      isAvailable: true,
+      modelLabel: model.label || model.id,
+      providerKey: model.provider.toLowerCase(),
+      providerLabel: formatProviderLabel(model.provider)
+    });
+  }
+  for (const encodedId of visibleModels) {
+    if (discoveredIds.has(encodedId)) {
+      continue;
+    }
+    const decoded = decodePiModelId(encodedId);
+    const provider = (_a5 = decoded == null ? void 0 : decoded.provider) != null ? _a5 : "pi";
+    enriched.push({
+      description: "Configured model",
+      encodedId,
+      isAvailable: false,
+      modelLabel: (_b3 = decoded == null ? void 0 : decoded.modelId) != null ? _b3 : encodedId,
+      providerKey: provider.toLowerCase(),
+      providerLabel: formatProviderLabel(provider)
+    });
+  }
+  return enriched.sort((left, right) => {
+    const providerCmp = left.providerLabel.localeCompare(right.providerLabel);
+    if (providerCmp !== 0) {
+      return providerCmp;
+    }
+    return left.modelLabel.localeCompare(right.modelLabel);
+  });
+}
+function buildPiModelDescription(model) {
+  const details = [];
+  if (model.api) {
+    details.push(`API: ${model.api}`);
+  }
+  if (model.contextWindow) {
+    details.push(`${model.contextWindow.toLocaleString()} context`);
+  }
+  if (model.maxTokens) {
+    details.push(`${model.maxTokens.toLocaleString()} output`);
+  }
+  if (model.input.includes("image")) {
+    details.push("image input");
+  }
+  details.push(model.reasoning ? `thinking: ${model.thinkingLevels.join(", ")}` : "thinking: off");
+  return details.join(" | ");
+}
+function formatProviderLabel(provider) {
+  const normalized = provider.trim();
+  const knownProviders = {
+    anthropic: "Anthropic",
+    deepseek: "DeepSeek",
+    google: "Google",
+    openai: "OpenAI",
+    xai: "xAI"
+  };
+  const known = knownProviders[normalized.toLowerCase()];
+  if (known) {
+    return known;
+  }
+  return normalized.split(/[-_\s]+/).filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ") || "Pi";
 }
 
 // src/providers/pi/runtime/PiChatRuntime.ts
@@ -83144,7 +83754,7 @@ function extractPiToolTextContent(value) {
   if (Array.isArray(value)) {
     return value.map(extractPiToolTextContent).filter(Boolean).join("\n");
   }
-  if (!isPlainObject9(value)) {
+  if (!isPlainObject10(value)) {
     return "";
   }
   if (typeof value.text === "string") {
@@ -83156,16 +83766,16 @@ function extractPiToolTextContent(value) {
   if (Array.isArray(value.content)) {
     return extractPiToolTextContent(value.content);
   }
-  if (isPlainObject9(value.partialResult)) {
+  if (isPlainObject10(value.partialResult)) {
     return extractPiToolTextContent(value.partialResult.content);
   }
-  if (isPlainObject9(value.result)) {
+  if (isPlainObject10(value.result)) {
     return extractPiToolTextContent((_a5 = value.result.content) != null ? _a5 : value.result);
   }
   return "";
 }
 function normalizePiToolInput(value, toolName) {
-  const input = isPlainObject9(value) ? { ...value } : {};
+  const input = isPlainObject10(value) ? { ...value } : {};
   const normalizedToolName = toolName ? normalizePiToolName(toolName) : "";
   if ((normalizedToolName === TOOL_READ || normalizedToolName === TOOL_WRITE || normalizedToolName === TOOL_EDIT) && typeof input.path === "string" && typeof input.file_path !== "string") {
     input.file_path = input.path;
@@ -83195,7 +83805,7 @@ function firstString4(...values) {
   }
   return void 0;
 }
-function isPlainObject9(value) {
+function isPlainObject10(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
@@ -83223,7 +83833,7 @@ function parsePiSessionEntries(content) {
     let record2;
     try {
       const parsed = JSON.parse(line);
-      if (!isPlainObject10(parsed)) {
+      if (!isPlainObject11(parsed)) {
         continue;
       }
       record2 = parsed;
@@ -83508,7 +84118,7 @@ function extractAssistantContentBlocks(value) {
   const blocks = [];
   const parts = Array.isArray(value) ? value : [{ type: "text", text: extractTextContent2(value) }];
   for (const part of parts) {
-    if (!isPlainObject10(part)) {
+    if (!isPlainObject11(part)) {
       continue;
     }
     const type = getString2(part.type);
@@ -83537,7 +84147,7 @@ function extractAssistantToolCalls(value) {
   const parts = Array.isArray(value) ? value : [];
   return parts.flatMap((part) => {
     var _a5, _b3, _c2, _d, _e2, _f2;
-    if (!isPlainObject10(part)) {
+    if (!isPlainObject11(part)) {
       return [];
     }
     const type = getString2(part.type);
@@ -83620,7 +84230,7 @@ function extractTextContent2(value) {
   if (Array.isArray(value)) {
     return value.map(extractTextContent2).filter(Boolean).join("");
   }
-  if (!isPlainObject10(value)) {
+  if (!isPlainObject11(value)) {
     return "";
   }
   if (typeof value.text === "string") {
@@ -83670,12 +84280,12 @@ function getTimestamp(value) {
   return Date.now();
 }
 function getRecord(value) {
-  return isPlainObject10(value) ? value : null;
+  return isPlainObject11(value) ? value : null;
 }
 function getString2(value) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
-function isPlainObject10(value) {
+function isPlainObject11(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
@@ -85228,17 +85838,7 @@ var piChatUIConfig = {
       value: level
     }));
   },
-  getDefaultReasoningValue(model, settings11) {
-    const piModel = getCachedModel(model, settings11);
-    if (!piModel) {
-      return decodePiModelId(model) ? PI_DEFAULT_THINKING_LEVEL : "off";
-    }
-    const piSettings = getPiProviderSettings(settings11);
-    return clampPiThinkingLevel(
-      piSettings.preferredThinkingByModel[piModel.encodedId],
-      piModel.thinkingLevels
-    );
-  },
+  getDefaultReasoningValue: getPiDefaultReasoningValue,
   getContextWindowSize(model, customLimits, settings11) {
     var _a5, _b3;
     const metadataContextWindow = settings11 ? (_a5 = getCachedModel(model, settings11)) == null ? void 0 : _a5.contextWindow : void 0;
@@ -85257,7 +85857,7 @@ var piChatUIConfig = {
       return;
     }
     settingsBag.model = model;
-    settingsBag.effortLevel = this.getDefaultReasoningValue(model, settingsBag);
+    settingsBag.effortLevel = getPiDefaultReasoningValue(model, settingsBag);
   },
   applyReasoningSelection(model, value, settings11) {
     var _a5, _b3;
@@ -85319,6 +85919,17 @@ function getCachedModel(model, settings11) {
     return null;
   }
   return (_a5 = getPiProviderSettings(settings11).discoveredModels.find((entry) => entry.encodedId === model)) != null ? _a5 : null;
+}
+function getPiDefaultReasoningValue(model, settings11) {
+  const piModel = getCachedModel(model, settings11);
+  if (!piModel) {
+    return decodePiModelId(model) ? PI_DEFAULT_THINKING_LEVEL : "off";
+  }
+  const piSettings = getPiProviderSettings(settings11);
+  return clampPiThinkingLevel(
+    piSettings.preferredThinkingByModel[piModel.encodedId],
+    piModel.thinkingLevels
+  );
 }
 function buildModelOption(model, alias) {
   return {
@@ -85639,7 +86250,7 @@ var PiExtensionModal = class extends import_obsidian21.Modal {
       this.close();
     };
     this.signal.addEventListener("abort", abortHandler, { once: true });
-    this.resultPromise.finally(() => {
+    void this.resultPromise.finally(() => {
       this.signal.removeEventListener("abort", abortHandler);
     });
     this.open();
@@ -86968,7 +87579,7 @@ var ConversationController = class {
       return;
     }
     const rewindCtx = findRewindContext(msgs, userIdx);
-    if (!rewindCtx.hasResponse || !rewindCtx.prevAssistantUuid) {
+    if (!rewindCtx.hasResponse) {
       new import_obsidian23.Notice(t10("chat.rewind.unavailableNoUuid"));
       return;
     }
@@ -87009,7 +87620,10 @@ var ConversationController = class {
     const filesChanged = (_c2 = (_b3 = result.filesChanged) == null ? void 0 : _b3.length) != null ? _c2 : 0;
     let saveError = null;
     try {
-      await this.save(false, { resumeAtMessageId: prevAssistantUuid });
+      await this.save(false, {
+        resumeAtMessageId: prevAssistantUuid,
+        resetProviderSession: !prevAssistantUuid
+      });
     } catch (e2) {
       saveError = e2 instanceof Error ? e2.message : "Failed to save";
     }
@@ -87055,7 +87669,7 @@ var ConversationController = class {
     const mcpServerSelector = this.deps.getMcpServerSelector();
     const enabledMcpServers = mcpServerSelector ? Array.from(mcpServerSelector.getEnabledServers()) : [];
     const conversation = plugin.getConversationSync(state.currentConversationId);
-    const { updates: sessionUpdates } = agentService ? agentService.buildSessionUpdates({ conversation, sessionInvalidated }) : { updates: {} };
+    const { updates: sessionUpdates } = agentService && !(options == null ? void 0 : options.resetProviderSession) ? agentService.buildSessionUpdates({ conversation, sessionInvalidated }) : { updates: {} };
     const updates = {
       ...sessionUpdates,
       messages: state.messages,
@@ -87069,6 +87683,10 @@ var ConversationController = class {
     }
     if (options) {
       updates.resumeAtMessageId = options.resumeAtMessageId;
+      if (options.resetProviderSession) {
+        updates.sessionId = null;
+        updates.providerState = void 0;
+      }
     }
     await plugin.updateConversation(state.currentConversationId, updates);
     state.hasPendingConversationSave = false;
@@ -87155,7 +87773,7 @@ var ConversationController = class {
    * Shared implementation for updateHistoryDropdown() and renderHistoryDropdown().
    */
   renderHistoryItems(container, options) {
-    var _a5;
+    var _a5, _b3;
     const { plugin, state } = this.deps;
     container.empty();
     const dropdownHeader = container.createDiv({ cls: "claudian-history-header" });
@@ -87167,22 +87785,37 @@ var ConversationController = class {
       return;
     }
     const conversations = [...allConversations].sort((a, b2) => {
-      var _a6, _b3;
-      return ((_a6 = b2.lastResponseAt) != null ? _a6 : b2.createdAt) - ((_b3 = a.lastResponseAt) != null ? _b3 : a.createdAt);
+      var _a6, _b4;
+      return ((_a6 = b2.lastResponseAt) != null ? _a6 : b2.createdAt) - ((_b4 = a.lastResponseAt) != null ? _b4 : a.createdAt);
     });
     for (const conv of conversations) {
-      const isCurrent = conv.id === state.currentConversationId;
+      const fallbackOpenState = conv.id === state.currentConversationId ? "current" : "closed";
+      const conversationStatus = this.getHistoryConversationStatus(conv.id, fallbackOpenState, options);
+      const { openState, isRunning } = conversationStatus;
+      const isCurrent = openState === "current";
+      const isOpen = openState === "open";
       const item = list.createDiv({
-        cls: `claudian-history-item${isCurrent ? " active" : ""}`
+        cls: [
+          "claudian-history-item",
+          isCurrent ? "active" : "",
+          isOpen ? "open" : "",
+          isRunning ? "running" : ""
+        ].filter(Boolean).join(" ")
       });
+      item.setAttribute("data-open-state", openState);
+      item.setAttribute("data-running", isRunning ? "true" : "false");
+      item.setAttribute("data-tab-location", (_a5 = conversationStatus.location) != null ? _a5 : "current-view");
+      if (typeof conversationStatus.tabIndex === "number") {
+        item.setAttribute("data-tab-index", String(conversationStatus.tabIndex));
+      }
       const iconEl = item.createDiv({ cls: "claudian-history-item-icon" });
-      (0, import_obsidian23.setIcon)(iconEl, isCurrent ? "message-square-dot" : "message-square");
+      (0, import_obsidian23.setIcon)(iconEl, this.getHistoryItemIcon(openState, isRunning));
       const content = item.createDiv({ cls: "claudian-history-item-content" });
       const titleEl = content.createDiv({ cls: "claudian-history-item-title", text: conv.title });
       titleEl.setAttribute("title", conv.title);
       content.createDiv({
         cls: "claudian-history-item-date",
-        text: isCurrent ? "Current session" : this.formatDate((_a5 = conv.lastResponseAt) != null ? _a5 : conv.createdAt)
+        text: this.getHistoryItemStatusText(conversationStatus, (_b3 = conv.lastResponseAt) != null ? _b3 : conv.createdAt)
       });
       if (!isCurrent) {
         content.addEventListener("click", (e2) => {
@@ -87249,6 +87882,26 @@ var ConversationController = class {
           );
         });
       }
+      if (openState === "closed" && options.onOpenConversationInNewTab) {
+        const openInNewTabBtn = actions.createEl("button", {
+          cls: "claudian-action-btn claudian-open-new-tab-btn"
+        });
+        (0, import_obsidian23.setIcon)(openInNewTabBtn, "square-plus");
+        openInNewTabBtn.setAttribute("aria-label", "Open in new tab");
+        openInNewTabBtn.addEventListener("click", (e2) => {
+          e2.stopPropagation();
+          runConversationAction(
+            () => this.runHistoryAction(
+              () => {
+                var _a6;
+                return (_a6 = options.onOpenConversationInNewTab) == null ? void 0 : _a6.call(options, conv.id, true);
+              },
+              "Failed to load conversation"
+            ),
+            "Failed to load conversation"
+          );
+        });
+      }
       const renameBtn = actions.createEl("button", { cls: "claudian-action-btn" });
       (0, import_obsidian23.setIcon)(renameBtn, "pencil");
       renameBtn.setAttribute("aria-label", "Rename");
@@ -87271,6 +87924,49 @@ var ConversationController = class {
       });
     }
   }
+  getHistoryConversationStatus(conversationId, fallbackOpenState, options) {
+    var _a5, _b3, _c2;
+    const status = (_a5 = options.getConversationStatus) == null ? void 0 : _a5.call(options, conversationId);
+    if (status) return status;
+    return {
+      openState: (_c2 = (_b3 = options.getConversationOpenState) == null ? void 0 : _b3.call(options, conversationId)) != null ? _c2 : fallbackOpenState,
+      isRunning: false
+    };
+  }
+  getHistoryItemStatusText(status, timestamp) {
+    var _a5;
+    const { openState, isRunning } = status;
+    const location = (_a5 = status.location) != null ? _a5 : "current-view";
+    if (openState !== "closed" && location === "other-view") {
+      return isRunning ? "Running in another pane" : "Open in another pane";
+    }
+    if (isRunning) {
+      if (openState === "closed") return "Running";
+      return `Running in ${this.getHistoryTabLabel(status)}`;
+    }
+    switch (openState) {
+      case "current":
+        return typeof status.tabIndex === "number" ? `Current tab ${status.tabIndex}` : "Current session";
+      case "open":
+        return `Open in ${this.getHistoryTabLabel(status)}`;
+      case "closed":
+        return this.formatDate(timestamp);
+    }
+  }
+  getHistoryTabLabel(status) {
+    if (typeof status.tabIndex === "number") {
+      return `tab ${status.tabIndex}`;
+    }
+    if (status.openState === "current") {
+      return "current tab";
+    }
+    return "tab";
+  }
+  getHistoryItemIcon(openState, isRunning) {
+    if (isRunning) return "loader-2";
+    if (openState === "current") return "message-square-dot";
+    return "message-square";
+  }
   isHistoryNewTabModifierClick(event) {
     return !event.altKey && !event.shiftKey && (event.metaKey || event.ctrlKey);
   }
@@ -87282,16 +87978,16 @@ var ConversationController = class {
     }
   }
   showHistoryContextMenu(item, conversationId, title, isCurrent, options, event) {
-    var _a5, _b3;
     const menu = new import_obsidian23.Menu();
-    const openState = (_b3 = (_a5 = options.getConversationOpenState) == null ? void 0 : _a5.call(options, conversationId)) != null ? _b3 : isCurrent ? "current" : "closed";
-    if (!isCurrent) {
+    const fallbackOpenState = isCurrent ? "current" : "closed";
+    const { openState } = this.getHistoryConversationStatus(conversationId, fallbackOpenState, options);
+    if (openState !== "current") {
       if (openState === "closed" && options.onOpenConversationInNewTab) {
         menu.addItem((menuItem) => menuItem.setTitle("Open in new tab").onClick(() => {
           void this.runHistoryAction(
             () => {
-              var _a6;
-              return (_a6 = options.onOpenConversationInNewTab) == null ? void 0 : _a6.call(options, conversationId, true);
+              var _a5;
+              return (_a5 = options.onOpenConversationInNewTab) == null ? void 0 : _a5.call(options, conversationId, true);
             },
             "Failed to load conversation"
           );
@@ -87299,8 +87995,8 @@ var ConversationController = class {
         menu.addItem((menuItem) => menuItem.setTitle("Open in background tab").onClick(() => {
           void this.runHistoryAction(
             () => {
-              var _a6;
-              return (_a6 = options.onOpenConversationInNewTab) == null ? void 0 : _a6.call(options, conversationId, false);
+              var _a5;
+              return (_a5 = options.onOpenConversationInNewTab) == null ? void 0 : _a5.call(options, conversationId, false);
             },
             "Failed to load conversation"
           );
@@ -87451,6 +88147,7 @@ var ConversationController = class {
   }
   /** Regenerates AI title for a conversation. */
   async regenerateTitle(conversationId) {
+    var _a5, _b3;
     const { plugin } = this.deps;
     if (!plugin.settings.enableAutoTitleGeneration) return;
     const fullConv = await plugin.getConversationById(conversationId);
@@ -87459,7 +88156,7 @@ var ConversationController = class {
     if (!titleService) return;
     const firstUserMsg = fullConv.messages.find((m4) => m4.role === "user");
     if (!firstUserMsg) return;
-    const userContent = firstUserMsg.displayContent || firstUserMsg.content;
+    const userContent = (_b3 = (_a5 = firstUserMsg.displayContent) != null ? _a5 : extractUserDisplayContent(firstUserMsg.content)) != null ? _b3 : firstUserMsg.content;
     const expectedTitle = fullConv.title;
     await plugin.updateConversation(conversationId, { titleGenerationStatus: "pending" });
     this.updateHistoryDropdown();
@@ -89955,17 +90652,19 @@ function renderToolContent(content, toolCall, initialText) {
     renderExpandedContent(content, toolCall.name, toolCall.result, toolCall.input);
   }
 }
-function renderToolCall(parentEl, toolCall, toolCallElements) {
+function renderToolCall(parentEl, toolCall, toolCallElements, options = {}) {
+  var _a5;
   const { toolEl, header, statusEl, content, currentTaskEl } = createToolElementStructure(parentEl, toolCall);
   toolEl.dataset.toolId = toolCall.id;
   toolCallElements.set(toolCall.id, toolEl);
   setGenericToolHeaderRight(statusEl, toolCall);
   renderToolContent(content, toolCall, "Running...");
-  const state = { isExpanded: false };
-  toolCall.isExpanded = false;
+  const initiallyExpanded = (_a5 = options.initiallyExpanded) != null ? _a5 : false;
+  const state = { isExpanded: initiallyExpanded };
+  toolCall.isExpanded = initiallyExpanded;
   const todoStatusEl = toolCall.name === TOOL_TODO_WRITE ? statusEl : null;
   setupCollapsible(toolEl, header, content, state, {
-    initiallyExpanded: false,
+    initiallyExpanded,
     onToggle: createTodoToggleHandler(currentTaskEl, todoStatusEl, (expanded) => {
       toolCall.isExpanded = expanded;
     }),
@@ -90016,7 +90715,8 @@ function updateToolCallResult(toolId, toolCall, toolCallElements) {
     renderExpandedContent(content, toolCall.name, toolCall.result, toolCall.input);
   }
 }
-function renderStoredToolCall(parentEl, toolCall) {
+function renderStoredToolCall(parentEl, toolCall, options = {}) {
+  var _a5;
   const { toolEl, header, statusEl, content, currentTaskEl } = createToolElementStructure(parentEl, toolCall);
   if (toolCall.name === TOOL_TODO_WRITE) {
     setTodoWriteStatus(statusEl, toolCall.input);
@@ -90027,7 +90727,7 @@ function renderStoredToolCall(parentEl, toolCall) {
   const state = { isExpanded: false };
   const todoStatusEl = toolCall.name === TOOL_TODO_WRITE ? statusEl : null;
   setupCollapsible(toolEl, header, content, state, {
-    initiallyExpanded: false,
+    initiallyExpanded: (_a5 = options.initiallyExpanded) != null ? _a5 : false,
     onToggle: createTodoToggleHandler(currentTaskEl, todoStatusEl),
     baseAriaLabel: getToolLabel(toolCall.name, toolCall.input)
   });
@@ -90826,7 +91526,7 @@ var InputController = class {
    * Handles setting fallback title, firing async generation, and updating UI.
    */
   async triggerTitleGeneration() {
-    var _a5, _b3;
+    var _a5, _b3, _c2, _d;
     const { plugin, state, conversationController } = this.deps;
     if (state.messages.length !== 1) {
       return;
@@ -90843,7 +91543,7 @@ var InputController = class {
     if (!firstUserMsg) {
       return;
     }
-    const userContent = firstUserMsg.displayContent || firstUserMsg.content;
+    const userContent = (_d = (_c2 = firstUserMsg.displayContent) != null ? _c2 : extractUserDisplayContent(firstUserMsg.content)) != null ? _d : firstUserMsg.content;
     const fallbackTitle = conversationController.generateFallbackTitle(userContent);
     await plugin.renameConversation(state.currentConversationId, fallbackTitle);
     if (!plugin.settings.enableAutoTitleGeneration) {
@@ -91522,18 +92222,26 @@ var SelectionController = class {
       if (!this.storedSelection) return;
       this.inputHandoffGraceUntil = Date.now() + INPUT_HANDOFF_GRACE_MS;
     };
+    this.focusScopeFocusInHandler = (event) => {
+      const relatedTarget = event.relatedTarget;
+      if (relatedTarget && this.isNodeWithinFocusScopes(relatedTarget)) return;
+      this.showHighlight();
+    };
     this.app = app;
     this.indicatorEl = indicatorEl;
     this.inputEl = inputEl;
-    this.focusScopeEl = focusScopeEl != null ? focusScopeEl : inputEl;
+    this.focusScopeEls = this.normalizeFocusScopes(focusScopeEl);
     this.contextRowEl = contextRowEl;
     this.onVisibilityChange = onVisibilityChange != null ? onVisibilityChange : null;
   }
   start() {
     if (this.pollInterval) return;
     this.inputEl.addEventListener("pointerdown", this.focusScopePointerDownHandler);
-    if (this.focusScopeEl !== this.inputEl) {
-      this.focusScopeEl.addEventListener("pointerdown", this.focusScopePointerDownHandler);
+    for (const focusScopeEl of this.focusScopeEls) {
+      if (focusScopeEl !== this.inputEl) {
+        focusScopeEl.addEventListener("pointerdown", this.focusScopePointerDownHandler);
+      }
+      focusScopeEl.addEventListener("focusin", this.focusScopeFocusInHandler);
     }
     this.pollInterval = window.setInterval(() => this.poll(), SELECTION_POLL_INTERVAL);
   }
@@ -91543,8 +92251,11 @@ var SelectionController = class {
       this.pollInterval = null;
     }
     this.inputEl.removeEventListener("pointerdown", this.focusScopePointerDownHandler);
-    if (this.focusScopeEl !== this.inputEl) {
-      this.focusScopeEl.removeEventListener("pointerdown", this.focusScopePointerDownHandler);
+    for (const focusScopeEl of this.focusScopeEls) {
+      if (focusScopeEl !== this.inputEl) {
+        focusScopeEl.removeEventListener("pointerdown", this.focusScopePointerDownHandler);
+      }
+      focusScopeEl.removeEventListener("focusin", this.focusScopeFocusInHandler);
     }
     this.clear();
   }
@@ -91673,9 +92384,22 @@ var SelectionController = class {
     var _a5, _b3, _c2;
     return (_c2 = (_b3 = ownerDocument == null ? void 0 : ownerDocument.activeElement) != null ? _b3 : (_a5 = this.inputEl.ownerDocument) == null ? void 0 : _a5.activeElement) != null ? _c2 : null;
   }
+  normalizeFocusScopes(focusScopeEl) {
+    const focusScopes = Array.isArray(focusScopeEl) ? focusScopeEl : [focusScopeEl != null ? focusScopeEl : this.inputEl];
+    return Array.from(new Set(focusScopes.filter(Boolean)));
+  }
+  getFocusScopeOwnerDocument() {
+    var _a5, _b3, _c2;
+    return (_c2 = (_b3 = (_a5 = this.focusScopeEls[0]) == null ? void 0 : _a5.ownerDocument) != null ? _b3 : this.inputEl.ownerDocument) != null ? _c2 : null;
+  }
+  isNodeWithinFocusScopes(node) {
+    return this.focusScopeEls.some(
+      (focusScopeEl) => node === focusScopeEl || focusScopeEl.contains(node)
+    );
+  }
   isFocusWithinChatSidebar() {
-    const activeElement = this.getActiveElement(this.focusScopeEl.ownerDocument);
-    return activeElement !== null && (activeElement === this.focusScopeEl || this.focusScopeEl.contains(activeElement));
+    const activeElement = this.getActiveElement(this.getFocusScopeOwnerDocument());
+    return activeElement !== null && this.isNodeWithinFocusScopes(activeElement);
   }
   isNativeEditorSelectionVisible(sel) {
     if (!sel.editorView || sel.from === void 0 || sel.to === void 0) {
@@ -91692,7 +92416,7 @@ var SelectionController = class {
     if (this.isFocusWithinChatSidebar()) {
       return false;
     }
-    return this.selectionMatchesRanges(this.getDocumentSelection(this.focusScopeEl.ownerDocument), ranges);
+    return this.selectionMatchesRanges(this.getDocumentSelection(this.getFocusScopeOwnerDocument()), ranges);
   }
   clearWhenMarkdownContextIsUnavailable() {
     if (!this.storedSelection) return;
@@ -92450,15 +93174,16 @@ function shortenPath2(filePath, maxLength = 40) {
   }
   return `${firstDir}/.../${filename}`;
 }
-function createWriteEditBlock(parentEl, toolCall) {
+function createWriteEditBlock(parentEl, toolCall, options = {}) {
+  var _a5;
   const filePath = toolCall.input.file_path || "file";
   const toolName = toolCall.name;
+  const baseAriaLabel = `${toolName}: ${shortenPath2(filePath)}`;
   const wrapperEl = parentEl.createDiv({ cls: "claudian-write-edit-block" });
   wrapperEl.dataset.toolId = toolCall.id;
   const headerEl = wrapperEl.createDiv({ cls: "claudian-write-edit-header" });
   headerEl.setAttribute("tabindex", "0");
   headerEl.setAttribute("role", "button");
-  headerEl.setAttribute("aria-label", `${toolName}: ${shortenPath2(filePath)} - click to expand`);
   const iconEl = headerEl.createDiv({ cls: "claudian-write-edit-icon" });
   iconEl.setAttribute("aria-hidden", "true");
   (0, import_obsidian31.setIcon)(iconEl, getToolIcon(toolName));
@@ -92484,7 +93209,10 @@ function createWriteEditBlock(parentEl, toolCall) {
     toolCall,
     isExpanded: false
   };
-  setupCollapsible(wrapperEl, headerEl, contentEl, state);
+  setupCollapsible(wrapperEl, headerEl, contentEl, state, {
+    initiallyExpanded: (_a5 = options.initiallyExpanded) != null ? _a5 : false,
+    baseAriaLabel
+  });
   return state;
 }
 function updateWriteEditWithDiff(state, diffData) {
@@ -92522,9 +93250,11 @@ function finalizeWriteEditBlock(state, isError) {
     state.wrapperEl.addClass("done");
   }
 }
-function renderStoredWriteEdit(parentEl, toolCall) {
+function renderStoredWriteEdit(parentEl, toolCall, options = {}) {
+  var _a5;
   const filePath = toolCall.input.file_path || "file";
   const toolName = toolCall.name;
+  const baseAriaLabel = `${toolName}: ${shortenPath2(filePath)}`;
   const isError = toolCall.status === "error" || toolCall.status === "blocked";
   const wrapperEl = parentEl.createDiv({ cls: "claudian-write-edit-block" });
   if (isError) {
@@ -92565,7 +93295,10 @@ function renderStoredWriteEdit(parentEl, toolCall) {
     doneEl.setText(isError ? "ERROR" : "DONE");
   }
   const state = { isExpanded: false };
-  setupCollapsible(wrapperEl, headerEl, contentEl, state);
+  setupCollapsible(wrapperEl, headerEl, contentEl, state, {
+    initiallyExpanded: (_a5 = options.initiallyExpanded) != null ? _a5 : false,
+    baseAriaLabel
+  });
   return wrapperEl;
 }
 
@@ -92788,6 +93521,9 @@ var _StreamController = class _StreamController {
   shouldDeferMathRendering() {
     return this.deps.plugin.settings.deferMathRenderingDuringStreaming !== false;
   }
+  shouldExpandFileEditsByDefault() {
+    return this.deps.plugin.settings.expandFileEditsByDefault === true;
+  }
   getStreamingRenderOptions(content) {
     return this.shouldDeferMathRendering() && hasStreamingMathDelimiters(content) ? { deferMath: true } : void 0;
   }
@@ -92824,11 +93560,15 @@ var _StreamController = class _StreamController {
     const { toolCall, parentEl } = pending;
     if (!parentEl) return;
     if (isWriteEditTool(toolCall.name)) {
-      const writeEditState = createWriteEditBlock(parentEl, toolCall);
+      const writeEditState = createWriteEditBlock(parentEl, toolCall, {
+        initiallyExpanded: this.shouldExpandFileEditsByDefault()
+      });
       state.writeEditStates.set(toolId, writeEditState);
       state.toolCallElements.set(toolId, writeEditState.wrapperEl);
     } else {
-      renderToolCall(parentEl, toolCall, state.toolCallElements);
+      renderToolCall(parentEl, toolCall, state.toolCallElements, {
+        initiallyExpanded: toolCall.name === TOOL_APPLY_PATCH && this.shouldExpandFileEditsByDefault()
+      });
     }
     state.pendingTools.delete(toolId);
   }
@@ -93997,6 +94737,15 @@ function replaceImageEmbedsWithHtml(markdown, app, options) {
   );
 }
 
+// src/features/chat/utils/conversationDirectoryTitle.ts
+var CONVERSATION_DIRECTORY_TITLE_MAX_LENGTH = 80;
+function formatConversationDirectoryTitle(text) {
+  const firstLine = text.split(/\r?\n/).map((line) => line.trim()).find(Boolean);
+  if (!firstLine) return "";
+  if (firstLine.length <= CONVERSATION_DIRECTORY_TITLE_MAX_LENGTH) return firstLine;
+  return `${firstLine.slice(0, CONVERSATION_DIRECTORY_TITLE_MAX_LENGTH - 3)}...`;
+}
+
 // src/features/chat/rendering/MessageRenderer.ts
 function runRendererAction(action) {
   void action().catch(() => {
@@ -94034,6 +94783,22 @@ var MessageRenderer = class {
   getSubagentLifecycleAdapter(toolName) {
     return resolveSubagentLifecycleAdapter(this.getCapabilities().providerId, toolName);
   }
+  shouldExpandFileEditsByDefault() {
+    var _a5;
+    return ((_a5 = this.plugin.settings) == null ? void 0 : _a5.expandFileEditsByDefault) === true;
+  }
+  getUserMessageTextToShow(msg) {
+    var _a5, _b3;
+    return (_b3 = (_a5 = msg.displayContent) != null ? _a5 : extractUserDisplayContent(msg.content)) != null ? _b3 : msg.content;
+  }
+  applyTocTitle(msgEl, text) {
+    const tocTitle = formatConversationDirectoryTitle(text);
+    if (tocTitle) {
+      msgEl.setAttribute("data-toc-title", tocTitle);
+    } else {
+      msgEl.removeAttribute("data-toc-title");
+    }
+  }
   // ============================================
   // Streaming Message Rendering
   // ============================================
@@ -94042,12 +94807,11 @@ var MessageRenderer = class {
    * Returns the message element for content updates.
    */
   addMessage(msg) {
-    var _a5, _b3;
     if (msg.role === "user" && msg.images && msg.images.length > 0) {
       this.renderMessageImages(this.messagesEl, msg.images);
     }
     if (msg.role === "user") {
-      const textToShow = (_a5 = msg.displayContent) != null ? _a5 : msg.content;
+      const textToShow = this.getUserMessageTextToShow(msg);
       if (!textToShow) {
         this.scrollToBottom();
         const lastChild = this.messagesEl.lastElementChild;
@@ -94063,11 +94827,12 @@ var MessageRenderer = class {
     });
     const contentEl = msgEl.createDiv({ cls: "claudian-message-content", attr: { dir: "auto" } });
     if (msg.role === "user") {
-      const textToShow = (_b3 = msg.displayContent) != null ? _b3 : msg.content;
+      const textToShow = this.getUserMessageTextToShow(msg);
       if (textToShow) {
         const textEl = contentEl.createDiv({ cls: "claudian-text-block" });
         void this.renderContent(textEl, textToShow);
         this.addUserCopyButton(msgEl, textToShow);
+        this.applyTocTitle(msgEl, textToShow);
       }
       if (this.rewindCallback || this.forkCallback) {
         this.liveMessageEls.set(msg.id, msgEl);
@@ -94077,7 +94842,7 @@ var MessageRenderer = class {
     return msgEl;
   }
   updateLiveUserMessage(msg) {
-    var _a5, _b3;
+    var _a5;
     if (msg.role !== "user") {
       return;
     }
@@ -94090,10 +94855,13 @@ var MessageRenderer = class {
       return;
     }
     contentEl.empty();
-    const textToShow = (_b3 = msg.displayContent) != null ? _b3 : msg.content;
+    const textToShow = this.getUserMessageTextToShow(msg);
     if (textToShow) {
       const textEl = contentEl.createDiv({ cls: "claudian-text-block" });
       void this.renderContent(textEl, textToShow);
+      this.applyTocTitle(msgEl, textToShow);
+    } else {
+      msgEl.removeAttribute("data-toc-title");
     }
     const toolbar = msgEl.querySelector(".claudian-user-msg-actions");
     if (toolbar) {
@@ -94133,7 +94901,6 @@ var MessageRenderer = class {
     return newWelcomeEl;
   }
   renderStoredMessage(msg, allMessages, index) {
-    var _a5, _b3;
     if (msg.isInterrupt && (msg.role === "user" || !this.hasVisibleContent(msg))) {
       this.renderInterruptMessage();
       return;
@@ -94145,7 +94912,7 @@ var MessageRenderer = class {
       this.renderMessageImages(this.messagesEl, msg.images);
     }
     if (msg.role === "user") {
-      const textToShow = (_a5 = msg.displayContent) != null ? _a5 : msg.content;
+      const textToShow = this.getUserMessageTextToShow(msg);
       if (!textToShow) {
         return;
       }
@@ -94162,17 +94929,18 @@ var MessageRenderer = class {
     });
     const contentEl = msgEl.createDiv({ cls: "claudian-message-content", attr: { dir: "auto" } });
     if (msg.role === "user") {
-      const textToShow = (_b3 = msg.displayContent) != null ? _b3 : msg.content;
+      const textToShow = this.getUserMessageTextToShow(msg);
       if (textToShow) {
         const textEl = contentEl.createDiv({ cls: "claudian-text-block" });
         void this.renderContent(textEl, textToShow);
         this.addUserCopyButton(msgEl, textToShow);
+        this.applyTocTitle(msgEl, textToShow);
       }
-      if (msg.userMessageId && this.isRewindEligible(allMessages, index)) {
-        if (this.rewindCallback) {
+      if (msg.userMessageId) {
+        if (this.rewindCallback && this.isRewindEligible(allMessages, index)) {
           this.addRewindButton(msgEl, msg.id);
         }
-        if (this.forkCallback) {
+        if (this.forkCallback && this.isForkEligible(allMessages, index)) {
           this.addForkButton(msgEl, msg.id);
         }
       }
@@ -94202,6 +94970,11 @@ var MessageRenderer = class {
     return false;
   }
   isRewindEligible(allMessages, index) {
+    if (!allMessages || index === void 0) return false;
+    const ctx = findRewindContext(allMessages, index);
+    return ctx.hasResponse;
+  }
+  isForkEligible(allMessages, index) {
     if (!allMessages || index === void 0) return false;
     const ctx = findRewindContext(allMessages, index);
     return !!ctx.prevAssistantUuid && ctx.hasResponse;
@@ -94297,13 +95070,17 @@ var MessageRenderer = class {
     if (!this.shouldRenderToolCall(toolCall)) return;
     const subagentLifecycleAdapter = this.getSubagentLifecycleAdapter(toolCall.name);
     if (isWriteEditTool(toolCall.name)) {
-      renderStoredWriteEdit(contentEl, toolCall);
+      renderStoredWriteEdit(contentEl, toolCall, {
+        initiallyExpanded: this.shouldExpandFileEditsByDefault()
+      });
     } else if (isSubagentToolName(toolCall.name)) {
       this.renderTaskSubagent(contentEl, toolCall);
     } else if ((subagentLifecycleAdapter == null ? void 0 : subagentLifecycleAdapter.isSpawnTool(toolCall.name)) && msg) {
       this.renderProviderLifecycleSubagent(contentEl, toolCall, msg);
     } else {
-      renderStoredToolCall(contentEl, toolCall);
+      renderStoredToolCall(contentEl, toolCall, {
+        initiallyExpanded: toolCall.name === TOOL_APPLY_PATCH && this.shouldExpandFileEditsByDefault()
+      });
     }
   }
   shouldRenderToolCall(toolCall) {
@@ -94565,20 +95342,22 @@ var MessageRenderer = class {
   }
   refreshActionButtons(msg, allMessages, index) {
     if (!msg.userMessageId) return;
-    if (!this.isRewindEligible(allMessages, index)) return;
+    const canRewind = this.isRewindEligible(allMessages, index);
+    const canFork = this.isForkEligible(allMessages, index);
+    if (!canRewind && !canFork) return;
     const msgEl = this.liveMessageEls.get(msg.id);
     if (!msgEl) return;
-    if (this.rewindCallback && !msgEl.querySelector(".claudian-message-rewind-btn")) {
+    if (canRewind && this.rewindCallback && !msgEl.querySelector(".claudian-message-rewind-btn")) {
       this.addRewindButton(msgEl, msg.id);
     }
-    if (this.forkCallback && !msgEl.querySelector(".claudian-message-fork-btn")) {
+    if (canFork && this.forkCallback && !msgEl.querySelector(".claudian-message-fork-btn")) {
       this.addForkButton(msgEl, msg.id);
     }
-    this.cleanupLiveMessageEl(msg.id, msgEl);
+    this.cleanupLiveMessageEl(msg.id, msgEl, { canRewind, canFork });
   }
-  cleanupLiveMessageEl(msgId, msgEl) {
-    const needsRewind = this.rewindCallback && !msgEl.querySelector(".claudian-message-rewind-btn");
-    const needsFork = this.forkCallback && !msgEl.querySelector(".claudian-message-fork-btn");
+  cleanupLiveMessageEl(msgId, msgEl, expectedActions) {
+    const needsRewind = expectedActions.canRewind && this.rewindCallback && !msgEl.querySelector(".claudian-message-rewind-btn");
+    const needsFork = expectedActions.canFork && this.forkCallback && !msgEl.querySelector(".claudian-message-fork-btn");
     if (!needsRewind && !needsFork) {
       this.liveMessageEls.delete(msgId);
     }
@@ -96368,10 +97147,6 @@ var MentionDropdownController = class {
         return;
       }
       const searchText = textBeforeCursor.substring(lastAtIndex + 1);
-      if (/\s/.test(searchText)) {
-        this.hide();
-        return;
-      }
       this.mentionStartIndex = lastAtIndex;
       this.showMentionDropdown(searchText);
     }, 200);
@@ -96473,6 +97248,9 @@ var MentionDropdownController = class {
       }
       const firstVaultItemIndex2 = this.filteredMentionItems.length;
       const vaultItemCount2 = this.appendVaultItems(searchLower);
+      if (this.hideIfNoResults()) {
+        return;
+      }
       if (this.filteredContextFiles.length === 0 && vaultItemCount2 > 0) {
         this.selectedMentionIndex = firstVaultItemIndex2;
       } else {
@@ -96519,6 +97297,9 @@ var MentionDropdownController = class {
     }
     const firstVaultItemIndex = this.filteredMentionItems.length;
     const vaultItemCount = this.appendVaultItems(searchLower);
+    if (this.hideIfNoResults()) {
+      return;
+    }
     this.selectedMentionIndex = vaultItemCount > 0 ? firstVaultItemIndex : 0;
     this.renderMentionDropdown();
   }
@@ -96576,6 +97357,11 @@ var MentionDropdownController = class {
       }
     }
     return merged.length;
+  }
+  hideIfNoResults() {
+    if (this.filteredMentionItems.length > 0) return false;
+    this.hide();
+    return true;
   }
   renderMentionDropdown() {
     this.dropdown.render({
@@ -98755,13 +99541,17 @@ var NavigationSidebar = class {
   constructor(parentEl, messagesEl) {
     this.parentEl = parentEl;
     this.messagesEl = messagesEl;
+    this.tocPopover = null;
     this.scrollHandler = () => {
     };
+    this.outsideClickHandler = null;
+    this.mutationObserver = null;
     this.pendingVisibilityFrame = null;
     this.isVisible = null;
     this.container = this.parentEl.createDiv({ cls: "claudian-nav-sidebar" });
     this.topBtn = this.createButton("claudian-nav-btn-top", "chevrons-up", "Scroll to top");
     this.prevBtn = this.createButton("claudian-nav-btn-prev", "chevron-up", "Previous message");
+    this.tocBtn = this.createButton("claudian-nav-btn-toc", "list-tree", "Conversation directory");
     this.nextBtn = this.createButton("claudian-nav-btn-next", "chevron-down", "Next message");
     this.bottomBtn = this.createButton("claudian-nav-btn-bottom", "chevrons-down", "Scroll to bottom");
     this.setupEventListeners();
@@ -98774,6 +99564,7 @@ var NavigationSidebar = class {
     return btn;
   }
   setupEventListeners() {
+    var _a5, _b3;
     this.scrollHandler = () => this.updateVisibility();
     this.messagesEl.addEventListener("scroll", this.scrollHandler, { passive: true });
     this.topBtn.addEventListener("click", () => {
@@ -98784,6 +99575,35 @@ var NavigationSidebar = class {
     });
     this.prevBtn.addEventListener("click", () => this.scrollToMessage("prev"));
     this.nextBtn.addEventListener("click", () => this.scrollToMessage("next"));
+    this.tocBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.toggleDirectory();
+    });
+    this.outsideClickHandler = (event) => {
+      var _a6;
+      const target = event.target;
+      if (!target) return;
+      const containerContainsTarget = typeof this.container.contains === "function" && this.container.contains(target);
+      const popoverContainsTarget = typeof ((_a6 = this.tocPopover) == null ? void 0 : _a6.contains) === "function" && this.tocPopover.contains(target);
+      if (!containerContainsTarget && !popoverContainsTarget) {
+        this.closeDirectory();
+      }
+    };
+    (_b3 = (_a5 = this.parentEl.ownerDocument) == null ? void 0 : _a5.addEventListener) == null ? void 0 : _b3.call(_a5, "click", this.outsideClickHandler);
+    if (typeof MutationObserver !== "undefined") {
+      this.mutationObserver = new MutationObserver((mutations) => {
+        this.updateVisibility();
+        if (this.shouldRefreshDirectory(mutations)) {
+          this.refreshOpenDirectory();
+        }
+      });
+      this.mutationObserver.observe(this.messagesEl, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["data-toc-title"]
+      });
+    }
   }
   /**
    * Updates visibility of the sidebar based on scroll state.
@@ -98800,9 +99620,101 @@ var NavigationSidebar = class {
   applyVisibility() {
     const { scrollHeight, clientHeight } = this.messagesEl;
     const isScrollable = scrollHeight > clientHeight + 50;
+    this.tocBtn.classList.remove("claudian-hidden");
     if (this.isVisible === isScrollable) return;
     this.isVisible = isScrollable;
     this.container.classList.toggle("visible", isScrollable);
+  }
+  getDirectoryEntries() {
+    return Array.from(this.messagesEl.querySelectorAll('.claudian-message-user, [data-role="user"]')).map((el2) => ({
+      el: el2,
+      title: this.getDirectoryTitle(el2)
+    })).filter((entry) => entry.title.length > 0);
+  }
+  getDirectoryTitle(el2) {
+    var _a5, _b3, _c2;
+    const explicitTitle = ((_a5 = el2.getAttribute("data-toc-title")) != null ? _a5 : "").trim();
+    if (explicitTitle) return explicitTitle;
+    const contentEl = el2.querySelector(".claudian-message-content");
+    return formatConversationDirectoryTitle((_c2 = (_b3 = contentEl == null ? void 0 : contentEl.textContent) != null ? _b3 : el2.textContent) != null ? _c2 : "");
+  }
+  shouldRefreshDirectory(mutations) {
+    if (!this.tocPopover) return false;
+    return mutations.some((mutation) => {
+      if (mutation.type === "attributes") {
+        return mutation.attributeName === "data-toc-title" && this.isDirectoryMessageElement(mutation.target);
+      }
+      if (mutation.type !== "childList") return false;
+      return Array.from(mutation.addedNodes).some((node) => this.nodeContainsDirectoryMessage(node)) || Array.from(mutation.removedNodes).some((node) => this.nodeContainsDirectoryMessage(node));
+    });
+  }
+  nodeContainsDirectoryMessage(node) {
+    if (this.isDirectoryMessageElement(node)) return true;
+    const candidate = node;
+    return typeof candidate.querySelector === "function" && candidate.querySelector('.claudian-message-user, [data-role="user"]') !== null;
+  }
+  isDirectoryMessageElement(node) {
+    var _a5, _b3, _c2;
+    const candidate = node;
+    if (typeof candidate.matches === "function") {
+      return candidate.matches('.claudian-message-user, [data-role="user"]');
+    }
+    return ((_b3 = (_a5 = candidate.classList) == null ? void 0 : _a5.contains) == null ? void 0 : _b3.call(_a5, "claudian-message-user")) === true || ((_c2 = candidate.getAttribute) == null ? void 0 : _c2.call(candidate, "data-role")) === "user";
+  }
+  toggleDirectory() {
+    if (this.tocPopover) {
+      this.closeDirectory();
+      return;
+    }
+    this.openDirectory();
+  }
+  openDirectory() {
+    const entries = this.getDirectoryEntries();
+    this.closeDirectory();
+    this.tocPopover = this.parentEl.createDiv({ cls: "claudian-nav-toc-popover" });
+    this.tocPopover.createDiv({ cls: "claudian-nav-toc-title", text: "Conversation directory" });
+    const listEl = this.tocPopover.createDiv({ cls: "claudian-nav-toc-list" });
+    if (entries.length === 0) {
+      listEl.createDiv({
+        cls: "claudian-nav-toc-empty",
+        text: "No user prompts in this conversation"
+      });
+      return;
+    }
+    entries.forEach((entry, index) => {
+      const itemEl = listEl.createDiv({
+        cls: "claudian-nav-toc-item",
+        text: `${index + 1}. ${entry.title}`
+      });
+      itemEl.setAttribute("role", "button");
+      itemEl.setAttribute("tabindex", "0");
+      itemEl.setAttribute("title", entry.title);
+      const selectEntry = () => {
+        this.scrollToElement(entry.el);
+        this.closeDirectory();
+      };
+      itemEl.addEventListener("click", selectEntry);
+      itemEl.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        selectEntry();
+      });
+    });
+  }
+  refreshOpenDirectory() {
+    if (!this.tocPopover) return;
+    this.openDirectory();
+  }
+  closeDirectory() {
+    var _a5;
+    (_a5 = this.tocPopover) == null ? void 0 : _a5.remove();
+    this.tocPopover = null;
+  }
+  scrollToElement(el2) {
+    this.messagesEl.scrollTo({
+      top: Math.max(el2.offsetTop - 10, 0),
+      behavior: "smooth"
+    });
   }
   /**
    * Scrolls to previous or next user message, skipping assistant messages.
@@ -98815,7 +99727,7 @@ var NavigationSidebar = class {
     if (direction === "prev") {
       for (let i = messages.length - 1; i >= 0; i--) {
         if (messages[i].offsetTop < scrollTop - threshold) {
-          this.messagesEl.scrollTo({ top: messages[i].offsetTop - 10, behavior: "smooth" });
+          this.scrollToElement(messages[i]);
           return;
         }
       }
@@ -98823,7 +99735,7 @@ var NavigationSidebar = class {
     } else {
       for (let i = 0; i < messages.length; i++) {
         if (messages[i].offsetTop > scrollTop + threshold) {
-          this.messagesEl.scrollTo({ top: messages[i].offsetTop - 10, behavior: "smooth" });
+          this.scrollToElement(messages[i]);
           return;
         }
       }
@@ -98831,10 +99743,18 @@ var NavigationSidebar = class {
     }
   }
   destroy() {
+    var _a5, _b3, _c2;
     if (this.pendingVisibilityFrame !== null) {
       cancelScheduledAnimationFrame(this.pendingVisibilityFrame);
       this.pendingVisibilityFrame = null;
     }
+    this.closeDirectory();
+    if (this.outsideClickHandler) {
+      (_b3 = (_a5 = this.parentEl.ownerDocument) == null ? void 0 : _a5.removeEventListener) == null ? void 0 : _b3.call(_a5, "click", this.outsideClickHandler);
+      this.outsideClickHandler = null;
+    }
+    (_c2 = this.mutationObserver) == null ? void 0 : _c2.disconnect();
+    this.mutationObserver = null;
     this.messagesEl.removeEventListener("scroll", this.scrollHandler);
     this.container.remove();
   }
@@ -99381,6 +100301,11 @@ function generateTabId() {
 }
 
 // src/features/chat/tabs/Tab.ts
+function getSharedSelectionFocusScopeEls(component) {
+  var _a5, _b3;
+  const host = component;
+  return (_b3 = (_a5 = host.getSharedSelectionFocusScopeEls) == null ? void 0 : _a5.call(host)) != null ? _b3 : [];
+}
 function getBlankTabModelOptions(settings11) {
   return ProviderRegistry.getEnabledProviderIds(settings11).flatMap((providerId) => {
     var _a5, _b3;
@@ -99678,7 +100603,8 @@ function buildTabDOM(contentEl) {
   const messagesEl = messagesWrapperEl.createDiv({ cls: "claudian-messages" });
   const welcomeEl = messagesEl.createDiv({ cls: "claudian-welcome" });
   const statusPanelContainerEl = contentEl.createDiv({ cls: "claudian-status-panel-container" });
-  const inputContainerEl = contentEl.createDiv({ cls: "claudian-input-container" });
+  const inputComposerEl = contentEl.createDiv({ cls: "claudian-input-composer" });
+  const inputContainerEl = inputComposerEl.createDiv({ cls: "claudian-input-container" });
   const queueIndicatorEl = inputContainerEl.createDiv({ cls: "claudian-input-queue-row" });
   const navRowEl = inputContainerEl.createDiv({ cls: "claudian-input-nav-row" });
   const inputWrapper = inputContainerEl.createDiv({ cls: "claudian-input-wrapper" });
@@ -99696,6 +100622,7 @@ function buildTabDOM(contentEl) {
     messagesEl,
     welcomeEl,
     statusPanelContainerEl,
+    inputComposerEl,
     inputContainerEl,
     queueIndicatorEl,
     inputWrapper,
@@ -100194,7 +101121,7 @@ function initializeTabControllers(tab, plugin, component, arg4, arg5, arg6, arg7
     dom.inputEl,
     dom.contextRowEl,
     () => autoResizeTextarea(dom.inputEl),
-    dom.contentEl
+    [dom.contentEl, dom.inputComposerEl, ...getSharedSelectionFocusScopeEls(component)]
   );
   tab.controllers.browserSelectionController = new BrowserSelectionController(
     plugin.app,
@@ -100456,13 +101383,6 @@ function wireTabInputEvents(tab, plugin) {
   };
   dom.inputEl.addEventListener("input", inputHandler);
   dom.eventCleanups.push(() => dom.inputEl.removeEventListener("input", inputHandler));
-  const focusHandler = (e2) => {
-    var _a6;
-    if (e2.relatedTarget && dom.contentEl.contains(e2.relatedTarget)) return;
-    (_a6 = controllers.selectionController) == null ? void 0 : _a6.showHighlight();
-  };
-  dom.contentEl.addEventListener("focusin", focusHandler);
-  dom.eventCleanups.push(() => dom.contentEl.removeEventListener("focusin", focusHandler));
   const SCROLL_THRESHOLD = 20;
   const RE_ENABLE_DELAY = 150;
   let reEnableTimeout = null;
@@ -100745,8 +101665,15 @@ function updatePlanModeUI(tab, plugin, mode) {
 }
 
 // src/features/chat/tabs/TabBar.ts
+var EXPANDED_TITLE_MAX_LENGTH = 32;
+var TRUNCATED_TITLE_SUFFIX = "...";
 var TabBar = class {
   constructor(containerEl, callbacks) {
+    this.expandedTitleTabIds = /* @__PURE__ */ new Set();
+    this.lastKnownScrollLeft = 0;
+    this.handleScroll = () => {
+      this.captureScrollPosition();
+    };
     this.containerEl = containerEl;
     this.callbacks = callbacks;
     this.build();
@@ -100754,16 +101681,20 @@ var TabBar = class {
   /** Builds the tab bar UI. */
   build() {
     this.containerEl.addClass("claudian-tab-badges");
+    this.containerEl.addEventListener("scroll", this.handleScroll);
   }
   /**
    * Updates the tab bar with new tab data.
    * @param items Tab items to render.
    */
   update(items) {
+    this.captureStableScrollPosition();
+    this.pruneExpandedTitleState(items);
     this.containerEl.empty();
     for (const item of items) {
       this.renderBadge(item);
     }
+    this.restoreScrollPosition();
   }
   /** Renders a single tab badge. */
   renderBadge(item) {
@@ -100775,14 +101706,26 @@ var TabBar = class {
     } else if (item.isStreaming) {
       stateClass = "claudian-tab-badge-streaming";
     }
+    const isTitleExpanded = this.expandedTitleTabIds.has(item.id);
     const badgeEl = this.containerEl.createDiv({
-      cls: `claudian-tab-badge ${stateClass}`,
-      text: String(item.index)
+      cls: [
+        "claudian-tab-badge",
+        stateClass,
+        isTitleExpanded ? "claudian-tab-badge-expanded" : ""
+      ].filter(Boolean).join(" "),
+      text: this.getBadgeLabel(item)
     });
     badgeEl.setAttribute("aria-label", item.title);
     badgeEl.setAttribute("data-provider", item.providerId);
+    badgeEl.setAttribute("data-title-expanded", isTitleExpanded ? "true" : "false");
     badgeEl.addEventListener("click", () => {
+      this.captureScrollPosition();
       this.callbacks.onTabClick(item.id);
+    });
+    badgeEl.addEventListener("dblclick", (e2) => {
+      e2.preventDefault();
+      e2.stopPropagation();
+      this.toggleBadgeTitle(item, badgeEl);
     });
     if (item.canClose) {
       badgeEl.addEventListener("contextmenu", (e2) => {
@@ -100795,6 +101738,60 @@ var TabBar = class {
   destroy() {
     this.containerEl.empty();
     this.containerEl.removeClass("claudian-tab-badges");
+    this.containerEl.removeEventListener("scroll", this.handleScroll);
+    this.expandedTitleTabIds.clear();
+    this.lastKnownScrollLeft = 0;
+  }
+  captureScrollPosition() {
+    this.lastKnownScrollLeft = this.containerEl.scrollLeft;
+  }
+  restoreScrollPosition() {
+    var _a5;
+    const scrollLeft = this.lastKnownScrollLeft;
+    this.containerEl.scrollLeft = scrollLeft;
+    if (scrollLeft <= 0) return;
+    scheduleAnimationFrame(() => {
+      if (this.containerEl.scrollLeft !== 0) return;
+      this.containerEl.scrollLeft = scrollLeft;
+    }, (_a5 = this.containerEl.ownerDocument.defaultView) != null ? _a5 : null);
+  }
+  captureStableScrollPosition() {
+    const currentScrollLeft = this.containerEl.scrollLeft;
+    if (currentScrollLeft > 0 || this.lastKnownScrollLeft === 0) {
+      this.lastKnownScrollLeft = currentScrollLeft;
+    }
+  }
+  pruneExpandedTitleState(items) {
+    const visibleTabIds = new Set(items.map((item) => item.id));
+    for (const tabId of this.expandedTitleTabIds) {
+      if (!visibleTabIds.has(tabId)) {
+        this.expandedTitleTabIds.delete(tabId);
+      }
+    }
+  }
+  toggleBadgeTitle(item, badgeEl) {
+    if (this.expandedTitleTabIds.has(item.id)) {
+      this.expandedTitleTabIds.delete(item.id);
+    } else {
+      this.expandedTitleTabIds.add(item.id);
+    }
+    const isTitleExpanded = this.expandedTitleTabIds.has(item.id);
+    badgeEl.textContent = this.getBadgeLabel(item);
+    badgeEl.toggleClass("claudian-tab-badge-expanded", isTitleExpanded);
+    badgeEl.setAttribute("data-title-expanded", isTitleExpanded ? "true" : "false");
+  }
+  getBadgeLabel(item) {
+    if (!this.expandedTitleTabIds.has(item.id)) {
+      return String(item.index);
+    }
+    return this.truncateExpandedTitle(item.title);
+  }
+  truncateExpandedTitle(title) {
+    const chars = Array.from(title);
+    if (chars.length <= EXPANDED_TITLE_MAX_LENGTH) {
+      return title;
+    }
+    return `${chars.slice(0, EXPANDED_TITLE_MAX_LENGTH - TRUNCATED_TITLE_SUFFIX.length).join("")}${TRUNCATED_TITLE_SUFFIX}`;
   }
 };
 
@@ -100947,7 +101944,7 @@ var TabManager = class {
    * @param tabId The tab to switch to.
    */
   async switchToTab(tabId) {
-    var _a5, _b3, _c2, _d;
+    var _a5, _b3, _c2, _d, _e2, _f2;
     const tab = this.tabs.get(tabId);
     if (!tab) {
       return;
@@ -100966,8 +101963,9 @@ var TabManager = class {
       }
       this.activeTabId = tabId;
       activateTab(tab);
+      (_b3 = (_a5 = this.callbacks).onActiveTabChanged) == null ? void 0 : _b3.call(_a5, previousTabId, tabId);
       if (tab.conversationId && tab.state.messages.length === 0) {
-        await ((_a5 = tab.controllers.conversationController) == null ? void 0 : _a5.switchTo(tab.conversationId));
+        await ((_c2 = tab.controllers.conversationController) == null ? void 0 : _c2.switchTo(tab.conversationId));
       } else if (tab.conversationId && tab.state.messages.length > 0 && tab.service && !tab.state.isStreaming && !tab.state.hasPendingConversationSave) {
         const conversation = this.plugin.getConversationSync(tab.conversationId);
         if (conversation) {
@@ -100976,9 +101974,9 @@ var TabManager = class {
           tab.service.syncConversationState(conversation, externalContextPaths);
         }
       } else if (!tab.conversationId && tab.state.messages.length === 0) {
-        (_b3 = tab.controllers.conversationController) == null ? void 0 : _b3.initializeWelcome();
+        (_d = tab.controllers.conversationController) == null ? void 0 : _d.initializeWelcome();
       }
-      (_d = (_c2 = this.callbacks).onTabSwitched) == null ? void 0 : _d.call(_c2, previousTabId, tabId);
+      (_f2 = (_e2 = this.callbacks).onTabSwitched) == null ? void 0 : _f2.call(_e2, previousTabId, tabId);
       this.maybePrimeProviderRuntime(tab);
     } finally {
       this.isSwitchingTab = false;
@@ -101554,14 +102552,13 @@ var ClaudianView = class extends import_obsidian46.ItemView {
     this.tabBarContainerEl = null;
     this.tabContentEl = null;
     this.navRowContent = null;
+    this.inputFooterEl = null;
+    this.inputNavRowHostEl = null;
+    this.activeInputSlotEl = null;
+    this.activeInputTabId = null;
     // DOM Elements
     this.viewContainerEl = null;
-    this.headerEl = null;
-    this.titleSlotEl = null;
     this.logoEl = null;
-    this.titleTextEl = null;
-    this.headerActionsEl = null;
-    this.headerActionsContent = null;
     this.newTabButtonEl = null;
     // Header elements
     this.historyDropdown = null;
@@ -101661,6 +102658,7 @@ var ClaudianView = class extends import_obsidian46.ItemView {
     this.buildHeader(header);
     this.navRowContent = this.buildNavRowContent();
     this.tabContentEl = this.viewContainerEl.createDiv({ cls: "claudian-tab-content-container" });
+    this.buildInputFooter();
     this.tabManager = new TabManager(
       this.plugin,
       this.tabContentEl,
@@ -101668,26 +102666,39 @@ var ClaudianView = class extends import_obsidian46.ItemView {
       {
         onTabCreated: () => {
           this.updateTabBar();
-          this.updateNavRowLocation();
+          this.updateHistoryDropdown();
+          this.updateInputLocation();
           this.persistTabState();
+          this.syncProviderBrandColor();
+        },
+        onActiveTabChanged: () => {
+          this.updateTabBar();
+          this.updateHistoryDropdown();
+          this.updateInputLocation();
           this.syncProviderBrandColor();
         },
         onTabSwitched: () => {
           this.updateTabBar();
           this.updateHistoryDropdown();
-          this.updateNavRowLocation();
+          this.updateInputLocation();
           this.persistTabState();
           this.syncProviderBrandColor();
         },
         onTabClosed: () => {
           this.updateTabBar();
+          this.updateHistoryDropdown();
+          this.updateInputLocation();
           this.persistTabState();
         },
-        onTabStreamingChanged: () => this.updateTabBar(),
+        onTabStreamingChanged: () => {
+          this.updateTabBar();
+          this.updateHistoryDropdown();
+        },
         onTabTitleChanged: () => this.updateTabBar(),
         onTabAttentionChanged: () => this.updateTabBar(),
         onTabConversationChanged: () => {
           this.updateTabBar();
+          this.updateHistoryDropdown();
           this.persistTabState();
           this.syncProviderBrandColor();
         },
@@ -101700,7 +102711,9 @@ var ClaudianView = class extends import_obsidian46.ItemView {
     this.wireEventHandlers();
     await this.restoreOrCreateTabs();
     this.syncProviderBrandColor();
-    this.updateLayoutForPosition();
+    this.attachNavRowContentToInputFooter();
+    this.updateInputLocation();
+    this.updateTabBarVisibility();
     (_b3 = this.tabManager) == null ? void 0 : _b3.primeProviderRuntime();
   }
   async onClose() {
@@ -101714,6 +102727,7 @@ var ClaudianView = class extends import_obsidian46.ItemView {
     }
     this.eventRefs = [];
     await this.persistTabStateImmediate();
+    this.restoreActiveInputToTabContent();
     await ((_a5 = this.tabManager) == null ? void 0 : _a5.destroy());
     this.tabManager = null;
     (_b3 = this.tabBar) == null ? void 0 : _b3.destroy();
@@ -101724,16 +102738,14 @@ var ClaudianView = class extends import_obsidian46.ItemView {
   // UI Building
   // ============================================
   buildHeader(header) {
-    this.headerEl = header;
-    this.titleSlotEl = header.createDiv({ cls: "claudian-title-slot" });
-    this.logoEl = this.titleSlotEl.createSpan({ cls: "claudian-logo" });
+    const titleEl = header.createDiv({ cls: "claudian-title" });
+    this.logoEl = titleEl.createSpan({ cls: "claudian-logo" });
     this.syncHeaderLogo(DEFAULT_CHAT_PROVIDER_ID);
-    this.titleTextEl = this.titleSlotEl.createEl("h4", { text: "Claudian", cls: "claudian-title-text" });
-    this.headerActionsEl = header.createDiv({ cls: "claudian-header-actions claudian-header-actions-slot claudian-hidden" });
+    titleEl.createEl("h4", { text: "Claudian", cls: "claudian-title-text" });
   }
   /**
-   * Builds the nav row content (tab badges + header actions).
-   * This is called once and the content is moved between locations.
+   * Builds the active tab nav row content.
+   * The wrapper is moved to the active tab's nav row on tab switches.
    */
   buildNavRowContent() {
     const activeDocument = this.containerEl.ownerDocument;
@@ -101750,15 +102762,15 @@ var ClaudianView = class extends import_obsidian46.ItemView {
       }
     });
     fragment.appendChild(this.tabBarContainerEl);
-    this.headerActionsContent = activeDocument.createElement("div");
-    this.headerActionsContent.className = "claudian-header-actions";
-    this.newTabButtonEl = this.headerActionsContent.createDiv({ cls: "claudian-header-btn claudian-new-tab-btn" });
+    const navActionsEl = activeDocument.createElement("div");
+    navActionsEl.className = "claudian-input-nav-actions";
+    this.newTabButtonEl = navActionsEl.createDiv({ cls: "claudian-input-nav-btn claudian-new-tab-btn" });
     (0, import_obsidian46.setIcon)(this.newTabButtonEl, "square-plus");
     this.newTabButtonEl.setAttribute("aria-label", "New tab");
     this.newTabButtonEl.addEventListener("click", () => {
       void this.createNewTab().catch(() => new import_obsidian46.Notice("Failed to create tab"));
     });
-    const newBtn = this.headerActionsContent.createDiv({ cls: "claudian-header-btn" });
+    const newBtn = navActionsEl.createDiv({ cls: "claudian-input-nav-btn" });
     (0, import_obsidian46.setIcon)(newBtn, "square-pen");
     newBtn.setAttribute("aria-label", "New conversation");
     newBtn.addEventListener("click", () => {
@@ -101768,8 +102780,8 @@ var ClaudianView = class extends import_obsidian46.ItemView {
         this.updateHistoryDropdown();
       })().catch(() => new import_obsidian46.Notice("Failed to create conversation"));
     });
-    const historyContainer = this.headerActionsContent.createDiv({ cls: "claudian-history-container" });
-    const historyBtn = historyContainer.createDiv({ cls: "claudian-header-btn" });
+    const historyContainer = navActionsEl.createDiv({ cls: "claudian-history-container" });
+    const historyBtn = historyContainer.createDiv({ cls: "claudian-input-nav-btn" });
     (0, import_obsidian46.setIcon)(historyBtn, "history");
     historyBtn.setAttribute("aria-label", "Chat history");
     this.historyDropdown = historyContainer.createDiv({ cls: "claudian-history-menu" });
@@ -101777,51 +102789,61 @@ var ClaudianView = class extends import_obsidian46.ItemView {
       e2.stopPropagation();
       this.toggleHistoryDropdown();
     });
-    fragment.appendChild(this.headerActionsContent);
+    fragment.appendChild(navActionsEl);
     const wrapper = activeDocument.createElement("div");
     wrapper.className = "claudian-input-nav-content";
     wrapper.appendChild(fragment);
     return wrapper;
   }
-  /**
-   * Moves nav row content based on tabBarPosition setting.
-   * - 'input' mode: Both tab badges and actions go to active tab's navRowEl
-   * - 'header' mode: Tab badges go to title slot (after logo), actions go to header right side
-   */
-  updateNavRowLocation() {
-    var _a5;
-    if (!this.tabBarContainerEl || !this.headerActionsContent) return;
-    const isHeaderMode = this.plugin.settings.tabBarPosition === "header";
-    if (isHeaderMode) {
-      if (this.titleSlotEl) {
-        this.titleSlotEl.appendChild(this.tabBarContainerEl);
-      }
-      if (this.headerActionsEl) {
-        this.headerActionsEl.appendChild(this.headerActionsContent);
-        this.headerActionsEl.removeClass("claudian-hidden");
-      }
-    } else {
-      const activeTab = (_a5 = this.tabManager) == null ? void 0 : _a5.getActiveTab();
-      if (activeTab && this.navRowContent) {
-        this.navRowContent.appendChild(this.tabBarContainerEl);
-        this.navRowContent.appendChild(this.headerActionsContent);
-        activeTab.dom.navRowEl.appendChild(this.navRowContent);
-      }
-      if (this.headerActionsEl) {
-        this.headerActionsEl.addClass("claudian-hidden");
+  buildInputFooter() {
+    if (!this.viewContainerEl) return;
+    this.inputFooterEl = this.viewContainerEl.createDiv({ cls: "claudian-input-footer" });
+    this.inputNavRowHostEl = this.inputFooterEl.createDiv({
+      cls: "claudian-input-nav-row claudian-view-input-nav-row"
+    });
+    this.activeInputSlotEl = this.inputFooterEl.createDiv({ cls: "claudian-active-input-slot" });
+  }
+  attachNavRowContentToInputFooter() {
+    var _a5, _b3;
+    if (!this.inputNavRowHostEl || !this.navRowContent) return;
+    (_a5 = this.tabBar) == null ? void 0 : _a5.captureScrollPosition();
+    this.inputNavRowHostEl.appendChild(this.navRowContent);
+    (_b3 = this.tabBar) == null ? void 0 : _b3.restoreScrollPosition();
+  }
+  updateInputLocation() {
+    var _a5, _b3;
+    const activeTab = (_a5 = this.tabManager) == null ? void 0 : _a5.getActiveTab();
+    if (!this.activeInputSlotEl) return;
+    if (!activeTab) {
+      this.activeInputSlotEl.empty();
+      this.activeInputTabId = null;
+      return;
+    }
+    if (this.activeInputTabId && this.activeInputTabId !== activeTab.id) {
+      const previousTab = (_b3 = this.tabManager) == null ? void 0 : _b3.getTab(this.activeInputTabId);
+      if (previousTab) {
+        previousTab.dom.contentEl.appendChild(previousTab.dom.inputComposerEl);
       }
     }
+    if (this.activeInputTabId === activeTab.id) {
+      if (activeTab.dom.inputComposerEl.parentElement !== this.activeInputSlotEl) {
+        this.activeInputSlotEl.appendChild(activeTab.dom.inputComposerEl);
+      }
+      return;
+    }
+    this.activeInputSlotEl.empty();
+    this.activeInputSlotEl.appendChild(activeTab.dom.inputComposerEl);
+    this.activeInputTabId = activeTab.id;
   }
-  /**
-   * Updates layout when tabBarPosition setting changes.
-   * Called from settings when user changes the tab bar position.
-   */
-  updateLayoutForPosition() {
-    if (!this.viewContainerEl) return;
-    const isHeaderMode = this.plugin.settings.tabBarPosition === "header";
-    this.viewContainerEl.toggleClass("claudian-container--header-mode", isHeaderMode);
-    this.updateNavRowLocation();
-    this.updateTabBarVisibility();
+  restoreActiveInputToTabContent() {
+    var _a5, _b3;
+    if (!this.activeInputTabId) return;
+    const activeInputTab = (_a5 = this.tabManager) == null ? void 0 : _a5.getTab(this.activeInputTabId);
+    if (activeInputTab) {
+      activeInputTab.dom.contentEl.appendChild(activeInputTab.dom.inputComposerEl);
+    }
+    (_b3 = this.activeInputSlotEl) == null ? void 0 : _b3.empty();
+    this.activeInputTabId = null;
   }
   /** Refreshes tab controls after settings that affect tab availability change. */
   refreshTabControls() {
@@ -101877,15 +102899,7 @@ var ClaudianView = class extends import_obsidian46.ItemView {
     if (!this.tabBarContainerEl || !this.tabManager) return;
     const tabCount = this.tabManager.getTabCount();
     const showTabBar = tabCount >= 2;
-    const isHeaderMode = this.plugin.settings.tabBarPosition === "header";
     this.tabBarContainerEl.toggleClass("claudian-hidden", !showTabBar);
-    const hideBranding = showTabBar && isHeaderMode;
-    if (this.logoEl) {
-      this.logoEl.toggleClass("claudian-hidden", hideBranding);
-    }
-    if (this.titleTextEl) {
-      this.titleTextEl.toggleClass("claudian-hidden", hideBranding);
-    }
     this.updateNewTabButtonVisibility();
   }
   updateNewTabButtonVisibility() {
@@ -101949,7 +102963,7 @@ var ClaudianView = class extends import_obsidian46.ItemView {
       conversationController.renderHistoryDropdown(this.historyDropdown, {
         onSelectConversation: (id) => this.openHistoryConversation(id),
         onOpenConversationInNewTab: (id, activate) => this.openHistoryConversationInNewTab(id, activate),
-        getConversationOpenState: (id) => this.getHistoryConversationOpenState(id)
+        getConversationStatus: (id) => this.getHistoryConversationStatus(id)
       });
     }
   }
@@ -101966,25 +102980,50 @@ var ClaudianView = class extends import_obsidian46.ItemView {
     }));
     (_b3 = this.historyDropdown) == null ? void 0 : _b3.removeClass("visible");
   }
-  getHistoryConversationOpenState(conversationId) {
-    var _a5;
+  getHistoryConversationStatus(conversationId) {
+    var _a5, _b3, _c2;
     const activeTab = (_a5 = this.tabManager) == null ? void 0 : _a5.getActiveTab();
     if ((activeTab == null ? void 0 : activeTab.conversationId) === conversationId) {
-      return "current";
+      return {
+        openState: "current",
+        isRunning: activeTab.state.isStreaming,
+        location: "current-view",
+        tabIndex: this.getHistoryTabIndex(activeTab)
+      };
     }
-    if (this.findTabWithConversation(conversationId)) {
-      return "open";
+    const localTab = this.findTabWithConversation(conversationId);
+    if (localTab) {
+      return {
+        openState: "open",
+        isRunning: localTab.state.isStreaming,
+        location: "current-view",
+        tabIndex: this.getHistoryTabIndex(localTab)
+      };
     }
     const crossViewResult = this.plugin.findConversationAcrossViews(conversationId);
     if (crossViewResult && crossViewResult.view !== this) {
-      return "open";
+      const crossViewTab = (_b3 = crossViewResult.view.getTabManager()) == null ? void 0 : _b3.getTab(crossViewResult.tabId);
+      return {
+        openState: "open",
+        isRunning: (_c2 = crossViewTab == null ? void 0 : crossViewTab.state.isStreaming) != null ? _c2 : false,
+        location: "other-view"
+      };
     }
-    return "closed";
+    return {
+      openState: "closed",
+      isRunning: false,
+      location: "current-view"
+    };
   }
   findTabWithConversation(conversationId) {
     var _a5, _b3, _c2;
     const tabs = (_b3 = (_a5 = this.tabManager) == null ? void 0 : _a5.getAllTabs()) != null ? _b3 : [];
     return (_c2 = tabs.find((tab) => tab.conversationId === conversationId)) != null ? _c2 : null;
+  }
+  getHistoryTabIndex(tab) {
+    var _a5, _b3;
+    const index = (_b3 = (_a5 = this.tabManager) == null ? void 0 : _a5.getAllTabs().findIndex((candidate) => candidate.id === tab.id)) != null ? _b3 : -1;
+    return index >= 0 ? index + 1 : void 0;
   }
   // ============================================
   // Event Wiring
@@ -102116,6 +103155,12 @@ var ClaudianView = class extends import_obsidian46.ItemView {
   getTabManager() {
     return this.tabManager;
   }
+  /** Gets shared view controls that should preserve active tab selection context. */
+  getSharedSelectionFocusScopeEls() {
+    return [
+      this.inputNavRowHostEl
+    ].filter((el2) => el2 !== null);
+  }
 };
 
 // src/features/inline-edit/ui/InlineEditModal.ts
@@ -102169,41 +103214,6 @@ var showDiff = import_state2.StateEffect.define();
 var showInsertion = import_state2.StateEffect.define();
 var hideInlineEdit = import_state2.StateEffect.define();
 var activeController = null;
-var DiffWidget = class extends import_view2.WidgetType {
-  constructor(diffOps, controller) {
-    super();
-    this.diffOps = diffOps;
-    this.controller = controller;
-  }
-  toDOM() {
-    const ownerDocument = this.controller.getOwnerDocument();
-    const span = ownerDocument.createElement("span");
-    span.className = "claudian-inline-diff-replace";
-    appendDiffOps(span, this.diffOps);
-    const btns = ownerDocument.createElement("span");
-    btns.className = "claudian-inline-diff-buttons";
-    const rejectBtn = ownerDocument.createElement("button");
-    rejectBtn.className = "claudian-inline-diff-btn reject";
-    rejectBtn.textContent = "\u2715";
-    rejectBtn.title = "Reject (esc)";
-    rejectBtn.onclick = () => this.controller.reject();
-    const acceptBtn = ownerDocument.createElement("button");
-    acceptBtn.className = "claudian-inline-diff-btn accept";
-    acceptBtn.textContent = "\u2713";
-    acceptBtn.title = "Accept (enter)";
-    acceptBtn.onclick = () => this.controller.accept();
-    btns.appendChild(rejectBtn);
-    btns.appendChild(acceptBtn);
-    span.appendChild(btns);
-    return span;
-  }
-  eq(other) {
-    return diffOpsEqual(this.diffOps, other.diffOps);
-  }
-  ignoreEvent() {
-    return true;
-  }
-};
 var InputWidget = class extends import_view2.WidgetType {
   constructor(controller) {
     super();
@@ -102219,17 +103229,17 @@ var InputWidget = class extends import_view2.WidgetType {
     return true;
   }
 };
-var PreviewWidget = class extends import_view2.WidgetType {
-  constructor(markdown, controller) {
+var MarkdownDiffWidget = class extends import_view2.WidgetType {
+  constructor(diffOps, controller) {
     super();
-    this.markdown = markdown;
+    this.diffOps = diffOps;
     this.controller = controller;
   }
   toDOM() {
-    return this.controller.createPreviewDOM(this.markdown);
+    return this.controller.createDiffPreviewDOM(this.diffOps);
   }
   eq(other) {
-    return this.markdown === other.markdown;
+    return diffOpsEqual(this.diffOps, other.diffOps);
   }
   ignoreEvent() {
     return true;
@@ -102265,26 +103275,19 @@ var inlineEditField = import_state2.StateField.define({
       } else if (e2.is(showDiff)) {
         deco = import_view2.Decoration.set([
           import_view2.Decoration.widget({
-            widget: new PreviewWidget(e2.value.previewText, e2.value.widget),
+            widget: new MarkdownDiffWidget(e2.value.diffOps, e2.value.widget),
             block: true,
             side: -1
           }).range(e2.value.previewPos),
-          import_view2.Decoration.replace({
-            widget: new DiffWidget(e2.value.diffOps, e2.value.widget)
-          }).range(e2.value.from, e2.value.to)
+          import_view2.Decoration.replace({}).range(e2.value.from, e2.value.to)
         ], true);
       } else if (e2.is(showInsertion)) {
         deco = import_view2.Decoration.set([
           import_view2.Decoration.widget({
-            widget: new PreviewWidget(e2.value.previewText, e2.value.widget),
+            widget: new MarkdownDiffWidget(e2.value.diffOps, e2.value.widget),
             block: true,
             side: -1
-          }).range(e2.value.previewPos),
-          import_view2.Decoration.widget({
-            widget: new DiffWidget(e2.value.diffOps, e2.value.widget),
-            side: 1
-            // After the position
-          }).range(e2.value.pos)
+          }).range(e2.value.previewPos)
         ], true);
       } else if (e2.is(hideInlineEdit)) {
         deco = import_view2.Decoration.none;
@@ -102295,55 +103298,75 @@ var inlineEditField = import_state2.StateField.define({
   provide: (f9) => import_view2.EditorView.decorations.from(f9)
 });
 var installedEditors = /* @__PURE__ */ new WeakSet();
-function computeDiff(oldText, newText) {
-  const oldWords = oldText.split(/(\s+)/);
-  const newWords = newText.split(/(\s+)/);
-  const m4 = oldWords.length, n10 = newWords.length;
+function splitLinesPreservingEndings(text) {
+  var _a5, _b3;
+  if (!text) return [];
+  return (_b3 = (_a5 = text.match(/[^\n]*(?:\n|$)/g)) == null ? void 0 : _a5.filter((line) => line.length > 0)) != null ? _b3 : [];
+}
+function computeMarkdownDiff(oldText, newText) {
+  const oldLines = splitLinesPreservingEndings(oldText);
+  const newLines = splitLinesPreservingEndings(newText);
+  const m4 = oldLines.length, n10 = newLines.length;
   const dp = Array.from({ length: m4 + 1 }, () => Array(n10 + 1).fill(0));
   for (let i2 = 1; i2 <= m4; i2++) {
     for (let j6 = 1; j6 <= n10; j6++) {
-      dp[i2][j6] = oldWords[i2 - 1] === newWords[j6 - 1] ? dp[i2 - 1][j6 - 1] + 1 : Math.max(dp[i2 - 1][j6], dp[i2][j6 - 1]);
+      dp[i2][j6] = oldLines[i2 - 1] === newLines[j6 - 1] ? dp[i2 - 1][j6 - 1] + 1 : Math.max(dp[i2 - 1][j6], dp[i2][j6 - 1]);
     }
   }
-  const ops = [];
-  let i = m4, j = n10;
   const temp = [];
+  let i = m4, j = n10;
   while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && oldWords[i - 1] === newWords[j - 1]) {
-      temp.push({ type: "equal", text: oldWords[i - 1] });
+    if (i > 0 && j > 0 && oldLines[i - 1] === newLines[j - 1]) {
+      temp.push({ type: "equal", text: oldLines[i - 1] });
       i--;
       j--;
     } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      temp.push({ type: "insert", text: newWords[j - 1] });
+      temp.push({ type: "insert", text: newLines[j - 1] });
       j--;
     } else {
-      temp.push({ type: "delete", text: oldWords[i - 1] });
+      temp.push({ type: "delete", text: oldLines[i - 1] });
       i--;
     }
   }
-  temp.reverse();
-  for (const op of temp) {
-    if (ops.length > 0 && ops[ops.length - 1].type === op.type) {
-      ops[ops.length - 1].text += op.text;
-    } else {
-      ops.push({ ...op });
-    }
-  }
-  return ops;
+  return mergeAdjacentDiffOps(temp.reverse());
 }
-function appendDiffOps(container, ops) {
+function mergeAdjacentDiffOps(ops) {
+  const merged = [];
   for (const op of ops) {
-    switch (op.type) {
-      case "delete":
-        container.createSpan({ cls: "claudian-diff-del", text: op.text });
-        break;
-      case "insert":
-        container.createSpan({ cls: "claudian-diff-ins", text: op.text });
-        break;
-      default:
-        container.appendText(op.text);
+    if (merged.length > 0 && merged[merged.length - 1].type === op.type) {
+      merged[merged.length - 1].text += op.text;
+    } else {
+      merged.push({ ...op });
     }
   }
+  return merged;
+}
+function getDiffBlockClass(type) {
+  switch (type) {
+    case "delete":
+      return "claudian-diff-del";
+    case "insert":
+      return "claudian-diff-ins";
+    default:
+      return "claudian-diff-equal";
+  }
+}
+function buildMarkdownDiffDocuments(diffOps) {
+  const oldMarkdown = diffOps.filter((op) => op.type !== "insert").map((op) => op.text).join("");
+  const newMarkdown = diffOps.filter((op) => op.type !== "delete").map((op) => op.text).join("");
+  const hasDeletion = diffOps.some((op) => op.type === "delete");
+  const hasInsertion = diffOps.some((op) => op.type === "insert");
+  const documents = [];
+  if (hasDeletion && oldMarkdown) {
+    documents.push({ type: "delete", markdown: oldMarkdown });
+  }
+  if (hasInsertion && newMarkdown) {
+    documents.push({ type: "insert", markdown: newMarkdown });
+  }
+  if (documents.length === 0 && newMarkdown) {
+    documents.push({ type: "equal", markdown: newMarkdown });
+  }
+  return documents;
 }
 function diffOpsEqual(left, right) {
   if (left.length !== right.length) return false;
@@ -102596,15 +103619,35 @@ var InlineEditController = class {
     }, 50);
     return container;
   }
-  createPreviewDOM(markdown) {
+  createDiffPreviewDOM(diffOps) {
     const ownerDocument = this.getOwnerDocument();
     const previewEl = ownerDocument.createElement("div");
-    previewEl.className = "claudian-inline-markdown-preview";
+    previewEl.className = "claudian-inline-diff-preview";
     const bodyEl = ownerDocument.createElement("div");
-    bodyEl.className = "claudian-inline-markdown-preview-body markdown-rendered";
+    bodyEl.className = "claudian-inline-diff-preview-body markdown-rendered";
     previewEl.appendChild(bodyEl);
-    void this.renderMarkdownPreview(bodyEl, markdown);
+    const actionsEl = ownerDocument.createElement("div");
+    actionsEl.className = "claudian-inline-preview-actions";
+    actionsEl.appendChild(this.createPreviewActionButton("Reject", "reject", () => this.reject()));
+    actionsEl.appendChild(this.createPreviewActionButton("Accept", "accept", () => this.accept()));
+    previewEl.appendChild(actionsEl);
+    void this.renderMarkdownDiffPreview(bodyEl, diffOps);
     return previewEl;
+  }
+  createPreviewActionButton(label, variant, onClick) {
+    const ownerDocument = this.getOwnerDocument();
+    const button = ownerDocument.createElement("button");
+    button.type = "button";
+    button.className = `claudian-inline-preview-action ${variant}`;
+    button.textContent = label;
+    button.title = variant === "accept" ? "Accept (enter)" : "Reject (esc)";
+    button.addEventListener("click", (event) => {
+      var _a5, _b3;
+      (_a5 = event.preventDefault) == null ? void 0 : _a5.call(event);
+      (_b3 = event.stopPropagation) == null ? void 0 : _b3.call(event);
+      onClick();
+    });
+    return button;
   }
   async renderMarkdownPreview(container, markdown) {
     var _a5, _b3;
@@ -102616,6 +103659,16 @@ var InlineEditController = class {
       sourcePath: this.notePath,
       mediaFolder: (_b3 = (_a5 = this.plugin.settings) == null ? void 0 : _a5.mediaFolder) != null ? _b3 : ""
     });
+  }
+  async renderMarkdownDiffPreview(container, diffOps) {
+    container.empty();
+    for (const document of buildMarkdownDiffDocuments(diffOps)) {
+      if (!document.markdown) continue;
+      const opEl = this.getOwnerDocument().createElement("div");
+      opEl.className = `claudian-diff-block ${getDiffBlockClass(document.type)}`;
+      container.appendChild(opEl);
+      await this.renderMarkdownPreview(opEl, document.markdown);
+    }
   }
   replaceRenderedPreview(target, rendered) {
     target.empty();
@@ -102711,7 +103764,7 @@ var InlineEditController = class {
   showDiffInPlace() {
     if (this.editedText === null) return;
     hideSelectionHighlight(this.editorView);
-    const diffOps = computeDiff(this.selectedText, this.editedText);
+    const diffOps = computeMarkdownDiff(this.selectedText, this.editedText);
     const previewPos = this.editorView.state.doc.lineAt(this.selFrom).from;
     this.editorView.dispatch({
       effects: showDiff.of({
@@ -102719,7 +103772,6 @@ var InlineEditController = class {
         to: this.selTo,
         diffOps,
         previewPos,
-        previewText: this.editedText,
         widget: this
       })
     });
@@ -102734,10 +103786,8 @@ var InlineEditController = class {
     const previewPos = this.editorView.state.doc.lineAt(this.selFrom).from;
     this.editorView.dispatch({
       effects: showInsertion.of({
-        pos: this.selFrom,
         diffOps,
         previewPos,
-        previewText: trimmedText,
         widget: this
       })
     });
@@ -103060,16 +104110,6 @@ var ClaudianSettingTab = class extends import_obsidian49.PluginSettingTab {
       });
     });
     new import_obsidian49.Setting(container).setName(t10("settings.display")).setHeading();
-    new import_obsidian49.Setting(container).setName(t10("settings.tabBarPosition.name")).setDesc(t10("settings.tabBarPosition.desc")).addDropdown((dropdown) => {
-      var _a5;
-      dropdown.addOption("input", t10("settings.tabBarPosition.input")).addOption("header", t10("settings.tabBarPosition.header")).setValue((_a5 = this.plugin.settings.tabBarPosition) != null ? _a5 : "input").onChange(async (value) => {
-        this.plugin.settings.tabBarPosition = value;
-        await this.plugin.saveSettings();
-        for (const view of this.plugin.getAllViews()) {
-          view.updateLayoutForPosition();
-        }
-      });
-    });
     const maxTabsSetting = new import_obsidian49.Setting(container).setName(t10("settings.maxTabs.name")).setDesc(t10("settings.maxTabs.desc"));
     const maxTabsWarningEl = container.createDiv({
       cls: "claudian-max-tabs-warning claudian-setting-validation claudian-setting-validation-warning claudian-hidden"
@@ -103110,6 +104150,15 @@ var ClaudianSettingTab = class extends import_obsidian49.PluginSettingTab {
         var _a5;
         return toggle.setValue((_a5 = this.plugin.settings.deferMathRenderingDuringStreaming) != null ? _a5 : true).onChange(async (value) => {
           this.plugin.settings.deferMathRenderingDuringStreaming = value;
+          await this.plugin.saveSettings();
+        });
+      }
+    );
+    new import_obsidian49.Setting(container).setName(t10("settings.expandFileEditsByDefault.name")).setDesc(t10("settings.expandFileEditsByDefault.desc")).addToggle(
+      (toggle) => {
+        var _a5;
+        return toggle.setValue((_a5 = this.plugin.settings.expandFileEditsByDefault) != null ? _a5 : false).onChange(async (value) => {
+          this.plugin.settings.expandFileEditsByDefault = value;
           await this.plugin.saveSettings();
         });
       }
@@ -103836,11 +104885,13 @@ var ClaudianPlugin = class extends import_obsidian50.Plugin {
     });
   }
   getConversationPreview(conv) {
+    var _a5, _b3;
     const firstUserMsg = conv.messages.find((m4) => m4.role === "user");
     if (!firstUserMsg) {
       return "New conversation";
     }
-    return firstUserMsg.content.substring(0, 50) + (firstUserMsg.content.length > 50 ? "..." : "");
+    const previewText = (_b3 = (_a5 = firstUserMsg.displayContent) != null ? _a5 : extractUserDisplayContent(firstUserMsg.content)) != null ? _b3 : firstUserMsg.content;
+    return previewText.substring(0, 50) + (previewText.length > 50 ? "..." : "");
   }
   async loadSdkMessagesForConversation(conversation) {
     await ProviderRegistry.getConversationHistoryService(conversation.providerId).hydrateConversationHistory(conversation, getVaultPath(this.app));

@@ -16,6 +16,11 @@ logs/
 # Environment & local config
 .env
 *.local
+.venv/
+.venv-marker/
+
+# Machine-local marker-pdf env cache (absolute python path, GPU probe)
+.claude/marker-env.local.json
 
 # LLM Wiki runtime (auto-regenerated on each machine)
 .llm-wiki/chats/
