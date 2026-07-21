@@ -1,0 +1,789 @@
+{
+  "table_of_contents": [
+    {
+      "title": "A New Method for Determining the FET Small-Signal Equivalent Circuit",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          126.85330073349633,
+          75.77388836329234
+        ],
+        [
+          493.1515892420538,
+          75.1181640625
+        ],
+        [
+          493.1515892420538,
+          118.4853515625
+        ],
+        [
+          126.2177734375,
+          120.0341796875
+        ]
+      ]
+    },
+    {
+      "title": "I. Introduction",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          162.1320293398533,
+          220.32080078125
+        ],
+        [
+          233.440097799511,
+          218.77197265625
+        ],
+        [
+          233.440097799511,
+          228.07190160832545
+        ],
+        [
+          162.1320293398533,
+          228.07190160832545
+        ]
+      ]
+    },
+    {
+      "title": "II. THEORETICAL ANALYSIS",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          373.8044009779951,
+          404.63134765625
+        ],
+        [
+          479.64058679706596,
+          404.63134765625
+        ],
+        [
+          479.64058679706596,
+          414.1305581835383
+        ],
+        [
+          373.8044009779951,
+          414.1305581835383
+        ]
+      ]
+    },
+    {
+      "title": "III. MEASUREMENT OF THE EQUIVALENT CIRCUIT EXTRINSIC ELEMENTS",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          320.1650390625,
+          361.6135721017908
+        ],
+        [
+          507.0,
+          361.076171875
+        ],
+        [
+          507.0,
+          380.3694627709708
+        ],
+        [
+          320.1650390625,
+          380.509765625
+        ]
+      ]
+    },
+    {
+      "title": "A. Determination of the Parasitic Resistances and Inductances",
+      "heading_level": null,
+      "page_id": 1,
+      "polygon": [
+        [
+          304.5,
+          390.1225259189444
+        ],
+        [
+          484.5,
+          388.671875
+        ],
+        [
+          484.5,
+          406.6277097078228
+        ],
+        [
+          304.5,
+          407.328125
+        ]
+      ]
+    },
+    {
+      "title": "B. Measurement of the C_{pg} and C_{pd} Parasitic Capacitances",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          79.56447688564477,
+          267.8466796875
+        ],
+        [
+          295.7396593673966,
+          267.8466796875
+        ],
+        [
+          295.7396593673966,
+          277.76203966005664
+        ],
+        [
+          79.56447688564477,
+          277.76203966005664
+        ]
+      ]
+    },
+    {
+      "title": "IV. EXPERIMENTAL RESULTS",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          360.01708984375,
+          601.29638671875
+        ],
+        [
+          470.6313868613139,
+          601.29638671875
+        ],
+        [
+          470.6313868613139,
+          610.3257790368273
+        ],
+        [
+          360.01708984375,
+          610.3257790368273
+        ]
+      ]
+    },
+    {
+      "title": "A. The Equivalent Circuit Parameters",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          89.25,
+          630.73828125
+        ],
+        [
+          228.005859375,
+          630.73828125
+        ],
+        [
+          228.0,
+          639.75
+        ],
+        [
+          88.751953125,
+          639.75
+        ]
+      ]
+    },
+    {
+      "title": "B. Broad-Band S Parameters",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          80.34798534798534,
+          610.1342155009452
+        ],
+        [
+          190.08544921875,
+          611.0078125
+        ],
+        [
+          189.981684981685,
+          620.640831758034
+        ],
+        [
+          80.34798534798534,
+          620.3125
+        ]
+      ]
+    },
+    {
+      "title": "V. Conclusions",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          84.75,
+          130.5
+        ],
+        [
+          141.0,
+          129.55078125
+        ],
+        [
+          141.0,
+          138.0
+        ],
+        [
+          84.75,
+          138.05859375
+        ]
+      ]
+    },
+    {
+      "title": "ACKNOWLEDGMENT",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          157.18359375,
+          363.75
+        ],
+        [
+          231.0,
+          362.35546875
+        ],
+        [
+          231.0,
+          372.0
+        ],
+        [
+          155.98828125,
+          372.0
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          170.630859375,
+          404.89453125
+        ],
+        [
+          217.5,
+          404.89453125
+        ],
+        [
+          217.5,
+          413.40234375
+        ],
+        [
+          169.435546875,
+          413.40234375
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          105
+        ],
+        [
+          "Span",
+          82
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "ListItem",
+          5
+        ],
+        [
+          "Equation",
+          4
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Span",
+          99
+        ],
+        [
+          "Line",
+          92
+        ],
+        [
+          "Equation",
+          8
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "ListItem",
+          5
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "PictureGroup",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Span",
+          125
+        ],
+        [
+          "Line",
+          100
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "Equation",
+          5
+        ],
+        [
+          "ListItem",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          112
+        ],
+        [
+          "Span",
+          91
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "Equation",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          2
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "ListItem",
+          2
+        ],
+        [
+          "FigureGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "ListGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          15
+        ],
+        [
+          "Span",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          49
+        ],
+        [
+          "Span",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          2
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          69
+        ],
+        [
+          "Span",
+          60
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "TableCell",
+          55
+        ],
+        [
+          "Line",
+          40
+        ],
+        [
+          "Span",
+          25
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "Text",
+          2
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "Table",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Span",
+          95
+        ],
+        [
+          "Line",
+          91
+        ],
+        [
+          "ListItem",
+          13
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "Picture",
+          8
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\A_new_method_for_determining_the_FET_small-signal_equivalent_circuit"
+}

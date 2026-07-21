@@ -26,6 +26,10 @@
 - [[christian-schmidt]] — Fraunhofer HHI / TU Berlin，AMUX 行为级建模与高速 DAC 架构
 - [[manfred-berroth]] — University of Stuttgart 教授，高速集成电路设计
 - [[fraunhofer-hhi]] — Fraunhofer Heinrich-Hertz-Institute，光子网络与系统
+- [[gilles-dambrine]] — Université de Lille，FET 小信号等效电路 Dambrine 提取法
+- [[alain-cappy]] — Université de Lille，GaAs FET 噪声建模与器件表征
+- [[centre-hyperfrequences-et-semiconducteurs]] — 法国里尔大学 CHS 实验室，微波半导体器件研究
+- [[roland-bosch]] — Fraunhofer IAF，FET 宽带等效电路提取
 
 ## Concepts
 
@@ -57,6 +61,9 @@
 - [[dac-glitch-asymmetry]] — rise/fall 不对称导致的 glitch：Andersson & Vesterbacka 模型
 - [[amux-dac]] — AMUX-DAC：用模拟复用器组合多路 DAC 以翻倍带宽的架构
 - [[dac-behavioral-modeling]] — SIMULINK/MATLAB 行为级 DAC 与 AMUX 建模方法
+- [[fet-small-signal-equivalent-circuit]] — FET 小信号等效电路标准拓扑：本征与寄生元件
+- [[cold-fet-extraction]] — Vds=0 条件下的冷管寄生参数提取技术
+- [[s-parameter-de-embedding]] — S 参数去嵌：矩阵变换逐层剥离寄生网络
 
 ## Sources
 
@@ -75,6 +82,8 @@
 - [[doris-2003-mismatch-timing-errors]] — Doris, van Roermund, Leenaerts：CS-DAC失配时序误差统一框架
 - [[andersson-vesterbacka-2005-glitch-asymmetry]] — Andersson & Vesterbacka：rise/fall不对称导致的glitch行为模型
 - [[schmidt-2018-amux-behavioral-model]] — Schmidt et al.：高速 2:1 AMUX MATLAB 行为级模型（MWSCAS 2018）
+- [[dambrine-1988-fet-equivalent-circuit]] — Dambrine et al.：FET 小信号等效电路直接提取法（IEEE TMTT, 1988）
+- [[berroth-1990-fet-broadband]] — Berroth & Bosch：FET 小信号等效电路宽带解析提取法（IEEE TMTT, 1990）
 
 ## Queries
 

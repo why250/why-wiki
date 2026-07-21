@@ -1,5 +1,23 @@
 # Research Log
 
+## [2026-07-21] ingest | Broad-Band Determination of the FET Small-Signal Equivalent Circuit (Berroth & Bosch, IEEE TMTT 1990)
+
+- Created source page: [[berroth-1990-fet-broadband]]
+- Created entity: [[roland-bosch]]
+- Updated entities: [[manfred-berroth]] — added early career at Fraunhofer IAF and FET modeling paper
+- Updated concepts: [[fet-small-signal-equivalent-circuit]] — added broadband analytic formulas and model self-validation; [[cold-fet-extraction]] — added HEMT modifications
+- Cross-references: linked to Dambrine 1988, fixed forward reference in source page
+- Source: raw/paper/Broad-band_determination_of_the_FET_small-signal_equivalent_circuit/
+
+## [2026-07-21] ingest | A New Method for Determining the FET Small-Signal Equivalent Circuit (Dambrine et al., IEEE TMTT 1988)
+
+- Created source page: [[dambrine-1988-fet-equivalent-circuit]]
+- Created entities: [[gilles-dambrine]], [[alain-cappy]], [[centre-hyperfrequences-et-semiconducteurs]]
+- Created concepts: [[fet-small-signal-equivalent-circuit]], [[cold-fet-extraction]], [[s-parameter-de-embedding]]
+- New domain: FET 器件建模与等效电路提取（wiki 首个非 ADC/DAC 方向的论文）
+- Cross-references: all new pages interlinked
+- Source: raw/paper/A_new_method_for_determining_the_FET_small-signal_equivalent_circuit/
+
 ## [2026-06-16] ingest | Behavioral Model for a High-Speed 2:1 AMUX (Schmidt et al., MWSCAS 2018)
 
 - Created source page: [[schmidt-2018-amux-behavioral-model]]
