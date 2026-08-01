@@ -136,9 +136,12 @@ from marker.config.parser import ConfigParser
 from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
 from marker.output import save_output
+import os
 
 pdf_path = "raw/paper/example.pdf"
-output_dir = "raw/paper"  # 与 PDF 同目录
+output_dir = "raw/paper/example"  # 目标输出目录
+
+os.makedirs(output_dir, exist_ok=True)
 
 config_parser = ConfigParser(
     {
@@ -156,8 +159,13 @@ converter = PdfConverter(
 )
 
 rendered = converter(pdf_path)
-out_folder = config_parser.get_output_folder(pdf_path)
-save_output(rendered, out_folder, config_parser.get_base_filename(pdf_path))
+
+# 直接调用 save_output()，手动指定输出路径和文件名
+# 跳过 get_output_folder() — 它会在 output_dir 下额外嵌套一层 PDF 文件名
+save_output(rendered, output_dir, "example")
+# 产物: raw/paper/example/example.md
+#       raw/paper/example/example_meta.json
+#       raw/paper/example/_page_X_Figure_Y.jpeg
 ```
 
 **页码范围转换：**
@@ -165,11 +173,12 @@ save_output(rendered, out_folder, config_parser.get_base_filename(pdf_path))
 config_parser = ConfigParser(
     {
         "output_format": "markdown",
-        "output_dir": "raw/paper",
+        "output_dir": "raw/paper/example",  # 目标输出目录
         "page_range": "74-77",  # 0-based: 书本 75-78 页
     }
 )
-# 其余代码同上
+# 其余代码同上（converter 创建 + save_output 直接调用）
+# save_output(rendered, "raw/paper/example", "example")
 ```
 
 调用方式示例（PowerShell）：

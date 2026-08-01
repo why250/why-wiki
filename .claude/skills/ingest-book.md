@@ -26,12 +26,11 @@
 
 ```
 raw/book/<pdf-filename>/                  ← 与 PDF 同名
-├── <pdf-filename>.pdf                     ← 原始 PDF
-├── ch-01-intro/                           ← 每章一个文件夹
-│   ├── ch-01-intro.md                     ← Markdown（重命名后）
-│   ├── ch-01-intro_meta.json              ← 元数据（重命名后）
+├── Introduction/                          ← 每章一个文件夹，以章节标题命名
+│   ├── Introduction.md                    ← Markdown（重命名后）
+│   ├── Introduction_meta.json             ← 元数据（重命名后）
 │   └── _page_X_Figure_Y.jpeg              ← 提取的图片
-├── ch-02-background/
+├── Background/
 │   └── ...
 ```
 
@@ -41,45 +40,47 @@ raw/book/<pdf-filename>/                  ← 与 PDF 同名
 
 ## Steps
 
-### Phase 1 — 提取目录 (TOC)
+### Phase 1 — 用户指定章节划分
 
-**目标：** 获取章节标题和起始页码，让用户确认章节划分。
+**目标：** 获取用户提供的章节列表（标题 + 页码范围），作为逐章转换的输入。
 
-**1a. 转换目录页**
+**1a. 提示用户提供章节信息**
 
-提取 PDF 前 15 页（覆盖目录部分）：
-```python
-config_parser = ConfigParser(
-    {
-        "output_format": "markdown",
-        "output_dir": "raw/books/book-slug",
-        "page_range": "0-14",  # 前 15 页
-    }
-)
+首先向用户询问此书的章节划分，给出明确格式提示：
+
 ```
+请提供此书的章节划分（可指定只处理部分章节）：
 
-如果 15 页不够（目录很长），根据实际情况增加。
-
-**1b. 解析章节列表**
-
-从 toc.md 中提取章节标题和起始页码。常见的目录格式：
-- `Chapter 1  Introduction .............. 3`
-- `第 1 章  引言 ...................... 5`
-- `1. Overview ........................ 7`
-
-**Gotcha:** PDF 实际页码和书本页码可能偏移——前言/目录可能用罗马数字（i, ii, iii...）。需要对比 PDF 前几页的实际页码号（通常在页脚）与 TOC 中标注的页码，计算偏移量。
-
-**1c. 呈现给用户确认**
-
-以表格形式列出所有检测到的章节：
-```
-| # | 章节标题 | 书本页码 | PDF页码 |
-|---|---------|---------|--------|
-| 1 | Introduction | p1 | p13 |
-| 2 | Background  | p15 | p27 |
+| # | 章节标题 | 起始页码 | 结束页码 |
+|---|---------|---------|---------|
+| 1 | Introduction | 1 | 14 |
+| 2 | Background  | 15 | 40 |
+| 3 | CMOS DAC Architectures | 41 | 72 |
 ...
 ```
-等待用户确认（可以删减、调整、补充）。用户也可以指定只处理某些章节。
+
+- **页码范围**：默认使用书本页码（1-based），如果是 PDF 页码请注明
+- 根据章节标题自动生成 slug（简短英文标识，如 `intro`、`background`、`cmos-dac-architectures`）
+- 用户可指定只处理某些章节
+
+**1b. 确认 PDF 页码偏移**
+
+用户提供的页码范围需要转为 marker 使用的 **0-based PDF 页码**。
+
+- 检查 PDF 前几页的实际页码（通常在页脚），确认偏移量
+- 常见情况：目录/前言用罗马数字（i, ii, iii...），正文从 p1 开始，此时 p1 可能对应 PDF 第 13 页
+- 书本页码 pN → 0-based PDF 页码 = pN + offset - 1
+
+在转换计划中列出最终的 PDF 页码范围，待用户确认：
+```
+| # | 章节标题 | PDF页码(0-based) |
+|---|---------|------------------|
+| 1 | Introduction | 12-25 |
+| 2 | Background  | 26-51 |
+...
+```
+
+用户确认后进入 Phase 2。
 
 ---
 
@@ -93,7 +94,8 @@ config_parser = ConfigParser(
 # 对每一章
 # pdf_folder = "raw/book/<pdf-filename>"（与 PDF 同名）
 chapter_pdf_range = f"{start_page}-{end_page}"  # 0-based
-output_dir = f"{pdf_folder}/ch-{NN:02d}-{chapter_slug}"
+chapter_name = "Introduction"  # 章节标题，直接用作文件夹名和文件名
+output_dir = f"{pdf_folder}/{chapter_name}"
 
 config_parser = ConfigParser(
     {
@@ -102,19 +104,30 @@ config_parser = ConfigParser(
         "page_range": chapter_pdf_range,
     }
 )
-# ... 标准转换代码，见 preprocess-pdf.md
+# ... 见下方 save_output 调用方式
 ```
 
-**产物命名：** `raw/book/<book-slug>/ch-NN-<chapter-slug>/ch-NN-<chapter-slug>.md`
-- `book-slug`：简短的英文书名 slug（如 `bosch-2004-dac-limitations`）
-- `NN`：两位数字章节号（01, 02, ...）
-- `chapter-slug`：简短的英文 slug（如 `intro`, `background`）
+**产物命名：** `raw/book/<pdf-filename>/<Chapter Title>/<Chapter Title>.md`
+- `<pdf-filename>`：PDF 文件名（不含 `.pdf` 扩展名），如 `Time Interleaving DAC (TI-DAC)`
+- `<Chapter Title>`：章节标题原文，直接用作文件夹名和 .md 文件名，如 `Introduction`、`Appendix A — Behavioral DAC Modeling`
 
-**Gotcha — marker 嵌套输出：** `save_output()` 会在 `output_dir` 下再创一个以 PDF 文件名为名的子文件夹。例如指定 `output_dir = "raw/book/chapters/ch-01-intro"`，实际产物路径是：
+**Gotcha — 跳过 `get_output_folder()`：** marker 的 `save_output(rendered, output_dir, fname_base)` 直接写入指定路径，不会自动嵌套。但旧代码模式习惯于调用 `config_parser.get_output_folder(pdf_path)`（返回 `output_dir/pdf_basename`），这才是嵌套的根源。
+
+**正确做法：** 直接调用 `save_output()`，手动传入目标路径和文件名：
+
+```python
+converter = PdfConverter(...)
+rendered = converter(pdf_path)
+
+# 直接指定输出路径，跳过 get_output_folder()
+output_dir = f"raw/book/<pdf-filename>/<Chapter Title>"
+os.makedirs(output_dir, exist_ok=True)
+save_output(rendered, output_dir, "<Chapter Title>")
+# 产物: raw/book/<pdf-filename>/<Chapter Title>/<Chapter Title>.md
+#        raw/book/<pdf-filename>/<Chapter Title>/<Chapter Title>_meta.json
+#        raw/book/<pdf-filename>/<Chapter Title>/_page_X_Figure_Y.jpeg
 ```
-ch-01-intro/<pdf-name>/<pdf-name>.md
-```
-需要在每章转换完成后清理：把 `.md` 提出来重命名为 `<ch-id>.md`，删除嵌套空文件夹。参见 `preprocess-pdf.md` Step 4 的清理代码。
+无嵌套，无需重命名。
 
 **Gotcha:** marker 转换每一章都需要时间。公式密集的章节（如 Static/Dynamic Behaviour）可能 20-30 分钟，轻量章节 1-3 分钟。总时间由最重的章节决定。
 
@@ -210,7 +223,7 @@ updated: YYYY-MM-DD
 
 ## Verification
 
-- [ ] TOC 解析正确，章节页码对应实际 PDF 页面
+- [ ] 用户提供的章节页码已正确转换为 0-based PDF 页码范围
 - [ ] 每章 .md 文件已生成且内容可读
 - [ ] 每章 source 页已创建，frontmatter 含 `book` 和 `chapter` 字段
 - [ ] 实体/概念页在章节间没有重复创建
@@ -233,8 +246,8 @@ updated: YYYY-MM-DD
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| TOC 解析失败 | 目录格式不规则（扫描版、非标准排版） | 让用户手动提供章节和页码范围 |
-| 页码偏移不一致 | 前言用罗马数字，正文用阿拉伯数字 | 对比 TOC 页码和 PDF 实际页码计算偏移量 |
+| 用户提供的页码与实际不符 | 书本页码与 PDF 页码有偏移（前言用罗马数字等） | 检查 PDF 前几页的实际页码号（页脚），计算偏移量并修正 |
+| 转换后内容不对 | marker 页码范围（0-based）计算错误 | 核对书本页码 → 0-based PDF 页码的转换公式：`pdf_page = book_page + offset - 1` |
 | 某章转换质量差 | 该章含大量图表或特殊排版 | 对该章重试或让用户决定是否跳过 |
 | 跨章节概念重复创建 | ingest 时未检查已有概念页 | Phase 3 中必须先 search 已有页面再创建 |
 

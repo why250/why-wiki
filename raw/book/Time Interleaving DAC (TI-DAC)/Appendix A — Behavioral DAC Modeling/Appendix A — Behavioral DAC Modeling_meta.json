@@ -1,0 +1,355 @@
+{
+  "table_of_contents": [
+    {
+      "title": "A DAC Behavioral Model",
+      "heading_level": null,
+      "page_id": 244,
+      "polygon": [
+        [
+          45.9375,
+          80.611328125
+        ],
+        [
+          202.32339477539062,
+          80.611328125
+        ],
+        [
+          202.32339477539062,
+          94.06826782226562
+        ],
+        [
+          45.9375,
+          94.06826782226562
+        ]
+      ]
+    },
+    {
+      "title": "Block Diagram",
+      "heading_level": null,
+      "page_id": 244,
+      "polygon": [
+        [
+          46.552734375,
+          355.0390625
+        ],
+        [
+          116.80043029785156,
+          355.0390625
+        ],
+        [
+          116.80043029785156,
+          366.9572448730469
+        ],
+        [
+          46.552734375,
+          366.9572448730469
+        ]
+      ]
+    },
+    {
+      "title": "Model Fitting",
+      "heading_level": null,
+      "page_id": 245,
+      "polygon": [
+        [
+          46.7578125,
+          457.767578125
+        ],
+        [
+          110.25,
+          457.767578125
+        ],
+        [
+          110.25,
+          468.826171875
+        ],
+        [
+          46.7578125,
+          468.826171875
+        ]
+      ]
+    },
+    {
+      "title": "Jitter and Phase Noise",
+      "heading_level": null,
+      "page_id": 248,
+      "polygon": [
+        [
+          45.52734375,
+          345.51332092285156
+        ],
+        [
+          154.20223999023438,
+          345.51332092285156
+        ],
+        [
+          154.20223999023438,
+          355.476318359375
+        ],
+        [
+          45.52734375,
+          355.476318359375
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 244,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          103
+        ],
+        [
+          "Line",
+          34
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 245,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          52
+        ],
+        [
+          "Span",
+          24
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 246,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          231
+        ],
+        [
+          "Line",
+          68
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 247,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          166
+        ],
+        [
+          "Line",
+          56
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 248,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          112
+        ],
+        [
+          "Line",
+          42
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 249,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          66
+        ],
+        [
+          "Span",
+          7
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data\\Time Interleaving DAC (TI-DAC)"
+}
