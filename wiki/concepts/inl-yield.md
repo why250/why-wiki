@@ -2,9 +2,9 @@
 type: concept
 title: INL 良率 (INL Yield)
 tags: [DAC, INL, yield, mismatch, Monte-Carlo, statistics]
-related: "[[bosch-2004-dac-limitations-ch-04-static-behaviour]], [[dac-static-performance]], [[transistor-mismatch]]"
+related: ["[[bosch-2004-dac-limitations-ch-04-static-behaviour]]", "[[dac-static-performance]]", "[[transistor-mismatch]]", "[[monte-carlo-simulation]]", "[[process-corner]]"]
 created: 2026-06-08
-updated: 2026-06-08
+updated: 2026-08-01
 ---
 
 # INL 良率 (INL Yield)
@@ -41,6 +41,11 @@ $$P(\exists j: |Y(j)| \ge 0.5) = 2 \cdot P(|Y(2^N)| \ge 0.5)$$
 
 - 给定工艺 → 预测可达分辨率下的良率
 - 给定目标良率 → 反推所需 $\sigma(I)/I$ → 确定晶体管尺寸
+
+## 相关概念
+
+- [[monte-carlo-simulation]] — MC 仿真在电路良率中的通用方法论
+- [[process-corner]] — Corner 与 MC 的互补关系
 
 ## 来源
 

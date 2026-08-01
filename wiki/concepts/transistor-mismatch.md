@@ -2,9 +2,9 @@
 type: concept
 title: 晶体管失配
 tags: [mismatch, transistor, CMOS, process-variation, Pelgrom, Lakshmikumar]
-related: "[[bosch-2004-dac-limitations-ch-01-introduction]], [[dac-static-performance]], [[dac-mismatch-effects]]"
+related: ["[[bosch-2004-dac-limitations-ch-01-introduction]]", "[[dac-static-performance]]", "[[dac-mismatch-effects]]", "[[process-corner]]", "[[monte-carlo-simulation]]", "[[xinhaishiyi-2026-spice-model]]"]
 created: 2026-06-08
-updated: 2026-06-08
+updated: 2026-08-01
 ---
 
 # 晶体管失配 (Transistor Mismatch)
@@ -32,6 +32,12 @@ $$\sigma(V_T) = \frac{A_{VT}}{\sqrt{WL}}, \quad \sigma(\beta) = \frac{A_\beta}{\
 
 详见 [[bosch-2004-dac-limitations-ch-01-introduction|Bosch Ch 4 & Ch 8]] 和 [[dac-mismatch-effects]]。
 
+## 相关概念
+
+- [[process-corner]] — 全局工艺变异（Corner Model）与局部失配的区别
+- [[monte-carlo-simulation]] — MC 仿真的两层结构：全局变异 + 局部失配
+
 ## 来源
 
 - [[bosch-2004-dac-limitations-ch-01-introduction]] — Bosch et al. (2004) Ch 8
+- [[xinhaishiyi-2026-spice-model]] — 芯海拾遗 SPICE Model 文章（统计建模与 Pelgrom 模型）

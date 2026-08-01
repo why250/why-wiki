@@ -30,6 +30,7 @@
 - [[alain-cappy]] — Université de Lille，GaAs FET 噪声建模与器件表征
 - [[centre-hyperfrequences-et-semiconducteurs]] — 法国里尔大学 CHS 实验室，微波半导体器件研究
 - [[roland-bosch]] — Fraunhofer IAF，FET 宽带等效电路提取
+- [[donald-pederson]] — UC Berkeley 教授，SPICE 仿真器创始人
 
 ## Concepts
 
@@ -64,6 +65,12 @@
 - [[fet-small-signal-equivalent-circuit]] — FET 小信号等效电路标准拓扑：本征与寄生元件
 - [[cold-fet-extraction]] — Vds=0 条件下的冷管寄生参数提取技术
 - [[s-parameter-de-embedding]] — S 参数去嵌：矩阵变换逐层剥离寄生网络
+- [[spice]] — SPICE 仿真器：牛顿-拉夫逊求解器、紧凑模型与商用 EDA 演化
+- [[bsim-model]] — BSIM 模型家族：从 BSIM1 到 BSIM-CMG 的 MOSFET 紧凑模型标准
+- [[spice-model-extraction]] — SPICE 模型参数提取：从 Testkey 到 Sign-off 的完整 7 步流程
+- [[process-corner]] — 工艺角（Corner）：TT/SS/FF/SF/FS 与 PVT 全局变异分析
+- [[wat]] — WAT（Wafer Acceptance Test）：原理、测量内容与三个天生局限
+- [[monte-carlo-simulation]] — 蒙特卡洛仿真：统计建模、局部失配与电路良率评估
 
 ## Sources
 
@@ -84,6 +91,7 @@
 - [[schmidt-2018-amux-behavioral-model]] — Schmidt et al.：高速 2:1 AMUX MATLAB 行为级模型（MWSCAS 2018）
 - [[dambrine-1988-fet-equivalent-circuit]] — Dambrine et al.：FET 小信号等效电路直接提取法（IEEE TMTT, 1988）
 - [[berroth-1990-fet-broadband]] — Berroth & Bosch：FET 小信号等效电路宽带解析提取法（IEEE TMTT, 1990）
+- [[xinhaishiyi-2026-spice-model]] — 芯海拾遗：SPICE Model 从零入门——Fab 视角的完整建模流程
 
 ## Queries
 

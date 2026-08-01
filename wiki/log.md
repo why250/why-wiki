@@ -1,5 +1,21 @@
 # Research Log
 
+## [2026-08-01] lint | Pre-push health check
+
+- Broken links: 2 (both pre-existing — [[tannert-2017-amux]], [[ti-dac]] are forward references)
+- Orphan pages: 8 (all pre-existing co-author entities + [[overview]])
+- New content clean: 0 broken links, 0 new orphans across 8 new + 2 updated pages
+- Missing pages: none proposed (all new concepts from this ingest already created)
+
+## [2026-08-01] ingest | 什么是SPICE Model：从零开始手把手教你搭建一个仿真模型（芯海拾遗）
+
+- Created source page: [[xinhaishiyi-2026-spice-model]]
+- Created entity: [[donald-pederson]]
+- Created concepts: [[spice]], [[bsim-model]], [[spice-model-extraction]], [[process-corner]], [[wat]], [[monte-carlo-simulation]]
+- Updated concepts: [[transistor-mismatch]] — added cross-refs to process-corner, monte-carlo-simulation; [[inl-yield]] — added cross-refs to monte-carlo-simulation, process-corner
+- New domain: SPICE 仿真与器件建模方法论（wiki 首个非 ADC/DAC/FET 方向，属于基础 EDA 知识层）
+- Cross-references added to 2 existing pages
+
 ## [2026-07-21] ingest | Broad-Band Determination of the FET Small-Signal Equivalent Circuit (Berroth & Bosch, IEEE TMTT 1990)
 
 - Created source page: [[berroth-1990-fet-broadband]]
