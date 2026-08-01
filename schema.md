@@ -100,8 +100,10 @@ Detailed step-by-step workflows live in `.claude/skills/` (SSOT):
 
 | Workflow | Skill file | When to use |
 |----------|-----------|-------------|
-| Ingest a source | `.claude/skills/ingest.md` | Processing new raw sources |
-| Health check / lint | `.claude/skills/lint.md` | Periodic wiki maintenance |
+| Ingest a source | `.claude/skills/ingest-source/SKILL.md` | Processing new Markdown sources |
+| Ingest a book | `.claude/skills/ingest-book/SKILL.md` | Processing large books chapter by chapter |
+| Preprocess a PDF | `.claude/skills/preprocess-pdf/SKILL.md` | Converting PDFs before ingest |
+| Health check / lint | `.claude/skills/lint-wiki/SKILL.md` | Periodic wiki maintenance |
 | Query | (inline in CLAUDE.md Step 2) | Answering questions from wiki content |
 
 ## Contradiction Handling

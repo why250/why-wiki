@@ -10,12 +10,12 @@ Default setup order (avoids re-downloading the large marker/torch stack):
   3. Only then create .venv-marker and pip install marker-pdf
 
 Usage (from repo root):
-  python .claude/skills/scripts/setup_marker_env.py setup
-  python .claude/skills/scripts/setup_marker_env.py setup --use-existing PATH
-  python .claude/skills/scripts/setup_marker_env.py setup --force-venv
-  python .claude/skills/scripts/setup_marker_env.py setup --cuda cu124
-  python .claude/skills/scripts/setup_marker_env.py resolve
-  python .claude/skills/scripts/setup_marker_env.py doctor
+  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup
+  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup --use-existing PATH
+  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup --force-venv
+  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup --cuda cu124
+  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py resolve
+  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py doctor
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[4]
 CONFIG_PATH = REPO_ROOT / ".claude" / "marker-env.local.json"
 VENV_DIR = REPO_ROOT / ".venv-marker"
 PREFERRED_MAJOR_MINOR = {(3, 11), (3, 12), (3, 13)}
@@ -491,7 +491,7 @@ def ensure_python_exists(config: dict[str, Any]) -> Path:
     if not python.is_file():
         raise SystemExit(
             f"Configured python missing: {python}\n"
-            "Run: python .claude/skills/scripts/setup_marker_env.py setup"
+            "Run: python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup"
         )
     return python
 
@@ -518,9 +518,9 @@ def cmd_resolve(args: argparse.Namespace) -> int:
         raise SystemExit(
             "No marker env config found.\n"
             "First-time / new machine:\n"
-            "  python .claude/skills/scripts/setup_marker_env.py setup\n"
+            "  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup\n"
             "Or bind an existing interpreter:\n"
-            "  python .claude/skills/scripts/setup_marker_env.py setup "
+            "  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup "
             "--use-existing PATH/to/python"
         )
     ensure_python_exists(config)
@@ -540,7 +540,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     if config is None:
         raise SystemExit(
             "No config yet. Run setup first:\n"
-            "  python .claude/skills/scripts/setup_marker_env.py setup"
+            "  python .claude/skills/preprocess-pdf/scripts/setup_marker_env.py setup"
         )
     config = refresh_config_from_probe(config)
     print_config_summary(config)

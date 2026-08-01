@@ -18,13 +18,13 @@ Before any task, read:
 
 | Task type | Load these docs |
 |-----------|----------------|
-| Ingest a new source | `.claude/skills/ingest.md` + `wiki/index.md` |
-| Ingest a book | `.claude/skills/ingest-book.md` |
+| Ingest a new source | `.claude/skills/ingest-source/SKILL.md` + `wiki/index.md` |
+| Ingest a book | `.claude/skills/ingest-book/SKILL.md` |
 | Answer a question | `wiki/index.md` → drill into relevant pages |
-| Health check / lint | `.claude/skills/lint.md` |
+| Health check / lint | `.claude/skills/lint-wiki/SKILL.md` |
 | Create a wiki page | `schema.md` (frontmatter + naming) + `.claude/rules/wiki.md` |
 | Update wiki pages | `wiki/index.md` + `.claude/rules/wiki.md` |
-| Preprocess a PDF | `.claude/skills/preprocess-pdf.md` |
+| Preprocess a PDF | `.claude/skills/preprocess-pdf/SKILL.md` |
 | Record architecture decision | `docs/decisions.md` (append) |
 | Unknown / ambiguous | Ask the user before loading anything |
 
@@ -49,10 +49,10 @@ Before executing a known workflow, check `.claude/skills/` first.
 
 | Skill | When to use |
 |-------|-------------|
-| `ingest.md` | User adds a source to `raw/` and asks to process it |
-| `ingest-book.md` | User adds a large multi-chapter PDF book to `raw/` |
-| `preprocess-pdf.md` | User adds a PDF to `raw/` and needs it converted to Markdown first |
-| `lint.md` | User asks for a health check or periodic maintenance |
+| `ingest-source/SKILL.md` | User adds a Markdown source to `raw/` and asks to process it |
+| `ingest-book/SKILL.md` | User adds a large multi-chapter PDF book to `raw/` |
+| `preprocess-pdf/SKILL.md` | User adds a PDF to `raw/` and needs it converted to Markdown first |
+| `lint-wiki/SKILL.md` | User asks for a health check or periodic maintenance |
 
 If a matching skill exists → follow it exactly.
 If no skill exists → execute, then propose creating one after.
@@ -99,12 +99,13 @@ raw/                            ← immutable source documents
     always.md                   ← loaded every session, keep it short
     wiki.md                     ← wiki editing and cross-referencing rules
   skills/
-    ingest.md                   ← SOP: ingesting a raw source
-    ingest-book.md              ← SOP: ingesting a multi-chapter book chapter-by-chapter
-    preprocess-pdf.md           ← SOP: converting PDF to Markdown before ingest
-    scripts/setup_marker_env.py ← marker env setup/resolve (used by preprocess-pdf)
-    lint.md                     ← SOP: wiki health check
-    _template.md                ← copy this when creating a new skill
+    README.md                   ← skill catalog and sharing conventions
+    ingest-source/SKILL.md      ← SOP: ingesting a raw Markdown source
+    ingest-book/SKILL.md        ← SOP: ingesting a multi-chapter book chapter by chapter
+    preprocess-pdf/SKILL.md     ← SOP: converting PDF to Markdown before ingest
+    preprocess-pdf/scripts/     ← Marker environment resources
+    lint-wiki/SKILL.md          ← SOP: wiki health check
+    templates/SKILL.md.template ← starter template for new skills
 
 docs/
   decisions.md                  ← ADR log for wiki architecture decisions
@@ -130,7 +131,7 @@ If two files say the same thing, one of them is wrong.
 - ❌ Page type definitions → `schema.md`
 - ❌ Frontmatter format → `schema.md`
 - ❌ Naming conventions → `schema.md`
-- ❌ Ingest workflow steps → `.claude/skills/ingest.md`
-- ❌ Lint workflow steps → `.claude/skills/lint.md`
+- ❌ Ingest workflow steps → `.claude/skills/ingest-source/SKILL.md`
+- ❌ Lint workflow steps → `.claude/skills/lint-wiki/SKILL.md`
 - ❌ Cross-referencing rules → `.claude/rules/wiki.md`
 - ❌ Architecture decisions → `docs/decisions.md`

@@ -1,0 +1,19 @@
+---
+name: skill-name
+description: State what this skill does and the concrete requests or contexts that should trigger it.
+---
+
+# Skill title
+
+Give the agent the minimum non-obvious context needed to perform this workflow.
+
+## Workflow
+
+1. Verify the inputs and prerequisites.
+2. Perform the task using the project conventions.
+3. Validate the result and report any exceptions.
+
+## Resources
+
+- Read `references/<file>.md` only when its topic applies.
+- Run `scripts/<script>` for deterministic or repetitive operations.

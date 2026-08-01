@@ -62,7 +62,7 @@
 
 ### [2026-07-21] Marker env: dedicated venv + machine-local config cache
 
-**Decision:** PDF preprocessing resolves the marker Python interpreter via `.claude/skills/scripts/setup_marker_env.py` and a gitignored cache at `.claude/marker-env.local.json`. New machines run `setup` once; later conversions only `resolve`. Default `setup` **reuses** any existing marker-capable interpreter (project `.venv-marker` first, then system/conda; CUDA preferred) and only creates/installs `.venv-marker` when none is found. Use `--force-venv` to force a fresh install.
+**Decision:** PDF preprocessing resolves the marker Python interpreter via `.claude/skills/preprocess-pdf/scripts/setup_marker_env.py` and a gitignored cache at `.claude/marker-env.local.json`. New machines run `setup` once; later conversions only `resolve`. Default `setup` **reuses** any existing marker-capable interpreter (project `.venv-marker` first, then system/conda; CUDA preferred) and only creates/installs `.venv-marker` when none is found. Use `--force-venv` to force a fresh install.
 
 **Context:** Each preprocess run previously rediscovered all Python installs and probed torch/marker — slow, brittle on multi-Python Windows hosts, and hard to share as a skill for new devices. Marker/torch is also large; always creating a new venv re-downloads a heavy stack even when the machine already has a working install.
 
