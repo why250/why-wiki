@@ -4,7 +4,7 @@ title: Project Overview
 tags: []
 related: "[]"
 created: 2026-06-06
-updated: 2026-07-21
+updated: 2026-10-07
 ---
 
 # Overview
@@ -13,7 +13,7 @@ updated: 2026-07-21
 
 ## 当前状态
 
-项目已摄入 14 篇源文章/章节，覆盖 26 个技术概念和 21 个实体。
+项目现有 18 个来源页面（含文章、章节、全书总览与操作记录）、37 个技术概念和 25 个实体。
 
 ### 数据转换器（ADC/DAC）
 
@@ -33,6 +33,12 @@ updated: 2026-07-21
 ### 器件建模（FET）
 
 - [[dambrine-1988-fet-equivalent-circuit]] — FET 小信号等效电路 Dambrine 直接提取法
+
+### AI 工具运行与远程工作流
+
+- [[codex]]、[[v2rayn]] — Windows Codex 桌面 App 与本地代理工具
+- [[local-2026-codex-remote-vpn]] — 手机远程连接的代理配置、排障证据与回退记录
+- [[codex-remote-proxy]] — 代理生效范围、进程核对与分层验证方法
 
 ## 核心主题
 

@@ -1,5 +1,14 @@
 # Research Log
 
+## [2026-10-07] ingest | Windows Codex 手机远程连接：代理配置记录
+
+- 原样归档外部原文：`raw/articles/Codex-Remote-VPN.md`，与原文件 SHA-256 一致
+- Created source page: [[local-2026-codex-remote-vpn]] — 保留故障证据、配置步骤、验证边界、日常使用与回退方案
+- Created entities: [[codex]], [[v2rayn]]
+- Created concept: [[codex-remote-proxy]] — 提取代理生效范围与分层验证方法
+- 更新索引与概览，新增 AI 辅助工程工具的运行与远程工作流资料
+- 原记录所述连接成功未在本次收录中重新测试；脚本和本机状态文件未归档为附件
+
 ## [2026-08-01] lint | Pre-push health check
 
 - Broken links: 2 (both pre-existing — [[tannert-2017-amux]], [[ti-dac]] are forward references)

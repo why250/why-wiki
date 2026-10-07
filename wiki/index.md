@@ -8,6 +8,8 @@
 ## Entities
 
 <!-- Named things: people, tools, organizations, datasets -->
+- [[codex]] — Codex 桌面 App：AI 辅助工程工具的 Windows 运行与手机远程使用记录
+- [[v2rayn]] — Windows 本地代理工具，Codex 远程连接案例中的代理入口
 - [[zhangtuoken]] — 张托肯，ADC 权重前台校准算法开源项目作者
 - [[gutietieqiu]] — 固推铁球公众号，模拟/RF IC 深度技术内容
 - [[jacob-wikner]] — Linköping University，DAC 动态性能建模研究者
@@ -35,6 +37,7 @@
 ## Concepts
 
 <!-- Ideas, techniques, phenomena, frameworks -->
+- [[codex-remote-proxy]] — Codex 远程连接的代理生效范围、进程核对与分层验证方法
 - [[time-interleaving-adc]] — 时间交织 ADC 架构、失配类型、分级交织
 - [[ti-calibration]] — TI Offset/Gain/Skew/Bandwidth 校准算法
 - [[high-speed-sar-adc]] — 单通道高速 SAR ADC 速度优化技术
@@ -75,6 +78,7 @@
 ## Sources
 
 <!-- Papers, articles, talks, books, blog posts -->
+- [[local-2026-codex-remote-vpn]] — Windows Codex 手机远程连接：代理配置、排障证据、日常使用与回退
 - [[zhangtuoken-2026-adc-calibration]] — 用 AI 实现并开源 ADC 权重前台校准算法
 - [[gutietieqiu-2024-8bit-high-speed-sar-adc]] — 第八届集创赛赛题点评：8位高速 SAR ADC
 - [[wikner-tan-1997-dac-imperfections]] — 电路非理想因素对 DAC 动态性能的影响
